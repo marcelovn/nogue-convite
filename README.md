@@ -6,7 +6,7 @@ Plataforma SaaS para criação de convites digitais interativos e gamificados. I
 
 ✨ **Editor de Cartões Personalizado**
 - Nome do destinatário
-- Seu nome
+- Seu nome.
 - Título do cartão
 - Mensagem personalizada
 

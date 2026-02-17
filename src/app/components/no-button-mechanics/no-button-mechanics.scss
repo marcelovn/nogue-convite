@@ -1,0 +1,124 @@
+.mechanics-container {
+  width: 100%;
+  min-height: 200px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+  padding: 2rem;
+}
+
+.buttons-area {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 2rem;
+  position: relative;
+  min-height: 160px;
+  width: 100%;
+}
+
+.btn-yes {
+  padding: 1rem 2.5rem;
+  font-size: 1.25rem;
+  font-weight: 700;
+  background: linear-gradient(135deg, #4CAF50, #66BB6A);
+  color: #fff;
+  border: none;
+  border-radius: 50px;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 20px rgba(76, 175, 80, 0.4);
+  z-index: 2;
+
+  &:hover {
+    background: linear-gradient(135deg, #43A047, #4CAF50);
+    box-shadow: 0 6px 28px rgba(76, 175, 80, 0.5);
+    transform: scale(1.05) !important;
+  }
+
+  &:active {
+    transform: scale(0.98) !important;
+  }
+}
+
+.btn-yes-extra {
+  position: absolute;
+  animation: popIn 0.3s ease-out;
+  font-size: 1rem;
+  padding: 0.75rem 1.5rem;
+}
+
+.btn-no {
+  padding: 1rem 2.5rem;
+  font-size: 1.25rem;
+  font-weight: 700;
+  background: linear-gradient(135deg, #e0e0e0, #bdbdbd);
+  color: #555;
+  border: none;
+  border-radius: 50px;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  z-index: 1;
+
+  &:hover {
+    background: linear-gradient(135deg, #bdbdbd, #9e9e9e);
+  }
+}
+
+/* Response Success */
+.response-success {
+  text-align: center;
+  padding: 2rem;
+
+  .confetti-emoji {
+    font-size: 4rem;
+    margin-bottom: 1rem;
+    animation: heartBeat 1.5s ease-in-out infinite;
+  }
+
+  h2 {
+    font-size: 1.75rem;
+    color: #4CAF50;
+    margin-bottom: 0.5rem;
+  }
+
+  p {
+    color: #666;
+    font-size: 1rem;
+  }
+}
+
+@keyframes popIn {
+  from {
+    opacity: 0;
+    transform: scale(0) translate(var(--tx, 0), var(--ty, 0));
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translate(var(--tx, 0), var(--ty, 0));
+  }
+}
+
+@keyframes heartBeat {
+  0% { transform: scale(1); }
+  14% { transform: scale(1.3); }
+  28% { transform: scale(1); }
+  42% { transform: scale(1.3); }
+  70% { transform: scale(1); }
+}
+
+@media (max-width: 480px) {
+  .buttons-area {
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
+  .btn-yes,
+  .btn-no {
+    padding: 0.875rem 2rem;
+    font-size: 1.1rem;
+  }
+}

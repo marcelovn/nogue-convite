@@ -1,0 +1,227 @@
+.editor-container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 2rem 1.5rem;
+}
+
+.editor-header {
+  text-align: center;
+  margin-bottom: 2rem;
+
+  h1 {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--accent, #FF1493);
+    margin-bottom: 0.5rem;
+  }
+
+  p {
+    color: #888;
+    font-size: 1rem;
+  }
+}
+
+/* Steps Indicator */
+.steps-indicator {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+  margin-bottom: 2rem;
+}
+
+.step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+  opacity: 0.4;
+  transition: all 0.3s ease;
+
+  &.active {
+    opacity: 1;
+  }
+
+  &.completed .step-number {
+    background: #4CAF50;
+  }
+}
+
+.step-number {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--accent, #FF1493);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 0.875rem;
+}
+
+.step-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #555;
+}
+
+.step-line {
+  width: 60px;
+  height: 3px;
+  background: #ddd;
+  margin: 0 0.5rem;
+  margin-bottom: 1.25rem;
+  border-radius: 2px;
+  transition: background 0.3s ease;
+
+  &.active {
+    background: var(--accent, #FF1493);
+  }
+}
+
+/* Editor Step */
+.editor-step {
+  animation: fadeIn 0.4s ease-out;
+}
+
+/* Form Groups */
+.form-group {
+  margin-bottom: 1.25rem;
+
+  label {
+    display: block;
+    font-weight: 600;
+    font-size: 0.875rem;
+    margin-bottom: 0.5rem;
+    color: #444;
+  }
+
+  input, textarea {
+    width: 100%;
+    padding: 0.875rem 1rem;
+    border: 2px solid #e8e8e8;
+    border-radius: 10px;
+    background: #fafafa;
+    transition: all 0.3s ease;
+    font-size: 0.95rem;
+
+    &:focus {
+      border-color: var(--accent, #FF1493);
+      background: #fff;
+      box-shadow: 0 0 0 3px rgba(255, 20, 147, 0.1);
+    }
+
+    &::placeholder {
+      color: #bbb;
+    }
+  }
+
+  textarea {
+    resize: vertical;
+    min-height: 100px;
+  }
+}
+
+/* Mechanic Grid */
+.mechanic-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.mechanic-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 1.5rem 1rem;
+  background: #f8f8f8;
+  border: 2px solid transparent;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-align: center;
+
+  &:hover {
+    background: #fff;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+    transform: translateY(-2px);
+  }
+
+  &.selected {
+    border-color: var(--accent, #FF1493);
+    background: #fff;
+    box-shadow: 0 4px 20px rgba(255, 20, 147, 0.15);
+  }
+}
+
+.mechanic-icon {
+  font-size: 2rem;
+}
+
+.mechanic-label {
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: #333;
+}
+
+.mechanic-desc {
+  font-size: 0.75rem;
+  color: #888;
+}
+
+/* Step Actions */
+.step-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 2rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid #eee;
+}
+
+.action-group {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.btn-whatsapp {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: #25D366;
+  color: #fff;
+  box-shadow: 0 4px 16px rgba(37, 211, 102, 0.3);
+
+  &:hover {
+    background: #1DA851;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 24px rgba(37, 211, 102, 0.4);
+  }
+}
+
+@media (max-width: 480px) {
+  .editor-container {
+    padding: 1rem;
+  }
+
+  .mechanic-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .step-actions {
+    flex-direction: column;
+    gap: 1rem;
+
+    .btn {
+      width: 100%;
+    }
+  }
+
+  .action-group {
+    width: 100%;
+    flex-direction: column;
+  }
+}

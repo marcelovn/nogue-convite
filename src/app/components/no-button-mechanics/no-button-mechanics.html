@@ -1,0 +1,40 @@
+<div class="mechanics-container" #buttonsContainer>
+  @if (hasResponded()) {
+    <div class="response-success animate-fade-in">
+      <div class="confetti-emoji">🎉</div>
+      <h2>Presença Confirmada!</h2>
+      <p>Obrigado por confirmar! Esperamos você lá! ❤️</p>
+    </div>
+  } @else {
+    <div class="buttons-area">
+      <!-- Yes Button -->
+      <button
+        class="btn-yes"
+        [style.transform]="'scale(' + yesScale() + ')'"
+        (click)="onYesClick()">
+        {{ yesText() }}
+      </button>
+
+      <!-- No Button -->
+      @if (noScale() > 0) {
+        <button
+          class="btn-no"
+          [style.transform]="'translate(' + noPosition().x + 'px, ' + noPosition().y + 'px) scale(' + noScale() + ')'"
+          (mouseenter)="onNoHover()"
+          (click)="onNoClick()">
+          Não 😢
+        </button>
+      }
+
+      <!-- Extra Yes buttons (multiplying) -->
+      @for (extra of extraYesButtons(); track $index) {
+        <button
+          class="btn-yes btn-yes-extra"
+          [style.transform]="'translate(' + extra.x + 'px, ' + extra.y + 'px)'"
+          (click)="onYesClick()">
+          Sim ❤
+        </button>
+      }
+    </div>
+  }
+</div>

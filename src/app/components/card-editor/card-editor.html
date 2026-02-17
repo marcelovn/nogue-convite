@@ -1,0 +1,128 @@
+<div class="editor-container animate-fade-in">
+  <header class="editor-header">
+    <h1>✨ Criar Convite</h1>
+    <p>Crie um convite interativo irresistível!</p>
+  </header>
+
+  <!-- Progress Steps -->
+  <div class="steps-indicator">
+    <div class="step" [class.active]="currentStep() >= 1" [class.completed]="currentStep() > 1">
+      <span class="step-number">1</span>
+      <span class="step-label">Informações</span>
+    </div>
+    <div class="step-line" [class.active]="currentStep() > 1"></div>
+    <div class="step" [class.active]="currentStep() >= 2" [class.completed]="currentStep() > 2">
+      <span class="step-number">2</span>
+      <span class="step-label">Visual</span>
+    </div>
+    <div class="step-line" [class.active]="currentStep() > 2"></div>
+    <div class="step" [class.active]="currentStep() >= 3">
+      <span class="step-number">3</span>
+      <span class="step-label">Mecânica</span>
+    </div>
+  </div>
+
+  <!-- Step 1: Info -->
+  @if (currentStep() === 1) {
+    <section class="editor-step card-base animate-fade-in">
+      <h2 class="section-title">📝 Informações do Convite</h2>
+
+      <div class="form-group">
+        <label for="recipientName">Nome de quem recebe</label>
+        <input
+          id="recipientName"
+          type="text"
+          placeholder="Ex: Maria"
+          [ngModel]="recipientName()"
+          (ngModelChange)="recipientName.set($event)" />
+      </div>
+
+      <div class="form-group">
+        <label for="senderName">Seu nome</label>
+        <input
+          id="senderName"
+          type="text"
+          placeholder="Ex: João"
+          [ngModel]="senderName()"
+          (ngModelChange)="senderName.set($event)" />
+      </div>
+
+      <div class="form-group">
+        <label for="cardTitle">Título do Convite</label>
+        <input
+          id="cardTitle"
+          type="text"
+          placeholder="Ex: Você está convidado! 🎉"
+          [ngModel]="cardTitle()"
+          (ngModelChange)="cardTitle.set($event)" />
+      </div>
+
+      <div class="form-group">
+        <label for="cardMessage">Mensagem especial</label>
+        <textarea
+          id="cardMessage"
+          rows="4"
+          placeholder="Ex: Venha celebrar esse momento especial conosco!"
+          [ngModel]="cardMessage()"
+          (ngModelChange)="cardMessage.set($event)"></textarea>
+      </div>
+
+      <div class="step-actions">
+        <span></span>
+        <button class="btn btn-primary" (click)="nextStep()">Próximo →</button>
+      </div>
+    </section>
+  }
+
+  <!-- Step 2: Visual -->
+  @if (currentStep() === 2) {
+    <section class="editor-step card-base animate-fade-in">
+      <app-theme-selector (themeChanged)="onThemeChanged($event)" />
+      <app-color-scheme (schemeChanged)="onSchemeChanged($event)" />
+
+      <div class="step-actions">
+        <button class="btn btn-secondary" (click)="prevStep()">← Voltar</button>
+        <button class="btn btn-primary" (click)="nextStep()">Próximo →</button>
+      </div>
+    </section>
+  }
+
+  <!-- Step 3: Mechanic -->
+  @if (currentStep() === 3) {
+    <section class="editor-step card-base animate-fade-in">
+      <h2 class="section-title">🎮 Mecânica do Botão "Não"</h2>
+      <p class="section-subtitle">Escolha como o botão "Não" vai se comportar</p>
+
+      <div class="mechanic-grid">
+        @for (mech of mechanics; track mech.id) {
+          <button
+            class="mechanic-card"
+            [class.selected]="selectedMechanic() === mech.id"
+            (click)="selectedMechanic.set($any(mech.id))">
+            <span class="mechanic-icon">
+              @switch (mech.id) {
+                @case ('teleporting') { 🏃 }
+                @case ('growing-yes') { 📈 }
+                @case ('multiplying-yes') { ✨ }
+                @case ('shrinking-no') { 🔍 }
+              }
+            </span>
+            <span class="mechanic-label">{{ mech.label }}</span>
+            <span class="mechanic-desc">{{ mech.description }}</span>
+          </button>
+        }
+      </div>
+
+      <div class="step-actions">
+        <button class="btn btn-secondary" (click)="prevStep()">← Voltar</button>
+        <div class="action-group">
+          <button class="btn btn-secondary" (click)="previewCard()">👁 Preview</button>
+          <button class="btn btn-whatsapp" (click)="saveAndShareWhatsApp()">
+            📲 Salvar & Enviar WhatsApp
+          </button>
+          <button class="btn btn-primary" (click)="saveAndShare()">🔗 Salvar & Compartilhar</button>
+        </div>
+      </div>
+    </section>
+  }
+</div>

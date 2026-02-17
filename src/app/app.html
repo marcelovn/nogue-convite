@@ -1,0 +1,20 @@
+<nav class="main-nav">
+  <div class="nav-container">
+    <a class="nav-brand" routerLink="/">
+      <span class="brand-icon">🎉</span>
+      <span class="brand-text">Nogue Convites</span>
+    </a>
+    <div class="nav-links">
+      <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">Criar</a>
+      <a routerLink="/dashboard" routerLinkActive="active">Painel</a>
+    </div>
+  </div>
+</nav>
+
+<main>
+  <router-outlet />
+</main>
+
+<footer class="main-footer">
+  <p>Nogue Convites &copy; 2026 &mdash; Convites Interativos para Salão de Festas</p>
+</footer>

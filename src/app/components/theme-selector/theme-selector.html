@@ -1,0 +1,26 @@
+<div class="theme-selector">
+  <h3 class="section-title">🎨 Escolha o Tema</h3>
+  <p class="section-subtitle">Selecione um tema visual para o seu convite</p>
+
+  <div class="theme-grid">
+    @for (theme of themes(); track theme.id) {
+      <button
+        class="theme-card"
+        [class.selected]="selectedTheme().id === theme.id"
+        [class.premium]="theme.isPremium"
+        [style.background-color]="theme.backgroundColor"
+        [style.border-color]="theme.accentColor"
+        [style.font-family]="theme.font + ', sans-serif'"
+        (click)="selectTheme(theme)">
+        @if (theme.isPremium) {
+          <span class="pro-badge">PRO</span>
+        }
+        <span class="theme-name">{{ theme.name }}</span>
+        <span class="theme-desc">{{ theme.description }}</span>
+        @if (selectedTheme().id === theme.id) {
+          <span class="check-mark">✓</span>
+        }
+      </button>
+    }
+  </div>
+</div>

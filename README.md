@@ -11,7 +11,7 @@ Plataforma SaaS para criação de convites digitais interativos e gamificados. I
 - Mensagem personalizada
 
 🎨 **Temas Visuais** (10 opções)
-- Cute Bear (Gratuito)
+- Cute Bear (Gratuito).
 - Sweet Hearts (Gratuito)
 - Premium themes: Pink Piggy, Bold Frame, Dreamy, Vintage Tag, Love Letter, Neon Glow, Royal, Pastel Dream
 

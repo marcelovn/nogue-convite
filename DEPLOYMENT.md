@@ -144,12 +144,8 @@ netlify deploy --prod --dir=dist/nogue-convites/browser
 
 #### Opção B: Via CLI Manual
 ```bash
-# Adicionar script ao package.json (já incluído)
-npm install -g angular-cli-ghpages
-
-# Build e deploy
-npm run build -- --base-href=/nogue-convite/
-npx angular-cli-ghpages --dir=dist/nogue-convites/browser
+# Script já está configurado no package.json
+npm run deploy:ghpages
 ```
 
 ---
@@ -162,29 +158,33 @@ Após o deploy, você pode usar seu próprio domínio:
 1. Vá para seu projeto no Vercel
 2. Settings → Domains
 3. Add Domain: `www.seudominio.com.br`
-4. Configure seu DNS:
-   - Tipo A: `76.76.21.21`
-   - CNAME www: `cname.vercel-dns.com`
+4. Vercel fornecerá instruções de DNS específicas
+5. Recomendado: Use CNAME apontando para `cname.vercel-dns.com`
+6. Alternativamente, siga as instruções de DNS fornecidas por Vercel
 
 ### Netlify
 1. Site settings → Domain management
 2. Add custom domain
-3. Configure DNS:
-   - Tipo A: `75.2.60.5`
-   - CNAME www: `seu-site.netlify.app`
+3. Netlify fornecerá instruções de DNS específicas
+4. Opção 1: Use Netlify DNS (gerenciamento completo)
+5. Opção 2: Configure CNAME apontando para `seu-site.netlify.app`
+6. Siga as instruções exibidas no painel
 
 ### Firebase
 1. Firebase Console → Hosting
 2. Connect domain
-3. Siga as instruções de verificação
-4. Configure DNS conforme instruído
+3. Siga as instruções de verificação fornecidas
+4. Configure DNS conforme instruído pelo Firebase
+5. Aguarde propagação DNS (pode levar até 24h)
 
 ### GitHub Pages
 1. Settings → Pages
 2. Custom domain: `www.seudominio.com.br`
-3. Configure DNS:
-   - Tipo A: IPs do GitHub Pages
-   - CNAME www: `marcelovn.github.io`
+3. Configure DNS no seu provedor:
+   - Para apex domain (seudominio.com.br):
+     - Consulte IPs atuais em: https://docs.github.com/pages/configuring-a-custom-domain-for-your-github-pages-site/managing-a-custom-domain-for-your-github-pages-site
+   - Para www subdomain:
+     - CNAME www apontando para: `marcelovn.github.io`
 
 ---
 

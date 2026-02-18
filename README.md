@@ -138,15 +138,11 @@ netlify deploy --prod --dir=dist/nogue-convites/browser
 
 ### Opção 4: GitHub Pages
 
-1. Adicione o script de deploy ao `package.json`:
-   ```json
-   "deploy": "ng build --configuration production --base-href=/nogue-convite/ && npx angular-cli-ghpages --dir=dist/nogue-convites/browser"
-   ```
-2. Execute:
+1. Execute o script de deploy (já configurado no `package.json`):
    ```bash
-   npm run deploy
+   npm run deploy:ghpages
    ```
-3. URL disponível em: `https://seu-usuario.github.io/nogue-convite/`
+2. URL disponível em: `https://seu-usuario.github.io/nogue-convite/`
 
 ### Configurar Domínio Personalizado
 

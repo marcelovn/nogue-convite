@@ -108,19 +108,18 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  padding: 6rem 2rem 12rem; /* top clears back-btn, bottom clears share-bar */
+  justify-content: space-evenly;
+  padding: 5rem 2rem 11rem; /* top clears back-btn, bottom clears share-bar */
   text-align: center;
   position: relative;
   z-index: 2;
   overflow-y: auto;
   scrollbar-width: none;
-  gap: 0;
 
   &::-webkit-scrollbar { display: none; }
 
   @media (min-width: 600px) {
-    padding: 5rem 2.25rem 11rem;
+    padding: 4.5rem 2.5rem 10rem;
   }
 }
 
@@ -134,7 +133,7 @@
 .card-title {
   font-size: 2.6rem;
   font-weight: 800;
-  margin: 0 0 1.75rem;
+  margin: 0;
   line-height: 1.15;
   letter-spacing: -0.02em;
   text-shadow: 0 2px 20px rgba(0,0,0,0.5);
@@ -176,7 +175,7 @@
 .card-message {
   font-size: 1.3rem;
   line-height: 1.75;
-  margin: 0 0 1.75rem;
+  margin: 0;
   opacity: 0.9;
   white-space: pre-line;
   font-family: 'Lora', serif;
@@ -189,7 +188,7 @@
   font-weight: 500;
   opacity: 0.85;
   letter-spacing: 0.03em;
-  margin-bottom: 0;
+  margin: 0;
 
   strong {
     font-size: 1.35rem;
@@ -203,8 +202,8 @@
 }
 
 .rsvp-section {
-  margin-top: 2.5rem;
-  padding-top: 2rem;
+  margin-top: 0;
+  padding-top: 1.75rem;
   border-top: 1px solid rgba(255,255,255,0.12);
   width: 100%;
   display: flex;

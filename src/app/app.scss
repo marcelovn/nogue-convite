@@ -72,6 +72,12 @@
 /* ===== Main ===== */
 main {
   flex: 1;
+  
+  &.public-invite {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
 }
 
 /* ===== Footer ===== */

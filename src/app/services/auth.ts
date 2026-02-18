@@ -1,7 +1,6 @@
-import { Injectable, signal, effect } from '@angular/core';
+import { Injectable, signal } from '@angular/core';
 import { SupabaseService } from './supabase';
 import { Router } from '@angular/router';
-import { CardService } from './card';
 
 @Injectable({
   providedIn: 'root'
@@ -13,8 +12,7 @@ export class AuthService {
 
   constructor(
     private supabaseService: SupabaseService,
-    private router: Router,
-    private cardService: CardService
+    private router: Router
   ) {
     this.initAuth();
   }
@@ -25,7 +23,6 @@ export class AuthService {
       if (user) {
         this.currentUser.set(user);
         this.isAuthenticated.set(true);
-        this.cardService.reloadCards();
       }
     });
 
@@ -33,9 +30,6 @@ export class AuthService {
     this.supabaseService.onAuthStateChange((user) => {
       this.currentUser.set(user);
       this.isAuthenticated.set(!!user);
-      if (user) {
-        this.cardService.reloadCards();
-      }
     });
   }
 
@@ -44,7 +38,6 @@ export class AuthService {
     try {
       const result = await this.supabaseService.signUp(email, password, displayName);
       if (!result.error) {
-        await this.cardService.reloadCards();
         this.router.navigate(['/dashboard']);
       }
       return result;
@@ -58,7 +51,6 @@ export class AuthService {
     try {
       const result = await this.supabaseService.signIn(email, password);
       if (!result.error) {
-        await this.cardService.reloadCards();
         this.router.navigate(['/dashboard']);
       }
       return result;

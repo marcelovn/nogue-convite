@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, effect } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { Card } from '../models/card.model';
 import { SupabaseService } from './supabase';
@@ -19,6 +19,16 @@ export class CardService {
     private supabaseService: SupabaseService,
     private authService: AuthService
   ) {
+    // Auto-reload cards when authentication state changes
+    effect(() => {
+      if (this.authService.isAuthenticated()) {
+        this.loadCardsFromSupabase();
+      } else {
+        this.cards = [];
+        this.cardsSubject.next([]);
+      }
+    });
+
     this.loadCardsFromSupabase();
   }
 

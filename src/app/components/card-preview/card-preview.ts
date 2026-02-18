@@ -24,6 +24,7 @@ export class CardPreview implements OnInit {
   private rsvpService = inject(RsvpService);
 
   card = signal<Card | null>(null);
+  isLoading = signal(false);
   isLiveInvite = signal(false);
   linkCopied = signal(false);
   whatsappPhone = signal('');
@@ -40,13 +41,28 @@ export class CardPreview implements OnInit {
     const cardId = this.route.snapshot.paramMap.get('id');
 
     if (cardId) {
-      // Live invite view
-      const card = this.cardService.getCard(cardId);
+      // Live invite view - primeiro tenta da memória
+      let card = this.cardService.getCard(cardId);
       if (card) {
         this.card.set(card);
         this.isLiveInvite.set(true);
         this.applyCardStyle(card);
         this.autoPlayAudio();
+      } else {
+        // Se não encontrar em memória, busca do Supabase
+        this.isLoading.set(true);
+        this.cardService.getCardFromDb(cardId).then(dbCard => {
+          if (dbCard) {
+            this.card.set(dbCard);
+            this.isLiveInvite.set(true);
+            this.applyCardStyle(dbCard);
+            this.autoPlayAudio();
+          }
+          this.isLoading.set(false);
+        }).catch(err => {
+          console.error('Erro ao carregar cartão:', err);
+          this.isLoading.set(false);
+        });
       }
     } else {
       // Preview mode

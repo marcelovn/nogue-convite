@@ -111,6 +111,41 @@ export class CardService {
     return [...this.cards];
   }
 
+  async getCardFromDb(id: string): Promise<Card | null> {
+    try {
+      const { data, error } = await this.supabaseService.getClient()
+        .from('cards')
+        .select('*')
+        .eq('id', id)
+        .single();
+
+      if (error || !data) {
+        console.error('Cartão não encontrado:', error);
+        return null;
+      }
+
+      const card: Card = {
+        id: data.id,
+        senderName: data.sender_name,
+        title: data.title,
+        message: data.message,
+        theme: data.theme,
+        colorScheme: data.color_scheme,
+        noButtonMechanic: data.no_button_mechanic,
+        photoUrl: data.photo_url,
+        musicUrl: data.music_url,
+        createdAt: new Date(data.created_at),
+        shareLink: data.share_link,
+        rsvp: { yes: data.yes_count, no: data.no_count }
+      };
+      
+      return card;
+    } catch (error) {
+      console.error('Erro ao buscar cartão:', error);
+      return null;
+    }
+  }
+
   async deleteCard(id: string): Promise<void> {
     const { error } = await this.supabaseService.getClient()
       .from('cards')

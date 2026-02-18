@@ -153,11 +153,32 @@
       </div>
 
       <div class="step-actions">
-        <button class="btn btn-secondary" (click)="prevStep()">← Voltar</button>
-        <button class="btn btn-secondary" (click)="previewCard()">👁 Preview</button>
-        <button class="btn btn-whatsapp" (click)="saveAndShareWhatsApp()">📲 WhatsApp</button>
-        <button class="btn btn-primary" (click)="saveAndShare()">✨ Criar</button>
+        <button class="btn btn-secondary" (click)="prevStep()" [disabled]="isLoading()">← Voltar</button>
+        <button class="btn btn-secondary" (click)="previewCard()" [disabled]="isLoading()">👁 Preview</button>
+        <button class="btn btn-whatsapp" (click)="saveAndShareWhatsApp()" [disabled]="isLoading()">
+          @if (isLoading()) {
+            <span class="spinner"></span>
+          } @else {
+            📲 WhatsApp
+          }
+        </button>
+        <button class="btn btn-primary" (click)="saveAndShare()" [disabled]="isLoading()">
+          @if (isLoading()) {
+            <span class="spinner"></span>
+          } @else {
+            ✨ Criar
+          }
+        </button>
       </div>
     </section>
+  }
+
+  @if (isLoading()) {
+    <div class="loading-overlay">
+      <div class="loading-card">
+        <div class="spinner-large"></div>
+        <p>Criando seu convite irrecusável...</p>
+      </div>
+    </div>
   }
 </div>

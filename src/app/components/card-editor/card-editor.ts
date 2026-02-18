@@ -26,6 +26,7 @@ export class CardEditor {
   photoFile = signal<File | null>(null);
   musicFile = signal<File | null>(null);
   photoPreview = signal<string | null>(null);
+  isLoading = signal(false);
   mechanics = NO_BUTTON_MECHANICS;
   currentStep = signal(1);
 
@@ -90,7 +91,9 @@ export class CardEditor {
 
   async saveAndShare(): Promise<void> {
     try {
+      this.isLoading.set(true);
       const card = this.buildCard();
+      const startTime = Date.now();
       
       // Upload files if present (graceful failure)
       if (this.photoFile()) {
@@ -121,16 +124,29 @@ export class CardEditor {
       }
       
       const id = await this.cardService.createCard(card);
-      this.router.navigate(['/invite', id]);
+      console.log('Convite criado com ID:', id);
+      
+      // Garantir que o loading fica visível por pelo menos 1 segundo
+      const elapsed = Date.now() - startTime;
+      const minLoadingTime = 1000;
+      if (elapsed < minLoadingTime) {
+        await new Promise(resolve => setTimeout(resolve, minLoadingTime - elapsed));
+      }
+      
+      await this.router.navigate(['/invite', id]);
+      // Loading permanece visível até aqui
     } catch (error) {
       console.error('Erro ao salvar cartão:', error);
       alert('Erro ao salvar cartão. Tente novamente.');
+      this.isLoading.set(false);
     }
   }
 
   async saveAndShareWhatsApp(): Promise<void> {
     try {
+      this.isLoading.set(true);
       const card = this.buildCard();
+      const startTime = Date.now();
       
       // Upload files if present (graceful failure)
       if (this.photoFile()) {
@@ -163,10 +179,21 @@ export class CardEditor {
       const id = await this.cardService.createCard(card);
       const url = this.cardService.getWhatsAppShareUrl(id, card.senderName);
       window.open(url, '_blank');
-      this.router.navigate(['/invite', id]);
+      console.log('Navegando para:', id);
+      
+      // Garantir que o loading fica visível por pelo menos 1 segundo
+      const elapsed = Date.now() - startTime;
+      const minLoadingTime = 1000;
+      if (elapsed < minLoadingTime) {
+        await new Promise(resolve => setTimeout(resolve, minLoadingTime - elapsed));
+      }
+      
+      await this.router.navigate(['/invite', id]);
+      // Loading permanece visível até aqui
     } catch (error) {
       console.error('Erro ao salvar cartão:', error);
       alert('Erro ao salvar cartão. Tente novamente.');
+      this.isLoading.set(false);
     }
   }
 

@@ -10,7 +10,7 @@ import { filter } from 'rxjs';
   styleUrl: './app.scss'
 })
 export class App {
-  protected readonly title = signal('Nogue-Convites');
+  protected readonly title = signal('Convitei');
   private currentRoute = signal('');
 
   constructor(private router: Router, private authService: AuthService) {

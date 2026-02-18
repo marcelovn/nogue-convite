@@ -1,6 +1,17 @@
 <div class="auth-wrapper">
+  <div class="floating-bg" aria-hidden="true">
+    <div class="invite-bubble b1">✉</div>
+    <div class="invite-bubble b2">💌</div>
+    <div class="invite-bubble b3">✉</div>
+    <div class="invite-bubble b4">💌</div>
+    <div class="invite-bubble b5">✉</div>
+    <div class="invite-bubble b6">💌</div>
+    <div class="invite-bubble b7">✉</div>
+    <div class="invite-bubble b8">💌</div>
+  </div>
+
   <div class="auth-center">
-    <h1 class="page-title">Nogue Convites</h1>
+    <h1 class="page-title">Convitei</h1>
     <p class="page-subtitle">Crie sua conta e comece a enviar convites</p>
 
     <div class="auth-card">
@@ -9,16 +20,13 @@
       <form [formGroup]="registerForm" (ngSubmit)="onRegister()">
         <div class="form-group">
           <label for="displayName">Nome</label>
-          <div class="input-wrapper">
-            <span class="input-icon">👤</span>
-            <input
-              type="text"
-              id="displayName"
-              formControlName="displayName"
-              class="form-input"
-              placeholder="Seu nome"
-            />
-          </div>
+          <input
+            type="text"
+            id="displayName"
+            formControlName="displayName"
+            class="form-input"
+            placeholder="Seu nome"
+          />
           @if (registerForm.get('displayName')?.invalid && registerForm.get('displayName')?.touched) {
             <span class="error">Nome é obrigatório</span>
           }
@@ -26,16 +34,13 @@
 
         <div class="form-group">
           <label for="email">Email</label>
-          <div class="input-wrapper">
-            <span class="input-icon">✉</span>
-            <input
-              type="email"
-              id="email"
-              formControlName="email"
-              class="form-input"
-              placeholder="seu@email.com"
-            />
-          </div>
+          <input
+            type="email"
+            id="email"
+            formControlName="email"
+            class="form-input"
+            placeholder="seu@email.com"
+          />
           @if (registerForm.get('email')?.invalid && registerForm.get('email')?.touched) {
             <span class="error">Email inválido</span>
           }
@@ -43,16 +48,13 @@
 
         <div class="form-group">
           <label for="password">Senha</label>
-          <div class="input-wrapper">
-            <span class="input-icon">🔑</span>
-            <input
-              type="password"
-              id="password"
-              formControlName="password"
-              class="form-input"
-              placeholder="Mínimo 6 caracteres"
-            />
-          </div>
+          <input
+            type="password"
+            id="password"
+            formControlName="password"
+            class="form-input"
+            placeholder="Mínimo 6 caracteres"
+          />
           @if (registerForm.get('password')?.invalid && registerForm.get('password')?.touched) {
             <span class="error">Mínimo 6 caracteres</span>
           }
@@ -60,16 +62,13 @@
 
         <div class="form-group">
           <label for="confirmPassword">Confirmar senha</label>
-          <div class="input-wrapper">
-            <span class="input-icon">🔑</span>
-            <input
-              type="password"
-              id="confirmPassword"
-              formControlName="confirmPassword"
-              class="form-input"
-              placeholder="Confirme a senha"
-            />
-          </div>
+          <input
+            type="password"
+            id="confirmPassword"
+            formControlName="confirmPassword"
+            class="form-input"
+            placeholder="Confirme a senha"
+          />
           @if (registerForm.hasError('passwordMismatch') && registerForm.get('confirmPassword')?.touched) {
             <span class="error">Senhas não coincidem</span>
           }

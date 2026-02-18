@@ -32,4 +32,8 @@ export class App {
     
     return this.isAuthenticated() && !isPublicInvite && !isAuthPage;
   });
+
+  isPublicInvite = computed(() => {
+    return this.currentRoute().startsWith('/invite/');
+  });
 }

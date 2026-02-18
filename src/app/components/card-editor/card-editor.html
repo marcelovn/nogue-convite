@@ -56,56 +56,6 @@
           (ngModelChange)="cardMessage.set($event)"></textarea>
       </div>
 
-      <!-- Photo Upload -->
-      <div class="form-group">
-        <label for="photoInput">📸 Adicionar Foto (opcional)</label>
-        <div class="file-input-wrapper">
-          <input
-            id="photoInput"
-            type="file"
-            accept="image/*"
-            (change)="onPhotoSelected($event)" />
-          <span class="file-input-label">
-            @if (photoFile()) {
-              {{ photoFile()!.name }}
-            } @else {
-              Clique para selecionar uma foto
-            }
-          </span>
-        </div>
-        @if (photoPreview()) {
-          <div class="media-preview">
-            <img [src]="photoPreview()!" alt="Preview da foto" />
-            <button type="button" class="btn-clear" (click)="clearPhoto()">✕ Remover</button>
-          </div>
-        }
-      </div>
-
-      <!-- Music Upload -->
-      <div class="form-group">
-        <label for="musicInput">🎵 Adicionar Música (opcional)</label>
-        <div class="file-input-wrapper">
-          <input
-            id="musicInput"
-            type="file"
-            accept="audio/*"
-            (change)="onMusicSelected($event)" />
-          <span class="file-input-label">
-            @if (musicFile()) {
-              {{ musicFile()!.name }}
-            } @else {
-              Clique para selecionar uma música
-            }
-          </span>
-        </div>
-        @if (musicFile()) {
-          <div class="music-selected">
-            <span>🎵 {{ musicFile()!.name }}</span>
-            <button type="button" class="btn-clear" (click)="clearMusic()">✕ Remover</button>
-          </div>
-        }
-      </div>
-
       <div class="step-actions">
         <span></span>
         <button class="btn btn-primary" (click)="nextStep()">Próximo →</button>

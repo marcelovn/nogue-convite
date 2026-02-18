@@ -23,9 +23,6 @@ export class CardEditor {
   cardTitle = signal('Você está convidado! 🎉');
   cardMessage = signal('Venha celebrar esse momento especial conosco!');
   selectedMechanic = signal<Card['noButtonMechanic']>('teleporting');
-  photoFile = signal<File | null>(null);
-  musicFile = signal<File | null>(null);
-  photoPreview = signal<string | null>(null);
   isLoading = signal(false);
   mechanics = NO_BUTTON_MECHANICS;
   currentStep = signal(1);
@@ -53,36 +50,6 @@ export class CardEditor {
     // scheme already set via service
   }
 
-  onPhotoSelected(event: Event): void {
-    const input = event.target as HTMLInputElement;
-    const file = input.files?.[0];
-    if (file && file.type.startsWith('image/')) {
-      this.photoFile.set(file);
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        this.photoPreview.set(e.target?.result as string);
-      };
-      reader.readAsDataURL(file);
-    }
-  }
-
-  onMusicSelected(event: Event): void {
-    const input = event.target as HTMLInputElement;
-    const file = input.files?.[0];
-    if (file && file.type.startsWith('audio/')) {
-      this.musicFile.set(file);
-    }
-  }
-
-  clearPhoto(): void {
-    this.photoFile.set(null);
-    this.photoPreview.set(null);
-  }
-
-  clearMusic(): void {
-    this.musicFile.set(null);
-  }
-
   previewCard(): void {
     const card = this.buildCard();
     this.cardService.setCurrentCard(card);
@@ -94,34 +61,6 @@ export class CardEditor {
       this.isLoading.set(true);
       const card = this.buildCard();
       const startTime = Date.now();
-      
-      // Upload files if present (graceful failure)
-      if (this.photoFile()) {
-        try {
-          console.log('Enviando foto...');
-          card.photoUrl = await this.cardService.uploadFile(
-            this.photoFile()!,
-            'photos'
-          );
-          console.log('Foto enviada com sucesso:', card.photoUrl);
-        } catch (err) {
-          console.warn('Erro ao fazer upload da foto:', err);
-          alert('Não foi possível enviar a foto, mas o convite será criado sem ela.');
-        }
-      }
-      if (this.musicFile()) {
-        try {
-          console.log('Enviando música...');
-          card.musicUrl = await this.cardService.uploadFile(
-            this.musicFile()!,
-            'music'
-          );
-          console.log('Música enviada com sucesso:', card.musicUrl);
-        } catch (err) {
-          console.warn('Erro ao fazer upload da música:', err);
-          alert('Não foi possível enviar a música, mas o convite será criado sem ela.');
-        }
-      }
       
       const id = await this.cardService.createCard(card);
       console.log('Convite criado com ID:', id);
@@ -147,34 +86,6 @@ export class CardEditor {
       this.isLoading.set(true);
       const card = this.buildCard();
       const startTime = Date.now();
-      
-      // Upload files if present (graceful failure)
-      if (this.photoFile()) {
-        try {
-          console.log('Enviando foto...');
-          card.photoUrl = await this.cardService.uploadFile(
-            this.photoFile()!,
-            'photos'
-          );
-          console.log('Foto enviada com sucesso:', card.photoUrl);
-        } catch (err) {
-          console.warn('Erro ao fazer upload da foto:', err);
-          alert('Não foi possível enviar a foto, mas o convite será criado sem ela.');
-        }
-      }
-      if (this.musicFile()) {
-        try {
-          console.log('Enviando música...');
-          card.musicUrl = await this.cardService.uploadFile(
-            this.musicFile()!,
-            'music'
-          );
-          console.log('Música enviada com sucesso:', card.musicUrl);
-        } catch (err) {
-          console.warn('Erro ao fazer upload da música:', err);
-          alert('Não foi possível enviar a música, mas o convite será criado sem ela.');
-        }
-      }
       
       const id = await this.cardService.createCard(card);
       const url = this.cardService.getWhatsAppShareUrl(id, card.senderName);

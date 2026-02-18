@@ -1,0 +1,69 @@
+<div class="welcome-wrapper">
+  <div class="welcome-container">
+    <header class="welcome-header">
+      <div class="logo-circle">
+        <span class="logo-icon">💌</span>
+      </div>
+
+      <h1 class="welcome-title">Nogue Convites</h1>
+      <p class="welcome-subtitle">Crie convites irrecusáveis que ninguém consegue rejeitar!</p>
+    </header>
+
+    <div class="welcome-card">
+      @if (!isAuthenticated) {
+        <!-- Não autenticado - mostrar opções de auth -->
+        <div class="auth-form">
+          <div class="form-group">
+            <label for="email">Email</label>
+            <input
+              id="email"
+              type="email"
+              placeholder="seu@email.com"
+              class="form-input"
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="password">Senha</label>
+            <input
+              id="password"
+              type="password"
+              placeholder="Mínimo 6 caracteres"
+              class="form-input"
+            />
+          </div>
+
+          <button routerLink="/register" class="btn btn-primary">
+            Criar Conta
+            <span class="arrow">→</span>
+          </button>
+
+          <p class="auth-link">
+            Já tem uma conta? <a routerLink="/login">Entrar</a>
+          </p>
+
+          <div class="divider-section">
+            <span class="divider-text">OU</span>
+          </div>
+
+          <button (click)="continueAsGuest()" class="btn btn-guest">
+            <span class="guest-icon">✨</span>
+            Continuar como Visitante
+          </button>
+        </div>
+      } @else {
+        <!-- Autenticado - mostrar botão para começar -->
+        <div class="authenticated-content">
+          <p class="welcome-message">Bem-vindo! Vamos criar um convite irrecusável?</p>
+          <button class="btn btn-primary btn-large" (click)="continueAsGuest()">
+            ✨ Começar Agora
+          </button>
+        </div>
+      }
+    </div>
+
+    <footer class="welcome-footer">
+      <p>Faça-os dizer sim ao ser seu Valentim</p>
+    </footer>
+  </div>
+</div>

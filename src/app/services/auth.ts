@@ -30,10 +30,6 @@ export class AuthService {
     this.supabaseService.onAuthStateChange((user) => {
       this.currentUser.set(user);
       this.isAuthenticated.set(!!user);
-      
-      if (!user) {
-        this.router.navigate(['/login']);
-      }
     });
   }
 

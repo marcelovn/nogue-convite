@@ -6,7 +6,8 @@
     "start": "ng serve",
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
-    "test": "ng test"
+    "test": "ng test",
+    "deploy:ghpages": "ng build --configuration production --base-href=/nogue-convite/ && npx angular-cli-ghpages --dir=dist/nogue-convites/browser"
   },
   "prettier": {
     "printWidth": 100,

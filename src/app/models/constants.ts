@@ -24,7 +24,7 @@ export const THEMES: CardTheme[] = [
     name: 'Pink Piggy',
     font: 'Quicksand',
     description: 'Cute pink pig character theme',
-    isPremium: true,
+    isPremium: false,
     backgroundColor: '#FFE4E1',
     accentColor: '#FF1493'
   },
@@ -33,7 +33,7 @@ export const THEMES: CardTheme[] = [
     name: 'Bold Frame',
     font: 'Montserrat',
     description: 'Modern bold lines and frames',
-    isPremium: true,
+    isPremium: false,
     backgroundColor: '#F5F5F5',
     accentColor: '#FF006E'
   },
@@ -42,7 +42,7 @@ export const THEMES: CardTheme[] = [
     name: 'Dreamy',
     font: 'Dancing Script',
     description: 'Soft and dreamy pastel design',
-    isPremium: true,
+    isPremium: false,
     backgroundColor: '#F0E6FF',
     accentColor: '#D8BFD8'
   },
@@ -51,7 +51,7 @@ export const THEMES: CardTheme[] = [
     name: 'Vintage Tag',
     font: 'Playfair Display',
     description: 'Classic vintage postcard style',
-    isPremium: true,
+    isPremium: false,
     backgroundColor: '#FFF8DC',
     accentColor: '#CD853F'
   },
@@ -60,7 +60,7 @@ export const THEMES: CardTheme[] = [
     name: 'Love Letter',
     font: 'Caveat',
     description: 'Handwritten love letter aesthetic',
-    isPremium: true,
+    isPremium: false,
     backgroundColor: '#FFFAF0',
     accentColor: '#DC143C'
   },
@@ -69,7 +69,7 @@ export const THEMES: CardTheme[] = [
     name: 'Neon Glow',
     font: 'Space Mono',
     description: 'Vibrant neon glowing text',
-    isPremium: true,
+    isPremium: false,
     backgroundColor: '#0A0E27',
     accentColor: '#00FF00'
   },
@@ -78,7 +78,7 @@ export const THEMES: CardTheme[] = [
     name: 'Royal',
     font: 'Cormorant Garamond',
     description: 'Elegant royal and luxurious design',
-    isPremium: true,
+    isPremium: false,
     backgroundColor: '#1A1A2E',
     accentColor: '#FFD700'
   },
@@ -87,7 +87,7 @@ export const THEMES: CardTheme[] = [
     name: 'Pastel Dream',
     font: 'Varela Round',
     description: 'Soft pastel colors with smooth design',
-    isPremium: true,
+    isPremium: false,
     backgroundColor: '#FFEEF8',
     accentColor: '#FFB6D9'
   }
@@ -205,8 +205,8 @@ export const COLOR_SCHEMES: ColorScheme[] = [
 ];
 
 export const NO_BUTTON_MECHANICS = [
-  { id: 'teleporting', label: 'Teleporting No', description: 'Botão foge do clique' },
-  { id: 'growing-yes', label: 'Growing Yes', description: 'Botão Yes cresce' },
-  { id: 'multiplying-yes', label: 'Multiplying Yes', description: 'Múltiplos botões Yes' },
-  { id: 'shrinking-no', label: 'Shrinking No', description: 'Botão No encolhe' }
+  { id: 'teleporting', label: 'Não Foge', description: '👻 O botão "Não" desaparece!' },
+  { id: 'growing-yes', label: 'Sim Cresce', description: '📈 Botão "Sim" cresce gigante' },
+  { id: 'multiplying-yes', label: 'Sim Multiplica', description: '✨ Vários "Sim" aparecem na tela' },
+  { id: 'shrinking-no', label: 'Não Encolhe', description: '🔍 Botão "Não" fica minúsculo' }
 ];

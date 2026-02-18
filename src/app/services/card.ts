@@ -1,6 +1,8 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { Card } from '../models/card.model';
+import { SupabaseService } from './supabase';
+import { AuthService } from './auth';
 
 @Injectable({
   providedIn: 'root'
@@ -13,31 +15,90 @@ export class CardService {
   private currentCard = new BehaviorSubject<Card | null>(null);
   public currentCard$ = this.currentCard.asObservable();
 
-  constructor() {
-    this.loadCardsFromStorage();
+  constructor(
+    private supabaseService: SupabaseService,
+    private authService: AuthService
+  ) {
+    this.loadCardsFromSupabase();
   }
 
-  createCard(card: Card): string {
-    const newCard: Card = {
-      ...card,
-      id: this.generateId(),
-      createdAt: new Date(),
-      shareLink: this.generateShareLink(),
-      rsvp: { yes: 0, no: 0 }
+  async createCard(card: Card): Promise<string> {
+    const user = this.authService.currentUser();
+    if (!user) throw new Error('User not authenticated');
+
+    const shareLink = this.generateShareLink();
+    
+    const insertData: any = {
+      user_id: user.id,
+      sender_name: card.senderName,
+      title: card.title,
+      message: card.message,
+      theme: card.theme,
+      color_scheme: card.colorScheme,
+      no_button_mechanic: card.noButtonMechanic,
+      share_link: shareLink,
+      yes_count: 0,
+      no_count: 0
+    };
+
+    // Only add media URLs if they exist
+    if (card.photoUrl) insertData.photo_url = card.photoUrl;
+    if (card.musicUrl) insertData.music_url = card.musicUrl;
+    
+    const { data, error } = await this.supabaseService.getClient()
+      .from('cards')
+      .insert([insertData])
+      .select();
+
+    if (error) {
+      console.error('Database error:', error);
+      throw error;
+    }
+    
+    const newCard = data[0];
+    const cardModel: Card = {
+      id: newCard.id,
+      senderName: newCard.sender_name,
+      title: newCard.title,
+      message: newCard.message,
+      theme: newCard.theme,
+      colorScheme: newCard.color_scheme,
+      noButtonMechanic: newCard.no_button_mechanic,
+      photoUrl: newCard.photo_url,
+      musicUrl: newCard.music_url,
+      createdAt: new Date(newCard.created_at),
+      shareLink: newCard.share_link,
+      rsvp: { yes: newCard.yes_count, no: newCard.no_count }
     };
     
-    this.cards.push(newCard);
-    this.saveCardsToStorage();
+    this.cards.push(cardModel);
     this.cardsSubject.next([...this.cards]);
     
-    return newCard.id!;
+    return newCard.id;
   }
 
-  updateCard(id: string, card: Partial<Card>): void {
+  async updateCard(id: string, card: Partial<Card>): Promise<void> {
+    const updateData: any = {};
+    
+    if (card.senderName) updateData.sender_name = card.senderName;
+    if (card.title) updateData.title = card.title;
+    if (card.message) updateData.message = card.message;
+    if (card.theme) updateData.theme = card.theme;
+    if (card.colorScheme) updateData.color_scheme = card.colorScheme;
+    if (card.noButtonMechanic) updateData.no_button_mechanic = card.noButtonMechanic;
+    if (card.photoUrl) updateData.photo_url = card.photoUrl;
+    if (card.musicUrl) updateData.music_url = card.musicUrl;
+
+    const { error } = await this.supabaseService.getClient()
+      .from('cards')
+      .update(updateData)
+      .eq('id', id);
+
+    if (error) throw error;
+
     const index = this.cards.findIndex(c => c.id === id);
     if (index !== -1) {
       this.cards[index] = { ...this.cards[index], ...card };
-      this.saveCardsToStorage();
       this.cardsSubject.next([...this.cards]);
     }
   }
@@ -50,9 +111,15 @@ export class CardService {
     return [...this.cards];
   }
 
-  deleteCard(id: string): void {
+  async deleteCard(id: string): Promise<void> {
+    const { error } = await this.supabaseService.getClient()
+      .from('cards')
+      .delete()
+      .eq('id', id);
+
+    if (error) throw error;
+
     this.cards = this.cards.filter(c => c.id !== id);
-    this.saveCardsToStorage();
     this.cardsSubject.next([...this.cards]);
   }
 
@@ -64,10 +131,6 @@ export class CardService {
     return this.currentCard.asObservable();
   }
 
-  private generateId(): string {
-    return `card_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-  }
-
   private generateShareLink(): string {
     return `${window.location.origin}/invite/`;
   }
@@ -76,28 +139,97 @@ export class CardService {
     return `${window.location.origin}/invite/${cardId}`;
   }
 
-  getWhatsAppShareUrl(cardId: string, recipientName: string, senderName: string): string {
+  getWhatsAppShareUrl(cardId: string, senderName: string): string {
     const link = this.getShareLink(cardId);
-    const message = `🎉 Olá ${recipientName || 'amigo(a)'}! Você recebeu um convite especial de ${senderName || 'alguém'}!\n\n💌 Abra o convite e confirme sua presença:\n${link}`;
+    const message = `🎉 Olá! Você recebeu um convite especial de ${senderName || 'alguém'}!\n\n💌 Abra o convite e confirme sua presença:\n${link}`;
     return `https://wa.me/?text=${encodeURIComponent(message)}`;
   }
 
-  getWhatsAppDirectUrl(phone: string, cardId: string, recipientName: string, senderName: string): string {
+  getWhatsAppDirectUrl(phone: string, cardId: string, senderName: string): string {
     const link = this.getShareLink(cardId);
-    const message = `🎉 Olá ${recipientName || 'amigo(a)'}! Você recebeu um convite especial de ${senderName || 'alguém'}!\n\n💌 Abra o convite e confirme sua presença:\n${link}`;
+    const message = `🎉 Olá! Você recebeu um convite especial de ${senderName || 'alguém'}!\n\n💌 Abra o convite e confirme sua presença:\n${link}`;
     const cleanPhone = phone.replace(/\D/g, '');
     return `https://wa.me/${cleanPhone}?text=${encodeURIComponent(message)}`;
   }
 
-  private saveCardsToStorage(): void {
-    localStorage.setItem('nogue_cards', JSON.stringify(this.cards));
+  async uploadFile(file: File, folder: 'photos' | 'music'): Promise<string> {
+    const user = this.authService.currentUser();
+    if (!user) throw new Error('Usuário não autenticado');
+
+    try {
+      const fileName = `${user.id}/${Date.now()}_${file.name}`;
+      const bucketName = 'card-media';
+      const path = `${folder}/${fileName}`;
+
+      console.log('Iniciando upload:', { bucketName, path, fileSize: file.size, fileType: file.type });
+
+      // Primeiro, tenta fazer upload
+      const { data, error } = await this.supabaseService.getClient()
+        .storage
+        .from(bucketName)
+        .upload(path, file, {
+          cacheControl: '3600',
+          upsert: false
+        });
+
+      if (error) {
+        console.error('Erro no upload:', error);
+        throw new Error(`Erro ao fazer upload: ${error.message}`);
+      }
+
+      console.log('Upload bem-sucedido:', data);
+
+      // Tenta obter a URL pública
+      const { data: urlData } = this.supabaseService.getClient()
+        .storage
+        .from(bucketName)
+        .getPublicUrl(path);
+
+      const publicUrl = urlData?.publicUrl;
+      console.log('URL pública obtida:', publicUrl);
+
+      if (!publicUrl) {
+        throw new Error('Não foi possível obter a URL pública do arquivo');
+      }
+
+      return publicUrl;
+    } catch (error) {
+      console.error('Erro completo no uploadFile:', error);
+      throw error;
+    }
   }
 
-  private loadCardsFromStorage(): void {
-    const stored = localStorage.getItem('nogue_cards');
-    if (stored) {
-      this.cards = JSON.parse(stored);
+  private async loadCardsFromSupabase(): Promise<void> {
+    const user = this.authService.currentUser();
+    if (!user) return;
+
+    try {
+      const { data, error } = await this.supabaseService.getClient()
+        .from('cards')
+        .select('*')
+        .eq('user_id', user.id)
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+
+      this.cards = (data || []).map(card => ({
+        id: card.id,
+        senderName: card.sender_name,
+        title: card.title,
+        message: card.message,
+        theme: card.theme,
+        colorScheme: card.color_scheme,
+        noButtonMechanic: card.no_button_mechanic,
+        photoUrl: card.photo_url,
+        musicUrl: card.music_url,
+        createdAt: new Date(card.created_at),
+        shareLink: card.share_link,
+        rsvp: { yes: card.yes_count, no: card.no_count }
+      }));
+
       this.cardsSubject.next([...this.cards]);
+    } catch (error) {
+      console.error('Erro ao carregar cartões:', error);
     }
   }
 }

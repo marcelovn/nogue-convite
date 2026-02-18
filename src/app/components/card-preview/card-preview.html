@@ -1,9 +1,10 @@
 <div class="preview-wrapper" [style.background-color]="schemeBackground()">
   @if (card(); as cardData) {
-    <div class="invite-card animate-fade-in"
+    <div class="invite-card"
          [style.font-family]="themeFont() + ', sans-serif'"
          [style.background-color]="themeBgColor()"
-         [style.color]="schemeText()">
+         [style.color]="schemeText()"
+         [style.background-image]="cardData.photoUrl ? 'url(' + cardData.photoUrl + ')' : 'none'">>
 
       @if (!isLiveInvite()) {
         <button class="back-btn" (click)="goBack()">← Voltar ao editor</button>
@@ -11,13 +12,13 @@
 
       <div class="card-content">
         <div class="card-decoration">
-          <span class="heart animate-float">❤️</span>
+          <span class="heart">❤️</span>
         </div>
 
         <h1 class="card-title" [style.color]="schemePrimary()">{{ cardData.title }}</h1>
 
         <p class="card-greeting">
-          Olá, <strong>{{ cardData.recipientName || 'Convidado' }}</strong>!
+          Você está convidado!
         </p>
 
         <p class="card-message">{{ cardData.message }}</p>
@@ -25,6 +26,17 @@
         <p class="card-sender">
           Com carinho, <strong [style.color]="schemePrimary()">{{ cardData.senderName || 'Anfitrião' }}</strong>
         </p>
+
+        @if (cardData.musicUrl) {
+          <div class="card-music">
+            <div class="music-player">
+              <button class="btn-mute" (click)="toggleMute()" title="Mutar/Desmutar">
+                {{ isMuted() ? '🔇' : '🔊' }}
+              </button>
+              <audio #audioPlayer [src]="cardData.musicUrl" (play)="onAudioPlay()" (pause)="onAudioPause()"></audio>
+            </div>
+          </div>
+        }
 
         <div class="card-divider" [style.background-color]="schemePrimary()"></div>
 
@@ -58,7 +70,7 @@
             </button>
 
             @if (showWhatsappInput()) {
-              <div class="direct-form animate-fade-in">
+              <div class="direct-form">
                 <div class="phone-input-group">
                   <span class="phone-prefix">+55</span>
                   <input
@@ -80,7 +92,7 @@
       }
     </div>
   } @else {
-    <div class="no-card animate-fade-in">
+    <div class="no-card">
       <h2>Nenhum convite encontrado</h2>
       <p>Crie um novo convite para visualizar!</p>
       <button class="btn btn-primary" (click)="goBack()">Criar Convite</button>

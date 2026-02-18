@@ -1,8 +1,37 @@
 <div class="dashboard-container animate-fade-in">
+  <!-- Seção de Perfil -->
+  <section class="profile-section">
+    <div class="profile-card card-base">
+      <div class="profile-header">
+        <div class="profile-avatar">👤</div>
+        <div class="profile-info">
+          <h2>Olá, {{ getUserName() }}!</h2>
+          <p>{{ authService.currentUser()?.email }}</p>
+        </div>
+      </div>
+      <div class="profile-stats">
+        <div class="stat-item">
+          <span class="stat-value">{{ cards().length }}</span>
+          <span class="stat-label">Cartões Criados</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-value">{{ getTotalResponses() }}</span>
+          <span class="stat-label">Respostas Totais</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-value">{{ getTotalAcceptanceRate() }}%</span>
+          <span class="stat-label">Taxa de Aceitação</span>
+        </div>
+      </div>
+      <button class="btn btn-danger" (click)="logout()">🚪 Sair</button>
+    </div>
+  </section>
+
+  <!-- Seção de Cartões -->
   <header class="dashboard-header">
     <div>
-      <h1>📊 Painel de Convites</h1>
-      <p>Acompanhe as confirmações de presença em tempo real</p>
+      <h1>📊 Meus Convites Irrecusáveis</h1>
+      <p>Acompanhe quem não consegue dizer não 😄</p>
     </div>
     <button class="btn btn-primary" (click)="createNew()">➕ Novo Convite</button>
   </header>
@@ -27,8 +56,7 @@
           </div>
 
           <div class="card-info">
-            <p><strong>Para:</strong> {{ card.recipientName }}</p>
-            <p><strong>De:</strong> {{ card.senderName }}</p>
+            <p><strong>Enviado por:</strong> {{ card.senderName }}</p>
           </div>
 
           <div class="stats-bar">
@@ -59,7 +87,9 @@
           <div class="card-actions">
             <button class="btn btn-ghost" (click)="viewCard(card.id!)">👁 Ver</button>
             <button class="btn btn-ghost btn-whatsapp-sm" (click)="shareWhatsApp(card)">📲 WhatsApp</button>
-            <button class="btn btn-ghost" (click)="copyLink(card.id!)">📎 Link</button>
+            <button class="btn btn-ghost" (click)="copyLink(card.id!)">
+              {{ linkCopied() === card.id ? '✓ Copiado!' : '📎 Link' }}
+            </button>
             <button class="btn btn-ghost btn-danger" (click)="deleteCard(card.id!)">🗑 Excluir</button>
           </div>
         </div>

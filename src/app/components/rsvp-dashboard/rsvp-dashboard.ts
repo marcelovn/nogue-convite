@@ -1,13 +1,14 @@
 import { Component, inject, signal, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { DatePipe } from '@angular/common';
+import { DatePipe, CommonModule } from '@angular/common';
 import { CardService } from '../../services/card';
 import { RsvpService } from '../../services/rsvp';
+import { AuthService } from '../../services/auth';
 import { Card, RSVPStats } from '../../models/card.model';
 
 @Component({
   selector: 'app-rsvp-dashboard',
-  imports: [DatePipe],
+  imports: [DatePipe, CommonModule],
   templateUrl: './rsvp-dashboard.html',
   styleUrl: './rsvp-dashboard.scss',
 })
@@ -15,25 +16,32 @@ export class RsvpDashboard implements OnInit {
   private cardService = inject(CardService);
   private rsvpService = inject(RsvpService);
   private router = inject(Router);
+  public authService = inject(AuthService);
 
   cards = signal<Card[]>([]);
   statsMap = signal<Map<string, RSVPStats>>(new Map());
+  linkCopied = signal<string | null>(null);
 
   ngOnInit(): void {
-    const allCards = this.cardService.getAllCards();
-    this.cards.set(allCards);
-
-    const map = new Map<string, RSVPStats>();
-    allCards.forEach(card => {
-      if (card.id) {
-        map.set(card.id, this.rsvpService.getStats(card.id));
-      }
+    this.cardService.cards$.subscribe(cards => {
+      this.cards.set(cards);
+      const map = new Map<string, RSVPStats>();
+      cards.forEach(card => {
+        if (card.id) {
+          map.set(card.id, this.rsvpService.getStats(card.id));
+        }
+      });
+      this.statsMap.set(map);
     });
-    this.statsMap.set(map);
   }
 
   getStats(cardId: string): RSVPStats {
     return this.statsMap().get(cardId) || { cardId, total: 0, yes: 0, no: 0, percentageYes: 0 };
+  }
+
+  getUserName(): string {
+    const user = this.authService.currentUser();
+    return user?.email?.split('@')[0] || 'Usuário';
   }
 
   viewCard(cardId: string): void {
@@ -41,20 +49,25 @@ export class RsvpDashboard implements OnInit {
   }
 
   deleteCard(cardId: string): void {
-    this.cardService.deleteCard(cardId);
-    this.cards.set(this.cardService.getAllCards());
+    if (confirm('Tem certeza que deseja deletar este cartão?')) {
+      this.cardService.deleteCard(cardId).catch(error => {
+        console.error('Erro ao deletar:', error);
+        alert('Erro ao deletar cartão');
+      });
+    }
   }
 
   copyLink(cardId: string): void {
     const link = `${window.location.origin}/invite/${cardId}`;
     navigator.clipboard.writeText(link);
+    this.linkCopied.set(cardId);
+    setTimeout(() => this.linkCopied.set(null), 2000);
   }
 
   shareWhatsApp(card: Card): void {
     if (card.id) {
       const url = this.cardService.getWhatsAppShareUrl(
         card.id,
-        card.recipientName,
         card.senderName
       );
       window.open(url, '_blank');
@@ -63,5 +76,25 @@ export class RsvpDashboard implements OnInit {
 
   createNew(): void {
     this.router.navigate(['/']);
+  }
+
+  getTotalResponses(): number {
+    return this.cards().reduce((sum, card) => {
+      return sum + this.getStats(card.id!).total;
+    }, 0);
+  }
+
+  getTotalAcceptanceRate(): number {
+    const allStats = this.cards().map(card => this.getStats(card.id!));
+    if (allStats.length === 0) return 0;
+    
+    const totalYes = allStats.reduce((sum, s) => sum + s.yes, 0);
+    const totalResponses = allStats.reduce((sum, s) => sum + s.total, 0);
+    
+    return totalResponses > 0 ? Math.round((totalYes / totalResponses) * 100) : 0;
+  }
+
+  async logout(): Promise<void> {
+    await this.authService.logout();
   }
 }

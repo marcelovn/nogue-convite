@@ -1,7 +1,6 @@
-<div class="editor-container animate-fade-in">
+<div class="editor-container">
   <header class="editor-header">
-    <h1>✨ Criar Convite</h1>
-    <p>Crie um convite interativo irresistível!</p>
+    <h1>✨ Criar Convite Irrecusável</h1>
   </header>
 
   <!-- Progress Steps -->
@@ -24,18 +23,8 @@
 
   <!-- Step 1: Info -->
   @if (currentStep() === 1) {
-    <section class="editor-step card-base animate-fade-in">
+    <section class="editor-step card-base">
       <h2 class="section-title">📝 Informações do Convite</h2>
-
-      <div class="form-group">
-        <label for="recipientName">Nome de quem recebe</label>
-        <input
-          id="recipientName"
-          type="text"
-          placeholder="Ex: Maria"
-          [ngModel]="recipientName()"
-          (ngModelChange)="recipientName.set($event)" />
-      </div>
 
       <div class="form-group">
         <label for="senderName">Seu nome</label>
@@ -67,6 +56,56 @@
           (ngModelChange)="cardMessage.set($event)"></textarea>
       </div>
 
+      <!-- Photo Upload -->
+      <div class="form-group">
+        <label for="photoInput">📸 Adicionar Foto (opcional)</label>
+        <div class="file-input-wrapper">
+          <input
+            id="photoInput"
+            type="file"
+            accept="image/*"
+            (change)="onPhotoSelected($event)" />
+          <span class="file-input-label">
+            @if (photoFile()) {
+              {{ photoFile()!.name }}
+            } @else {
+              Clique para selecionar uma foto
+            }
+          </span>
+        </div>
+        @if (photoPreview()) {
+          <div class="media-preview">
+            <img [src]="photoPreview()!" alt="Preview da foto" />
+            <button type="button" class="btn-clear" (click)="clearPhoto()">✕ Remover</button>
+          </div>
+        }
+      </div>
+
+      <!-- Music Upload -->
+      <div class="form-group">
+        <label for="musicInput">🎵 Adicionar Música (opcional)</label>
+        <div class="file-input-wrapper">
+          <input
+            id="musicInput"
+            type="file"
+            accept="audio/*"
+            (change)="onMusicSelected($event)" />
+          <span class="file-input-label">
+            @if (musicFile()) {
+              {{ musicFile()!.name }}
+            } @else {
+              Clique para selecionar uma música
+            }
+          </span>
+        </div>
+        @if (musicFile()) {
+          <div class="music-selected">
+            <span>🎵 {{ musicFile()!.name }}</span>
+            <button type="button" class="btn-clear" (click)="clearMusic()">✕ Remover</button>
+          </div>
+        }
+      </div>
+
       <div class="step-actions">
         <span></span>
         <button class="btn btn-primary" (click)="nextStep()">Próximo →</button>
@@ -76,7 +115,7 @@
 
   <!-- Step 2: Visual -->
   @if (currentStep() === 2) {
-    <section class="editor-step card-base animate-fade-in">
+    <section class="editor-step card-base">
       <app-theme-selector (themeChanged)="onThemeChanged($event)" />
       <app-color-scheme (schemeChanged)="onSchemeChanged($event)" />
 
@@ -89,9 +128,9 @@
 
   <!-- Step 3: Mechanic -->
   @if (currentStep() === 3) {
-    <section class="editor-step card-base animate-fade-in">
+    <section class="editor-step card-base">
       <h2 class="section-title">🎮 Mecânica do Botão "Não"</h2>
-      <p class="section-subtitle">Escolha como o botão "Não" vai se comportar</p>
+      <p class="section-subtitle">Escolha como fazer com que a pessoa NÃO conseguir rejeitar o convite!</p>
 
       <div class="mechanic-grid">
         @for (mech of mechanics; track mech.id) {
@@ -115,13 +154,9 @@
 
       <div class="step-actions">
         <button class="btn btn-secondary" (click)="prevStep()">← Voltar</button>
-        <div class="action-group">
-          <button class="btn btn-secondary" (click)="previewCard()">👁 Preview</button>
-          <button class="btn btn-whatsapp" (click)="saveAndShareWhatsApp()">
-            📲 Salvar & Enviar WhatsApp
-          </button>
-          <button class="btn btn-primary" (click)="saveAndShare()">🔗 Salvar & Compartilhar</button>
-        </div>
+        <button class="btn btn-secondary" (click)="previewCard()">👁 Preview</button>
+        <button class="btn btn-whatsapp" (click)="saveAndShareWhatsApp()">📲 WhatsApp</button>
+        <button class="btn btn-primary" (click)="saveAndShare()">✨ Criar</button>
       </div>
     </section>
   }

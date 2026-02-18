@@ -1,5 +1,6 @@
 import { Injectable, signal } from '@angular/core';
 import { RSVPEntry, RSVPStats } from '../models/card.model';
+import { SupabaseService } from './supabase';
 
 @Injectable({
   providedIn: 'root',
@@ -8,19 +9,36 @@ export class RsvpService {
   private entries: RSVPEntry[] = [];
   readonly rsvpEntries = signal<RSVPEntry[]>([]);
 
-  constructor() {
-    this.loadFromStorage();
+  constructor(private supabaseService: SupabaseService) {
+    this.loadFromSupabase();
   }
 
-  addResponse(entry: RSVPEntry): void {
+  async addResponse(entry: RSVPEntry): Promise<void> {
+    const { data, error } = await this.supabaseService.getClient()
+      .from('rsvp_entries')
+      .insert([
+        {
+          card_id: entry.cardId,
+          response: entry.response,
+          guest_name: entry.guestName,
+          guest_email: entry.guestEmail
+        }
+      ])
+      .select();
+
+    if (error) throw error;
+
     const newEntry: RSVPEntry = {
-      ...entry,
-      id: `rsvp_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
-      timestamp: new Date(),
+      id: data[0].id,
+      cardId: data[0].card_id,
+      response: data[0].response,
+      guestName: data[0].guest_name,
+      guestEmail: data[0].guest_email,
+      timestamp: new Date(data[0].timestamp)
     };
+
     this.entries.push(newEntry);
     this.rsvpEntries.set([...this.entries]);
-    this.saveToStorage();
   }
 
   getStats(cardId: string): RSVPStats {
@@ -42,15 +60,27 @@ export class RsvpService {
     return this.entries.filter(e => e.cardId === cardId);
   }
 
-  private saveToStorage(): void {
-    localStorage.setItem('nogue_rsvp', JSON.stringify(this.entries));
-  }
+  private async loadFromSupabase(): Promise<void> {
+    try {
+      const { data, error } = await this.supabaseService.getClient()
+        .from('rsvp_entries')
+        .select('*')
+        .order('timestamp', { ascending: false });
 
-  private loadFromStorage(): void {
-    const stored = localStorage.getItem('nogue_rsvp');
-    if (stored) {
-      this.entries = JSON.parse(stored);
+      if (error) throw error;
+
+      this.entries = (data || []).map(entry => ({
+        id: entry.id,
+        cardId: entry.card_id,
+        response: entry.response,
+        guestName: entry.guest_name,
+        guestEmail: entry.guest_email,
+        timestamp: new Date(entry.timestamp)
+      }));
+
       this.rsvpEntries.set([...this.entries]);
+    } catch (error) {
+      console.error('Erro ao carregar RSVPs:', error);
     }
   }
 }

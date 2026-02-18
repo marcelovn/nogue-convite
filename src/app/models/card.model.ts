@@ -1,12 +1,13 @@
 export interface Card {
   id?: string;
-  recipientName: string;
   senderName: string;
   title: string;
   message: string;
   theme: string;
   colorScheme: string;
   noButtonMechanic: 'teleporting' | 'growing-yes' | 'multiplying-yes' | 'shrinking-no';
+  photoUrl?: string;
+  musicUrl?: string;
   createdAt?: Date;
   shareLink?: string;
   rsvp?: {

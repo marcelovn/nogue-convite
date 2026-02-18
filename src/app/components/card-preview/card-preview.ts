@@ -1,4 +1,4 @@
-import { Component, inject, signal, OnInit } from '@angular/core';
+import { Component, inject, signal, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { NoButtonMechanics } from '../no-button-mechanics/no-button-mechanics';
@@ -15,6 +15,8 @@ import { THEMES, COLOR_SCHEMES } from '../../models/constants';
   styleUrl: './card-preview.scss',
 })
 export class CardPreview implements OnInit {
+  @ViewChild('audioPlayer') audioPlayer?: ElementRef<HTMLAudioElement>;
+
   private route = inject(ActivatedRoute);
   private router = inject(Router);
   private cardService = inject(CardService);
@@ -26,6 +28,7 @@ export class CardPreview implements OnInit {
   linkCopied = signal(false);
   whatsappPhone = signal('');
   showWhatsappInput = signal(false);
+  isMuted = signal(false);
   themeFont = signal('Poppins');
   themeBgColor = signal('#FFF0F5');
   themeAccentColor = signal('#FF1493');
@@ -43,6 +46,7 @@ export class CardPreview implements OnInit {
         this.card.set(card);
         this.isLiveInvite.set(true);
         this.applyCardStyle(card);
+        this.autoPlayAudio();
       }
     } else {
       // Preview mode
@@ -50,9 +54,35 @@ export class CardPreview implements OnInit {
         if (c) {
           this.card.set(c);
           this.applyCardStyle(c);
+          this.autoPlayAudio();
         }
       });
     }
+  }
+
+  private autoPlayAudio(): void {
+    setTimeout(() => {
+      if (this.audioPlayer?.nativeElement) {
+        this.audioPlayer.nativeElement.play().catch(() => {
+          // Auto-play blocked by browser, user can click play manually
+        });
+      }
+    }, 500);
+  }
+
+  toggleMute(): void {
+    if (this.audioPlayer?.nativeElement) {
+      this.isMuted.update(v => !v);
+      this.audioPlayer.nativeElement.muted = this.isMuted();
+    }
+  }
+
+  onAudioPlay(): void {
+    // Audio is playing
+  }
+
+  onAudioPause(): void {
+    // Audio was paused
   }
 
   onResponse(response: 'yes' | 'no'): void {
@@ -61,6 +91,9 @@ export class CardPreview implements OnInit {
       this.rsvpService.addResponse({
         cardId: cardData.id,
         response,
+      }).catch(error => {
+        console.error('Erro ao registrar resposta:', error);
+        alert('Erro ao registrar sua resposta. Tente novamente.');
       });
     }
   }
@@ -84,7 +117,6 @@ export class CardPreview implements OnInit {
     if (cardData?.id) {
       const url = this.cardService.getWhatsAppShareUrl(
         cardData.id,
-        cardData.recipientName,
         cardData.senderName
       );
       window.open(url, '_blank');
@@ -98,7 +130,6 @@ export class CardPreview implements OnInit {
       const url = this.cardService.getWhatsAppDirectUrl(
         phone,
         cardData.id,
-        cardData.recipientName,
         cardData.senderName
       );
       window.open(url, '_blank');

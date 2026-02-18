@@ -10,7 +10,7 @@ export const routes: Routes = [
   { path: '', component: LoginComponent },
   { path: 'login', component: LoginComponent },
   { path: 'register', component: RegisterComponent },
-  { path: 'editor', component: CardEditor },
+  { path: 'editor', component: CardEditor, canActivate: [authGuard] },
   { path: 'preview', component: CardPreview },
   { path: 'invite/:id', component: CardPreview },
   { path: 'dashboard', component: RsvpDashboard, canActivate: [authGuard] },

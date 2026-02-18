@@ -26,7 +26,7 @@ export class CardService {
     const user = this.authService.currentUser();
     if (!user) throw new Error('User not authenticated');
 
-    const shareLink = this.generateShareLink();
+    const shareLink = this.generateShareLink('TEMP_ID');
     
     const insertData: any = {
       user_id: user.id,
@@ -56,6 +56,14 @@ export class CardService {
     }
     
     const newCard = data[0];
+    
+    // Update share_link with actual ID
+    const actualShareLink = this.generateShareLink(newCard.id);
+    await this.supabaseService.getClient()
+      .from('cards')
+      .update({ share_link: actualShareLink })
+      .eq('id', newCard.id);
+    
     const cardModel: Card = {
       id: newCard.id,
       senderName: newCard.sender_name,
@@ -67,7 +75,7 @@ export class CardService {
       photoUrl: newCard.photo_url,
       musicUrl: newCard.music_url,
       createdAt: new Date(newCard.created_at),
-      shareLink: newCard.share_link,
+      shareLink: actualShareLink,
       rsvp: { yes: newCard.yes_count, no: newCard.no_count }
     };
     
@@ -166,8 +174,12 @@ export class CardService {
     return this.currentCard.asObservable();
   }
 
-  private generateShareLink(): string {
-    return `${window.location.origin}/invite/`;
+  private generateShareLink(cardId: string): string {
+    return `${window.location.origin}/invite/${cardId}`;
+  }
+
+  async reloadCards(): Promise<void> {
+    await this.loadCardsFromSupabase();
   }
 
   getShareLink(cardId: string): string {

@@ -1,6 +1,7 @@
 import { Injectable, signal } from '@angular/core';
 import { RSVPEntry, RSVPStats } from '../models/card.model';
 import { SupabaseService } from './supabase';
+import { AuthService } from './auth';
 
 @Injectable({
   providedIn: 'root',
@@ -8,8 +9,14 @@ import { SupabaseService } from './supabase';
 export class RsvpService {
   private entries: RSVPEntry[] = [];
   readonly rsvpEntries = signal<RSVPEntry[]>([]);
+  private hasLoaded = false;
 
-  constructor(private supabaseService: SupabaseService) {
+  constructor(
+    private supabaseService: SupabaseService,
+    private authService: AuthService
+  ) {
+    // Load RSVPs once when user authenticates
+    this.authService.isAuthenticated;
     this.loadFromSupabase();
   }
 
@@ -37,8 +44,11 @@ export class RsvpService {
       timestamp: new Date(data[0].timestamp)
     };
 
-    this.entries.push(newEntry);
-    this.rsvpEntries.set([...this.entries]);
+    // Avoid duplicates
+    if (!this.entries.find(e => e.id === newEntry.id)) {
+      this.entries.push(newEntry);
+      this.rsvpEntries.set([...this.entries]);
+    }
   }
 
   getStats(cardId: string): RSVPStats {
@@ -69,7 +79,7 @@ export class RsvpService {
 
       if (error) throw error;
 
-      this.entries = (data || []).map(entry => ({
+      const newEntries = (data || []).map(entry => ({
         id: entry.id,
         cardId: entry.card_id,
         response: entry.response,
@@ -78,7 +88,15 @@ export class RsvpService {
         timestamp: new Date(entry.timestamp)
       }));
 
+      // Merge with existing, avoiding duplicates
+      newEntries.forEach(newEntry => {
+        if (!this.entries.find(e => e.id === newEntry.id)) {
+          this.entries.push(newEntry);
+        }
+      });
+
       this.rsvpEntries.set([...this.entries]);
+      this.hasLoaded = true;
     } catch (error) {
       console.error('Erro ao carregar RSVPs:', error);
     }

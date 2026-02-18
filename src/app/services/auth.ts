@@ -62,7 +62,8 @@ export class AuthService {
   async logout() {
     this.isLoading.set(true);
     try {
-      return await this.supabaseService.signOut();
+      await this.supabaseService.signOut();
+      this.router.navigate(['/']);
     } finally {
       this.isLoading.set(false);
     }

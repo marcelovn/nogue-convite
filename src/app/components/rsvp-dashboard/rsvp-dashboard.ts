@@ -75,7 +75,7 @@ export class RsvpDashboard implements OnInit {
   }
 
   createNew(): void {
-    this.router.navigate(['/']);
+    this.router.navigate(['/editor']);
   }
 
   getTotalResponses(): number {

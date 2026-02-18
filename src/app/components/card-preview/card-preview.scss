@@ -41,7 +41,8 @@
   position: relative;
   display: flex;
   flex-direction: column;
-  overflow: hidden;
+  overflow: clip;
+  isolation: isolate;
   color: #fff;
   background: linear-gradient(160deg, #0f0f1a 0%, #1a1a2e 60%, #0f1930 100%);
 
@@ -124,26 +125,20 @@
 }
 
 .card-icon {
-  font-size: 4rem;
+  font-size: 3rem;
   display: block;
   margin-bottom: 1.5rem;
-  filter: drop-shadow(0 0 24px rgba(255, 100, 130, 0.65));
-  animation: pulse-icon 3s ease-in-out infinite;
-}
-
-@keyframes pulse-icon {
-  0%, 100% { transform: scale(1);    filter: drop-shadow(0 0 20px rgba(255,100,130,0.5)); }
-  50%       { transform: scale(1.08); filter: drop-shadow(0 0 36px rgba(255,100,130,0.9)); }
+  filter: drop-shadow(0 0 20px rgba(255, 100, 130, 0.65));
 }
 
 .card-title {
-  font-size: 2rem;
+  font-size: 2.6rem;
   font-weight: 800;
   margin: 0 0 1.75rem;
   line-height: 1.15;
   letter-spacing: -0.02em;
   text-shadow: 0 2px 20px rgba(0,0,0,0.5);
-  @media (min-width: 600px) { font-size: 2.2rem; }
+  @media (min-width: 600px) { font-size: 2.9rem; }
 }
 
 .card-music {
@@ -179,8 +174,8 @@
 .card-greeting { display: none; }
 
 .card-message {
-  font-size: 1.05rem;
-  line-height: 1.8;
+  font-size: 1.3rem;
+  line-height: 1.75;
   margin: 0 0 1.75rem;
   opacity: 0.9;
   white-space: pre-line;
@@ -190,9 +185,9 @@
 }
 
 .card-sender {
-  font-size: 0.85rem;
+  font-size: 1rem;
   font-weight: 500;
-  opacity: 0.7;
+  opacity: 0.75;
   letter-spacing: 0.04em;
   margin-bottom: 0;
 
@@ -218,7 +213,7 @@
 }
 
 .rsvp-title {
-  font-size: 0.72rem;
+  font-size: 0.9rem;
   font-weight: 700;
   letter-spacing: 0.14em;
   text-transform: uppercase;

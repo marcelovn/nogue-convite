@@ -10,7 +10,7 @@
          [style.font-family]="themeFont() + ', sans-serif'"
          [style.background-color]="themeBgColor()"
          [style.color]="schemeText()"
-         [style.background-image]="cardData.photoUrl ? 'url(' + cardData.photoUrl + ')' : null">
+         [style.background-image]="cardData.photoUrl ? 'url(' + cardData.photoUrl + ')' : 'none'">
 
       @if (authService.isAuthenticated()) {
         <button class="back-btn" (click)="goBack()">

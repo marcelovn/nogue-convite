@@ -12,7 +12,7 @@
 .profile-card {
   background: #fff;
   color: #1a1a1a;
-  padding: 1.5rem;
+  padding: 1rem 1.5rem;
   border-radius: 12px;
   border: 1px solid #e5e7eb;
 }
@@ -21,32 +21,33 @@
   display: flex;
   align-items: center;
   gap: 1rem;
-  margin-bottom: 1.5rem;
-  padding-bottom: 1.5rem;
-  border-bottom: 1px solid #e5e7eb;
 }
 
 .profile-info {
   flex: 1;
 
   h2 {
-    font-size: 1.25rem;
+    font-size: 1rem;
     font-weight: 600;
-    margin: 0 0 0.15rem 0;
+    margin: 0 0 0.1rem 0;
   }
 
   p {
-    font-size: 0.85rem;
-    color: #6b7280;
+    font-size: 0.8rem;
+    color: #9ca3af;
     margin: 0;
   }
 }
 
-.profile-stats {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 1rem;
-  margin-bottom: 1.5rem;
+.profile-badge {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #6b7280;
+  background: #f3f4f6;
+  padding: 0.3rem 0.75rem;
+  border-radius: 50px;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
 }
 
 .stat-item {

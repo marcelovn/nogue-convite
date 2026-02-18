@@ -18,22 +18,9 @@
           <h2>Olá, {{ getUserName() }}</h2>
           <p>{{ authService.currentUser()?.email }}</p>
         </div>
+        <span class="profile-badge">{{ cards().length }} {{ cards().length === 1 ? 'convite' : 'convites' }}</span>
+        <button class="btn btn-danger" (click)="logout()">Sair</button>
       </div>
-      <div class="profile-stats">
-        <div class="stat-item">
-          <span class="stat-value">{{ cards().length }}</span>
-          <span class="stat-label">Convites</span>
-        </div>
-        <div class="stat-item">
-          <span class="stat-value">{{ getTotalResponses() }}</span>
-          <span class="stat-label">Respostas</span>
-        </div>
-        <div class="stat-item">
-          <span class="stat-value">{{ getTotalAcceptanceRate() }}%</span>
-          <span class="stat-label">Aceitação</span>
-        </div>
-      </div>
-      <button class="btn btn-danger" (click)="logout()">Sair</button>
     </div>
   </section>
 

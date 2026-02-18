@@ -43,11 +43,18 @@ export class CardEditor {
   }
 
   onThemeChanged(theme: CardTheme): void {
-    // theme already set via service
+    // Update preview immediately when theme changes
+    this.updatePreviewCard();
   }
 
   onSchemeChanged(scheme: ColorSchemeModel): void {
-    // scheme already set via service
+    // Update preview immediately when color scheme changes
+    this.updatePreviewCard();
+  }
+
+  private updatePreviewCard(): void {
+    const card = this.buildCard();
+    this.cardService.setCurrentCard(card);
   }
 
   previewCard(): void {

@@ -1,4 +1,4 @@
-import { Component, inject, signal, OnInit, ViewChild, ElementRef } from '@angular/core';
+import { Component, inject, signal, OnInit, ViewChild, ElementRef, effect } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { NoButtonMechanics } from '../no-button-mechanics/no-button-mechanics';
@@ -32,10 +32,23 @@ export class CardPreview implements OnInit {
   isMuted = signal(false);
   themeFont = signal('Poppins');
   themeBgColor = signal('#FFF0F5');
-  themeAccentColor = signal('#FF1493');
+  themeAccentColor = signal('#FFB3D9');
   schemePrimary = signal('#FF69B4');
   schemeBackground = signal('#FFF0F5');
   schemeText = signal('#333333');
+
+  constructor() {
+    // React to theme and color scheme changes during preview mode
+    effect(() => {
+      const currentCard = this.card();
+      const selectedTheme = this.themeService.selectedTheme();
+      const selectedScheme = this.themeService.selectedColorScheme();
+      
+      if (currentCard && !this.isLiveInvite()) {
+        this.applyCardStyle(currentCard);
+      }
+    });
+  }
 
   ngOnInit(): void {
     const cardId = this.route.snapshot.paramMap.get('id');
@@ -153,8 +166,19 @@ export class CardPreview implements OnInit {
   }
 
   private applyCardStyle(card: Card): void {
-    const theme = THEMES.find(t => t.id === card.theme);
-    const scheme = COLOR_SCHEMES.find(s => s.id === card.colorScheme);
+    let theme;
+    let scheme;
+
+    // In live invite mode, use theme/scheme from the card
+    // In preview mode, use selected theme/scheme from service for real-time updates
+    if (this.isLiveInvite()) {
+      theme = THEMES.find(t => t.id === card.theme);
+      scheme = COLOR_SCHEMES.find(s => s.id === card.colorScheme);
+    } else {
+      // Preview mode - use currently selected theme/scheme
+      theme = this.themeService.selectedTheme();
+      scheme = this.themeService.selectedColorScheme();
+    }
 
     if (theme) {
       this.themeFont.set(theme.font);

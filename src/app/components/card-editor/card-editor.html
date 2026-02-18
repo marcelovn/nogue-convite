@@ -69,6 +69,23 @@
       <app-theme-selector (themeChanged)="onThemeChanged($event)" />
       <app-color-scheme (schemeChanged)="onSchemeChanged($event)" />
 
+      <!-- Emoji Picker -->
+      <div class="emoji-picker">
+        <h3 class="section-title">Emoji flutuante</h3>
+        <p class="section-subtitle">Escolha o emoji que vai subir animado no convite</p>
+        <div class="emoji-grid">
+          @for (item of FLOATING_EMOJIS; track item.emoji) {
+            <button
+              class="emoji-btn"
+              [class.selected]="selectedEmoji() === item.emoji"
+              (click)="selectedEmoji.set(item.emoji)">
+              <span class="emoji-symbol">{{ item.emoji }}</span>
+              <span class="emoji-label">{{ item.label }}</span>
+            </button>
+          }
+        </div>
+      </div>
+
       <div class="step-actions">
         <button class="btn btn-secondary" (click)="prevStep()">← Voltar</button>
         <button class="btn btn-primary" (click)="nextStep()">Próximo →</button>

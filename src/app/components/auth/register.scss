@@ -1,6 +1,6 @@
 .auth-wrapper {
   min-height: 100vh;
-  background: linear-gradient(160deg, #0f172a 0%, #1e3a5f 50%, #0f172a 100%);
+  background: linear-gradient(160deg, #f8f9fa 0%, #e3f2fd 50%, #f8f9fa 100%);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -21,20 +21,20 @@
   position: absolute;
   bottom: -80px;
   font-size: 1.6rem;
-  color: rgba(147, 197, 253, 0.18);
+  color: rgba(30, 99, 255, 0.12);
   filter: blur(0.5px);
   animation: float-up linear infinite;
   user-select: none;
 }
 
-.b1 { left:  5%;  font-size: 1.4rem; animation-duration: 12s; animation-delay: 0s;    color: rgba(147,197,253,0.20); }
-.b2 { left: 14%;  font-size: 2rem;   animation-duration: 16s; animation-delay: 2s;    color: rgba(96,165,250,0.15);  }
-.b3 { left: 27%;  font-size: 1.2rem; animation-duration: 10s; animation-delay: 4.5s;  color: rgba(147,197,253,0.22); }
-.b4 { left: 42%;  font-size: 2.2rem; animation-duration: 18s; animation-delay: 1s;    color: rgba(96,165,250,0.12);  }
-.b5 { left: 58%;  font-size: 1.5rem; animation-duration: 13s; animation-delay: 6s;    color: rgba(147,197,253,0.18); }
-.b6 { left: 70%;  font-size: 1rem;   animation-duration: 11s; animation-delay: 3s;    color: rgba(96,165,250,0.20);  }
-.b7 { left: 82%;  font-size: 1.8rem; animation-duration: 15s; animation-delay: 0.5s;  color: rgba(147,197,253,0.14); }
-.b8 { left: 92%;  font-size: 1.3rem; animation-duration: 14s; animation-delay: 7s;    color: rgba(96,165,250,0.18);  }
+.b1 { left:  5%;  font-size: 1.4rem; animation-duration: 12s; animation-delay: 0s;    color: rgba(30,99,255,0.14); }
+.b2 { left: 14%;  font-size: 2rem;   animation-duration: 16s; animation-delay: 2s;    color: rgba(66,133,244,0.10);  }
+.b3 { left: 27%;  font-size: 1.2rem; animation-duration: 10s; animation-delay: 4.5s;  color: rgba(30,99,255,0.16); }
+.b4 { left: 42%;  font-size: 2.2rem; animation-duration: 18s; animation-delay: 1s;    color: rgba(66,133,244,0.08);  }
+.b5 { left: 58%;  font-size: 1.5rem; animation-duration: 13s; animation-delay: 6s;    color: rgba(30,99,255,0.12); }
+.b6 { left: 70%;  font-size: 1rem;   animation-duration: 11s; animation-delay: 3s;    color: rgba(66,133,244,0.14);  }
+.b7 { left: 82%;  font-size: 1.8rem; animation-duration: 15s; animation-delay: 0.5s;  color: rgba(30,99,255,0.10); }
+.b8 { left: 92%;  font-size: 1.3rem; animation-duration: 14s; animation-delay: 7s;    color: rgba(66,133,244,0.12);  }
 
 @keyframes float-up {
   0%   { transform: translateY(0)    rotate(-6deg)  scale(1);    opacity: 0; }
@@ -54,31 +54,31 @@
 .page-title {
   font-size: 24px;
   font-weight: 700;
-  color: #fff;
+  color: #1e3a5f;
   margin: 0 0 4px;
 }
 
 .page-subtitle {
   font-size: 13px;
-  color: rgba(147, 197, 253, 0.8);
+  color: #1e63ff;
   margin: 0 0 32px;
   font-weight: 400;
 }
 
 .auth-card {
-  background: rgba(255,255,255,0.06);
+  background: rgba(255,255,255,0.95);
   border-radius: 20px;
   padding: 2.25rem 2rem;
-  border: 1px solid rgba(255,255,255,0.08);
-  box-shadow: 0 24px 60px rgba(0,0,0,0.25);
+  border: 1px solid rgba(30, 99, 255, 0.15);
+  box-shadow: 0 24px 60px rgba(0,0,0,0.08);
   text-align: left;
-  backdrop-filter: blur(16px);
+  backdrop-filter: blur(8px);
 }
 
 .card-title {
   font-size: 1.15rem;
   font-weight: 600;
-  color: #fff;
+  color: #1e3a5f;
   margin: 0 0 1.75rem;
   text-align: center;
   letter-spacing: 0.02em;
@@ -89,7 +89,7 @@
 
   label {
     display: block;
-    color: rgba(255,255,255,0.5);
+    color: #1e3a5f;
     font-weight: 500;
     margin-bottom: 6px;
     font-size: 0.75rem;
@@ -101,44 +101,44 @@
     width: 100%;
     padding: 0.75rem 0;
     border: none;
-    border-bottom: 1px solid rgba(255,255,255,0.15);
+    border-bottom: 1px solid rgba(30, 99, 255, 0.2);
     border-radius: 0;
     font-size: 0.95rem;
     background: transparent !important;
-    color: #fff;
+    color: #1a1a1a;
     transition: border-color 0.2s ease;
-    color-scheme: dark;
+    color-scheme: light;
 
     &:focus {
       outline: none;
-      border-bottom-color: rgba(147, 197, 253, 0.7);
+      border-bottom-color: #1e63ff;
     }
 
-    &::placeholder { color: rgba(255,255,255,0.25); }
+    &::placeholder { color: rgba(30, 99, 255, 0.4); }
 
     /* Override autofill styles */
     &:-webkit-autofill {
       -webkit-box-shadow: 0 0 0 1000px transparent inset !important;
-      -webkit-text-fill-color: #fff !important;
+      -webkit-text-fill-color: #1a1a1a !important;
     }
 
     &:-webkit-autofill:focus {
       -webkit-box-shadow: 0 0 0 1000px transparent inset !important;
-      -webkit-text-fill-color: #fff !important;
+      -webkit-text-fill-color: #1a1a1a !important;
     }
   }
 
   .error {
     display: block;
-    color: #f87171;
+    color: #ef4444;
     font-size: 0.75rem;
     margin-top: 6px;
   }
 }
 
 .error-message {
-  background: rgba(239,68,68,0.12);
-  color: #fca5a5;
+  background: rgba(239,68,68,0.1);
+  color: #dc2626;
   padding: 0.65rem 0.85rem;
   border-radius: 10px;
   margin-bottom: 1.25rem;
@@ -164,10 +164,10 @@
   letter-spacing: 0.02em;
 
   &.btn-primary {
-    background: rgba(147, 197, 253, 0.2);
-    color: #93C5FD;
-    border: 1px solid rgba(147, 197, 253, 0.25);
-    &:hover:not(:disabled) { background: rgba(147, 197, 253, 0.3); }
+    background: #1e63ff;
+    color: #fff;
+    border: 1px solid #1e63ff;
+    &:hover:not(:disabled) { background: #0040d4; }
     &:disabled { opacity: 0.4; cursor: not-allowed; }
   }
 }
@@ -176,8 +176,8 @@
   display: inline-block;
   width: 14px;
   height: 14px;
-  border: 2px solid rgba(255,255,255,0.3);
-  border-top-color: white;
+  border: 2px solid rgba(30, 99, 255, 0.3);
+  border-top-color: #1e63ff;
   border-radius: 50%;
   animation: spin 0.8s linear infinite;
 }
@@ -195,12 +195,12 @@
     content: '';
     flex: 1;
     height: 1px;
-    background: rgba(255,255,255,0.08);
+    background: rgba(30, 99, 255, 0.1);
   }
 }
 
 .divider-text {
-  color: rgba(255,255,255,0.25);
+  color: #1e3a5f;
   font-size: 0.65rem;
   font-weight: 500;
   text-transform: uppercase;
@@ -209,12 +209,12 @@
 
 .auth-footer-link {
   font-size: 0.8rem;
-  color: rgba(255,255,255,0.4);
+  color: #1e3a5f;
   margin: 0;
   text-align: center;
 
   a {
-    color: #93C5FD;
+    color: #1e63ff;
     text-decoration: none;
     font-weight: 500;
     &:hover { text-decoration: underline; }
@@ -223,12 +223,12 @@
 
 .footer-message {
   font-size: 12px;
-  color: rgba(147, 197, 253, 0.55);
+  color: #1e3a5f;
   margin-top: 20px;
 }
 
 @media (max-width: 767px) {
   .auth-wrapper { padding: 16px; align-items: flex-start; padding-top: 48px; }
-  .page-title { font-size: 22px; }
+  .page-title { font-size: 22px; color: #1e3a5f; }
   .auth-card { padding: 2rem 1.5rem; }
 }

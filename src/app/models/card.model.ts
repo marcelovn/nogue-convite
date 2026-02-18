@@ -6,6 +6,7 @@ export interface Card {
   theme: string;
   colorScheme: string;
   noButtonMechanic: 'teleporting' | 'growing-yes' | 'multiplying-yes' | 'shrinking-no';
+  floatingEmoji?: string;
   photoUrl?: string;
   musicUrl?: string;
   createdAt?: Date;

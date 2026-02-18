@@ -39,6 +39,17 @@ export class CardPreview implements OnInit {
   schemeBackground = signal('#FFF0F5');
   schemeText = signal('#333333');
 
+  readonly floatingParticles = [
+    { id: 0, left: '7%',  delay: '0s',   duration: '7s',   size: '1.8rem' },
+    { id: 1, left: '18%', delay: '1.4s', duration: '5.5s', size: '1.3rem' },
+    { id: 2, left: '32%', delay: '0.5s', duration: '8s',   size: '2rem'   },
+    { id: 3, left: '50%', delay: '2.2s', duration: '6.2s', size: '1.5rem' },
+    { id: 4, left: '63%', delay: '1s',   duration: '7.5s', size: '1.2rem' },
+    { id: 5, left: '76%', delay: '1.8s', duration: '5.2s', size: '1.7rem' },
+    { id: 6, left: '88%', delay: '3.1s', duration: '6.8s', size: '1.4rem' },
+    { id: 7, left: '42%', delay: '4.3s', duration: '8.5s', size: '1.1rem' },
+  ];
+
   constructor() {
     // React to theme and color scheme changes during preview mode
     effect(() => {

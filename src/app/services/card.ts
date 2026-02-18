@@ -54,6 +54,7 @@ export class CardService {
     // Only add media URLs if they exist
     if (card.photoUrl) insertData.photo_url = card.photoUrl;
     if (card.musicUrl) insertData.music_url = card.musicUrl;
+    if (card.floatingEmoji) insertData.floating_emoji = card.floatingEmoji;
     
     const { data, error } = await this.supabaseService.getClient()
       .from('cards')
@@ -82,6 +83,7 @@ export class CardService {
       theme: newCard.theme,
       colorScheme: newCard.color_scheme,
       noButtonMechanic: newCard.no_button_mechanic,
+      floatingEmoji: newCard.floating_emoji,
       photoUrl: newCard.photo_url,
       musicUrl: newCard.music_url,
       createdAt: new Date(newCard.created_at),
@@ -106,6 +108,7 @@ export class CardService {
     if (card.noButtonMechanic) updateData.no_button_mechanic = card.noButtonMechanic;
     if (card.photoUrl) updateData.photo_url = card.photoUrl;
     if (card.musicUrl) updateData.music_url = card.musicUrl;
+    if (card.floatingEmoji) updateData.floating_emoji = card.floatingEmoji;
 
     const { error } = await this.supabaseService.getClient()
       .from('cards')
@@ -150,6 +153,7 @@ export class CardService {
         theme: data.theme,
         colorScheme: data.color_scheme,
         noButtonMechanic: data.no_button_mechanic,
+        floatingEmoji: data.floating_emoji,
         photoUrl: data.photo_url,
         musicUrl: data.music_url,
         createdAt: new Date(data.created_at),
@@ -277,6 +281,7 @@ export class CardService {
         theme: card.theme,
         colorScheme: card.color_scheme,
         noButtonMechanic: card.no_button_mechanic,
+        floatingEmoji: card.floating_emoji,
         photoUrl: card.photo_url,
         musicUrl: card.music_url,
         createdAt: new Date(card.created_at),

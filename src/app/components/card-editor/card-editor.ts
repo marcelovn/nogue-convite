@@ -23,9 +23,19 @@ export class CardEditor {
   cardTitle = signal('Você está convidado! 🎉');
   cardMessage = signal('Venha celebrar esse momento especial conosco!');
   selectedMechanic = signal<Card['noButtonMechanic']>('teleporting');
+  selectedEmoji = signal('');
   isLoading = signal(false);
   mechanics = NO_BUTTON_MECHANICS;
   currentStep = signal(1);
+
+  readonly FLOATING_EMOJIS = [
+    { emoji: '', label: 'Nenhum' },
+    { emoji: '🎉', label: 'Confete' },
+    { emoji: '🌸', label: 'Flor' },
+    { emoji: '❤️', label: 'Coração' },
+    { emoji: '⭐', label: 'Estrela' },
+    { emoji: '🦋', label: 'Borboleta' },
+  ];
 
   get selectedTheme() { return this.themeService.selectedTheme; }
   get selectedColorScheme() { return this.themeService.selectedColorScheme; }
@@ -123,6 +133,7 @@ export class CardEditor {
       theme: this.themeService.selectedTheme().id,
       colorScheme: this.themeService.selectedColorScheme().id,
       noButtonMechanic: this.selectedMechanic(),
+      floatingEmoji: this.selectedEmoji(),
     };
   }
 }

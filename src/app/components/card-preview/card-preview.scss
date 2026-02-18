@@ -330,6 +330,30 @@
   input { flex: 1; padding: 0.4rem 0.6rem; border: none; outline: none; font-size: 0.85rem; background: transparent; color: #fff; }
 }
 
+.floating-emojis {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+  overflow: hidden;
+}
+
+@keyframes floatUp {
+  0%   { transform: translateY(0) scale(1) rotate(0deg);  opacity: 0; }
+  8%   { opacity: 1; }
+  85%  { opacity: 0.85; }
+  100% { transform: translateY(-105vh) scale(0.55) rotate(20deg); opacity: 0; }
+}
+
+.floating-emoji {
+  position: absolute;
+  bottom: -2rem;
+  animation: floatUp ease-in infinite;
+  opacity: 0;
+  filter: drop-shadow(0 0 6px rgba(255,255,255,0.25));
+  will-change: transform, opacity;
+}
+
 .no-card {
   text-align: center;
   padding: 2.5rem 2rem;

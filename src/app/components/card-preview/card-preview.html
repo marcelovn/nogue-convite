@@ -18,6 +18,19 @@
         </button>
       }
 
+      @if (cardData.floatingEmoji) {
+        <div class="floating-emojis" aria-hidden="true">
+          @for (p of floatingParticles; track p.id) {
+            <span
+              class="floating-emoji"
+              [style.left]="p.left"
+              [style.animation-delay]="p.delay"
+              [style.animation-duration]="p.duration"
+              [style.font-size]="p.size">{{ cardData.floatingEmoji }}</span>
+          }
+        </div>
+      }
+
       <div class="card-content">
         <h1 class="card-title" [style.color]="schemePrimary()">{{ cardData.title }}</h1>
 

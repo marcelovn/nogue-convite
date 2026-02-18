@@ -40,13 +40,13 @@
           </div>
         }
 
-        <div class="card-divider" [style.background-color]="schemePrimary()"></div>
+        <div class="rsvp-section">
+          <p class="rsvp-title" [style.color]="schemePrimary()">Você confirma presença?</p>
 
-        <h3 class="rsvp-title" [style.color]="schemePrimary()">Você confirma presença?</h3>
-
-        <app-no-button-mechanics
-          [mechanic]="cardData.noButtonMechanic"
-          (responded)="onResponse($event)" />
+          <app-no-button-mechanics
+            [mechanic]="cardData.noButtonMechanic"
+            (responded)="onResponse($event)" />
+        </div>
       </div>
 
       @if (cardData.id && !isLiveInvite()) {

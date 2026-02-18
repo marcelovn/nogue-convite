@@ -1,11 +1,12 @@
 .color-scheme-selector {
   margin-bottom: 1.5rem;
+  padding: 0 0.5rem;
 }
 
 .color-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
-  gap: 0.5rem;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.4rem;
 }
 
 .color-swatch {
@@ -13,11 +14,11 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 0.4rem;
-  padding: 0.75rem 0.5rem;
+  gap: 0.3rem;
+  padding: 0.5rem 0.3rem;
   background: #fff;
   border: 2px solid transparent;
-  border-radius: 12px;
+  border-radius: 10px;
   cursor: pointer;
   transition: all 0.3s ease;
 
@@ -34,55 +35,60 @@
 
 .swatch-colors {
   display: flex;
-  gap: 3px;
+  gap: 2px;
 
   span {
-    width: 20px;
-    height: 20px;
+    width: 16px;
+    height: 16px;
     border-radius: 50%;
-    border: 1px solid rgba(0, 0, 0, 0.08);
+    border: 0.5px solid rgba(0, 0, 0, 0.08);
   }
 }
 
 .swatch-name {
-  font-size: 0.65rem;
+  font-size: 0.55rem;
   font-weight: 600;
   color: #444;
   text-align: center;
-  line-height: 1.1;
+  line-height: 1;
 }
 
 .selected-indicator {
   position: absolute;
-  top: 6px;
-  right: 6px;
+  top: 4px;
+  right: 4px;
   background: #333;
   color: #fff;
-  width: 18px;
-  height: 18px;
+  width: 16px;
+  height: 16px;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 0.65rem;
+  font-size: 0.6rem;
   font-weight: 700;
 }
 
 @media (max-width: 480px) {
+  .color-scheme-selector {
+    padding: 0 0.25rem;
+  }
+
   .color-grid {
     grid-template-columns: repeat(4, 1fr);
+    gap: 0.3rem;
   }
 
   .color-swatch {
-    padding: 0.6rem 0.4rem;
+    padding: 0.4rem 0.2rem;
   }
 
   .swatch-colors span {
-    width: 18px;
-    height: 18px;
+    width: 14px;
+    height: 14px;
   }
 
   .swatch-name {
-    font-size: 0.6rem;
+    font-size: 0.5rem;
   }
 }

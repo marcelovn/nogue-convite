@@ -1,0 +1,15 @@
+<div class="dialog-backdrop" (click)="cancelled.emit()">
+  <div class="dialog-box" (click)="$event.stopPropagation()">
+    <div class="dialog-icon" [class.danger]="danger()">
+      @if (danger()) { ⚠️ } @else { ℹ️ }
+    </div>
+    <h3 class="dialog-title">{{ title() }}</h3>
+    <p class="dialog-message">{{ message() }}</p>
+    <div class="dialog-actions">
+      <button class="btn-cancel" (click)="cancelled.emit()">{{ cancelLabel() }}</button>
+      <button class="btn-confirm" [class.danger]="danger()" (click)="confirmed.emit()">
+        {{ confirmLabel() }}
+      </button>
+    </div>
+  </div>
+</div>

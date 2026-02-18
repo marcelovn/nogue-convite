@@ -71,9 +71,7 @@ main {
   width: 100%;
   
   &.public-invite {
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    display: block;
   }
 }
 

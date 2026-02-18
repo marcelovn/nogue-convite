@@ -12,20 +12,18 @@
          [style.color]="schemeText()"
          [style.background-image]="cardData.photoUrl ? 'url(' + cardData.photoUrl + ')' : null">
 
-      @if (!isLiveInvite()) {
-        <button class="back-btn" (click)="goBack()">← Voltar ao editor</button>
+      @if (authService.isAuthenticated()) {
+        <button class="back-btn" (click)="goBack()">
+          {{ isLiveInvite() ? '← Voltar ao painel' : '← Voltar ao editor' }}
+        </button>
       }
 
       <div class="card-content">
-        <div class="card-decoration">
-          <span class="heart">❤️</span>
-        </div>
+        <span class="card-icon">❤️</span>
 
         <h1 class="card-title" [style.color]="schemePrimary()">{{ cardData.title }}</h1>
 
-        <p class="card-greeting">
-          Você está convidado!
-        </p>
+        <p class="card-emoji">🎉</p>
 
         <p class="card-message">{{ cardData.message }}</p>
 

@@ -6,10 +6,11 @@ import { RsvpService } from '../../services/rsvp';
 import { AuthService } from '../../services/auth';
 import { Card, RSVPStats } from '../../models/card.model';
 import { Subscription } from 'rxjs';
+import { ConfirmDialog } from '../confirm-dialog/confirm-dialog';
 
 @Component({
   selector: 'app-rsvp-dashboard',
-  imports: [DatePipe, CommonModule],
+  imports: [DatePipe, CommonModule, ConfirmDialog],
   templateUrl: './rsvp-dashboard.html',
   styleUrl: './rsvp-dashboard.scss',
 })
@@ -22,6 +23,7 @@ export class RsvpDashboard implements OnInit, OnDestroy {
   cards = signal<Card[]>([]);
   statsMap = signal<Map<string, RSVPStats>>(new Map());
   linkCopied = signal<string | null>(null);
+  confirmDeleteId = signal<string | null>(null);
   
   private subscriptions: Subscription[] = [];
 
@@ -71,12 +73,16 @@ export class RsvpDashboard implements OnInit, OnDestroy {
   }
 
   deleteCard(cardId: string): void {
-    if (confirm('Tem certeza que deseja deletar este cartão?')) {
-      this.cardService.deleteCard(cardId).catch(error => {
-        console.error('Erro ao deletar:', error);
-        alert('Erro ao deletar cartão');
-      });
-    }
+    this.confirmDeleteId.set(cardId);
+  }
+
+  confirmDelete(): void {
+    const cardId = this.confirmDeleteId();
+    if (!cardId) return;
+    this.confirmDeleteId.set(null);
+    this.cardService.deleteCard(cardId).catch(error => {
+      console.error('Erro ao deletar:', error);
+    });
   }
 
   copyLink(cardId: string): void {

@@ -1,3 +1,14 @@
+@if (confirmDeleteId()) {
+  <app-confirm-dialog
+    title="Excluir convite"
+    message="Tem certeza que deseja excluir este convite? Esta ação não pode ser desfeita."
+    confirmLabel="Excluir"
+    cancelLabel="Cancelar"
+    [danger]="true"
+    (confirmed)="confirmDelete()"
+    (cancelled)="confirmDeleteId.set(null)" />
+}
+
 <div class="dashboard-container animate-fade-in">
   <!-- Perfil -->
   <section class="profile-section">
@@ -60,27 +71,9 @@
           <div class="stats-bar">
             <div class="stat">
               <span class="stat-number stat-yes">{{ stats.yes }}</span>
-              <span class="stat-label">Sim</span>
-            </div>
-            <div class="stat">
-              <span class="stat-number stat-no">{{ stats.no }}</span>
-              <span class="stat-label">Não</span>
-            </div>
-            <div class="stat">
-              <span class="stat-number">{{ stats.total }}</span>
-              <span class="stat-label">Total</span>
-            </div>
-            <div class="stat">
-              <span class="stat-number stat-percent">{{ stats.percentageYes }}%</span>
-              <span class="stat-label">Aceitação</span>
+              <span class="stat-label">Comparecerão</span>
             </div>
           </div>
-
-          @if (stats.total > 0) {
-            <div class="progress-bar">
-              <div class="progress-fill" [style.width.%]="stats.percentageYes"></div>
-            </div>
-          }
 
           <div class="card-actions">
             <button class="btn btn-ghost" (click)="viewCard(card.id!)">Ver</button>

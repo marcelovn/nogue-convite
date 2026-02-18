@@ -5,6 +5,7 @@ import { NoButtonMechanics } from '../no-button-mechanics/no-button-mechanics';
 import { CardService } from '../../services/card';
 import { ThemeService } from '../../services/theme';
 import { RsvpService } from '../../services/rsvp';
+import { AuthService } from '../../services/auth';
 import { Card } from '../../models/card.model';
 import { THEMES, COLOR_SCHEMES } from '../../models/constants';
 
@@ -22,6 +23,7 @@ export class CardPreview implements OnInit {
   private cardService = inject(CardService);
   private themeService = inject(ThemeService);
   private rsvpService = inject(RsvpService);
+  public authService = inject(AuthService);
 
   card = signal<Card | null>(null);
   isLoading = signal(false);
@@ -128,6 +130,11 @@ export class CardPreview implements OnInit {
   }
 
   goBack(): void {
+    if (this.authService.isAuthenticated()) {
+      this.router.navigate([this.isLiveInvite() ? '/dashboard' : '/editor']);
+      return;
+    }
+
     this.router.navigate(['/']);
   }
 

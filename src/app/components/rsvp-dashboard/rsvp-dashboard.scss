@@ -199,8 +199,6 @@
 }
 
 .stat-yes { color: #16a34a; }
-.stat-no { color: #dc2626; }
-.stat-percent { color: var(--accent, #1E40AF); }
 
 .stat-label {
   display: block;
@@ -209,22 +207,6 @@
   text-transform: uppercase;
   letter-spacing: 0.3px;
   font-weight: 500;
-}
-
-/* Progress */
-.progress-bar {
-  height: 4px;
-  background: #e5e7eb;
-  border-radius: 2px;
-  margin-bottom: 0.75rem;
-  overflow: hidden;
-}
-
-.progress-fill {
-  height: 100%;
-  background: #16a34a;
-  border-radius: 2px;
-  transition: width 0.4s ease;
 }
 
 /* Card Actions */

@@ -1,105 +1,80 @@
 <div class="auth-wrapper">
-  <div class="auth-container">
-    <!-- Left side: branding (visible on desktop) -->
-    <div class="auth-branding">
-      <div class="branding-content">
-        <div class="logo-circle">
-          <span class="logo-icon">💌</span>
-        </div>
-        <h1 class="brand-title">Nogue Convites</h1>
-        <p class="brand-subtitle">Crie convites interativos e irrecusáveis para seu evento!</p>
-        <div class="brand-features">
-          <div class="feature-item">
-            <span>🎨</span> Temas e cores personalizáveis
-          </div>
-          <div class="feature-item">
-            <span>🎉</span> Botão "Não" impossível de clicar
-          </div>
-          <div class="feature-item">
-            <span>📊</span> Painel de confirmações em tempo real
-          </div>
-        </div>
-      </div>
-    </div>
+  <div class="auth-center">
+    <!-- Title -->
+    <h1 class="page-title">Nogue Convites</h1>
+    <p class="page-subtitle">Crie convites que ninguém consegue recusar</p>
 
-    <!-- Right side: form -->
-    <div class="auth-form-side">
-      <!-- Mobile-only header -->
-      <div class="auth-header-mobile">
-        <div class="logo-circle-sm">
-          <span class="logo-icon-sm">💌</span>
-        </div>
-        <h1 class="auth-title-mobile">Nogue Convites</h1>
-        <p class="auth-subtitle-mobile">Entre para criar convites irrecusáveis!</p>
-      </div>
+    <!-- Auth Card -->
+    <div class="auth-card">
+      <h2 class="card-title">Bem-vindo de volta</h2>
 
-      <div class="auth-card">
-        <h2 class="card-title">Entrar</h2>
-
-        <form [formGroup]="loginForm" (ngSubmit)="onLogin()">
-          <div class="form-group">
-            <label for="email">Email</label>
-            <div class="input-wrapper">
-              <span class="input-icon">📧</span>
-              <input
-                type="email"
-                id="email"
-                formControlName="email"
-                class="form-input"
-                placeholder="seu@email.com"
-              />
-            </div>
-            @if (loginForm.get('email')?.invalid && loginForm.get('email')?.touched) {
-              <span class="error">Email inválido</span>
-            }
+      <form [formGroup]="loginForm" (ngSubmit)="onLogin()">
+        <!-- Email -->
+        <div class="form-group">
+          <label for="email">Email</label>
+          <div class="input-wrapper">
+            <span class="input-icon">📧</span>
+            <input
+              type="email"
+              id="email"
+              formControlName="email"
+              class="form-input"
+              placeholder="seu@email.com"
+            />
           </div>
-
-          <div class="form-group">
-            <label for="password">Senha</label>
-            <div class="input-wrapper">
-              <span class="input-icon">🔒</span>
-              <input
-                type="password"
-                id="password"
-                formControlName="password"
-                class="form-input"
-                placeholder="Sua senha"
-              />
-            </div>
-            @if (loginForm.get('password')?.invalid && loginForm.get('password')?.touched) {
-              <span class="error">Senha é obrigatória</span>
-            }
-          </div>
-
-          @if (error()) {
-            <div class="error-message">{{ error() }}</div>
+          @if (loginForm.get('email')?.invalid && loginForm.get('email')?.touched) {
+            <span class="error">Email inválido</span>
           }
-
-          <button
-            type="submit"
-            class="btn btn-primary"
-            [disabled]="!loginForm.valid || authService.isLoading()"
-          >
-            {{ authService.isLoading() ? 'Entrando...' : 'Entrar' }}
-            @if (!authService.isLoading()) {
-              <span class="arrow">→</span>
-            }
-          </button>
-        </form>
-
-        <p class="auth-link">
-          Não tem conta? <a routerLink="/register">Criar conta</a>
-        </p>
-<!-- 
-        <div class="divider-section">
-          <span class="divider-text">OU</span>
         </div>
 
-        <a routerLink="/" class="btn btn-guest">
-          <span class="guest-icon">✨</span>
-          Continuar como Visitante
-        </a> -->
+        <!-- Password -->
+        <div class="form-group">
+          <label for="password">Senha</label>
+          <div class="input-wrapper">
+            <span class="input-icon">🔒</span>
+            <input
+              type="password"
+              id="password"
+              formControlName="password"
+              class="form-input"
+              placeholder="Mínimo 6 caracteres"
+            />
+          </div>
+          @if (loginForm.get('password')?.invalid && loginForm.get('password')?.touched) {
+            <span class="error">Senha é obrigatória</span>
+          }
+        </div>
+
+        @if (error()) {
+          <div class="error-message">⚠️ {{ error() }}</div>
+        }
+
+        <!-- Login Button -->
+        <button
+          type="submit"
+          class="btn btn-primary"
+          [disabled]="!loginForm.valid || authService.isLoading()"
+        >
+          @if (authService.isLoading()) {
+            <span class="spinner-small"></span> Entrando...
+          } @else {
+            Entrar →
+          }
+        </button>
+      </form>
+
+      <!-- Divider -->
+      <div class="divider-section">
+        <span class="divider-text">OU</span>
       </div>
+
+      <!-- Sign Up Link -->
+      <p class="auth-footer-link">
+        Não tem conta? <a routerLink="/register">Crie uma</a>
+      </p>
     </div>
+
+    <!-- Footer Text -->
+    <p class="footer-message">Compartilhe momentos inesquecíveis com estilo</p>
   </div>
 </div>

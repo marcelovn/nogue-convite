@@ -1,17 +1,15 @@
 <div class="auth-wrapper">
-  <div class="auth-container">
-    <div class="auth-header">
-      <div class="logo-circle">
-        <span class="logo-icon">💌</span>
-      </div>
-      <h1 class="auth-title">Nogue Convites</h1>
-      <p class="auth-subtitle">Crie sua conta e comece a enviar convites!</p>
-    </div>
+  <div class="auth-center">
+    <!-- Title -->
+    <h1 class="page-title">Nogue Convites</h1>
+    <p class="page-subtitle">Crie sua conta e comece a enviar convites</p>
 
+    <!-- Auth Card -->
     <div class="auth-card">
       <h2 class="card-title">Criar Conta</h2>
 
       <form [formGroup]="registerForm" (ngSubmit)="onRegister()">
+        <!-- Display Name -->
         <div class="form-group">
           <label for="displayName">Nome</label>
           <div class="input-wrapper">
@@ -21,7 +19,7 @@
               id="displayName"
               formControlName="displayName"
               class="form-input"
-              placeholder="Seu nome"
+              placeholder="Seu nome completo"
             />
           </div>
           @if (registerForm.get('displayName')?.invalid && registerForm.get('displayName')?.touched) {
@@ -29,6 +27,7 @@
           }
         </div>
 
+        <!-- Email -->
         <div class="form-group">
           <label for="email">Email</label>
           <div class="input-wrapper">
@@ -46,6 +45,7 @@
           }
         </div>
 
+        <!-- Password -->
         <div class="form-group">
           <label for="password">Senha</label>
           <div class="input-wrapper">
@@ -59,10 +59,11 @@
             />
           </div>
           @if (registerForm.get('password')?.invalid && registerForm.get('password')?.touched) {
-            <span class="error">Senha deve ter mínimo 6 caracteres</span>
+            <span class="error">Mínimo 6 caracteres</span>
           }
         </div>
 
+        <!-- Confirm Password -->
         <div class="form-group">
           <label for="confirmPassword">Confirmar Senha</label>
           <div class="input-wrapper">
@@ -75,30 +76,42 @@
               placeholder="Confirme a senha"
             />
           </div>
-          @if (registerForm.get('confirmPassword')?.invalid && registerForm.get('confirmPassword')?.touched) {
-            <span class="error">As senhas não coincidem</span>
+          @if (registerForm.hasError('passwordMismatch') && registerForm.get('confirmPassword')?.touched) {
+            <span class="error">Senhas não coincidem</span>
           }
         </div>
 
+        <!-- Error Message -->
         @if (error()) {
-          <div class="error-message">{{ error() }}</div>
+          <div class="error-message">⚠️ {{ error() }}</div>
         }
 
+        <!-- Register Button -->
         <button
           type="submit"
           class="btn btn-primary"
           [disabled]="!registerForm.valid || authService.isLoading()"
         >
-          {{ authService.isLoading() ? 'Criando conta...' : 'Criar Conta' }}
-          @if (!authService.isLoading()) {
-            <span class="arrow">→</span>
+          @if (authService.isLoading()) {
+            <span class="spinner-small"></span> Criando...
+          } @else {
+            Criar Conta →
           }
         </button>
       </form>
 
-      <p class="auth-link">
-        Já tem conta? <a routerLink="/login">Entrar</a>
+      <!-- Divider -->
+      <div class="divider-section">
+        <span class="divider-text">OU</span>
+      </div>
+
+      <!-- Login Link -->
+      <p class="auth-footer-link">
+        Já tem conta? <a routerLink="/login">Entre aqui</a>
       </p>
     </div>
+
+    <!-- Footer Text -->
+    <p class="footer-message">Compartilhe momentos inesquecíveis com estilo</p>
   </div>
 </div>

@@ -7,8 +7,8 @@ export const THEMES: CardTheme[] = [
     font: 'Poppins',
     description: 'Adorable and playful design with bear theme',
     isPremium: false,
-    backgroundColor: '#FFF5F7',
-    accentColor: '#FFB3D9'
+    backgroundColor: '#F0F4FF',
+    accentColor: '#93C5FD'
   },
   {
     id: 'sweet-hearts',
@@ -16,17 +16,17 @@ export const THEMES: CardTheme[] = [
     font: 'Lora',
     description: 'Romantic heart theme with elegant typography',
     isPremium: false,
-    backgroundColor: '#FFF0F5',
-    accentColor: '#FF69B4'
+    backgroundColor: '#F0F7FF',
+    accentColor: '#3B82F6'
   },
   {
     id: 'pink-piggy',
-    name: 'Pink Piggy',
+    name: 'Blue Breeze',
     font: 'Quicksand',
-    description: 'Cute pink pig character theme',
+    description: 'Cool blue air and fresh theme',
     isPremium: false,
-    backgroundColor: '#FFE4E1',
-    accentColor: '#FF1493'
+    backgroundColor: '#E0E8FF',
+    accentColor: '#1E40AF'
   },
   {
     id: 'bold-frame',
@@ -35,7 +35,7 @@ export const THEMES: CardTheme[] = [
     description: 'Modern bold lines and frames',
     isPremium: false,
     backgroundColor: '#F5F5F5',
-    accentColor: '#FF006E'
+    accentColor: '#1E40AF'
   },
   {
     id: 'dreamy',
@@ -88,28 +88,28 @@ export const THEMES: CardTheme[] = [
     font: 'Varela Round',
     description: 'Soft pastel colors with smooth design',
     isPremium: false,
-    backgroundColor: '#FFEEF8',
-    accentColor: '#FFB6D9'
+    backgroundColor: '#F0F7FF',
+    accentColor: '#93C5FD'
   }
 ];
 
 export const COLOR_SCHEMES: ColorScheme[] = [
   {
     id: 'classic-pink',
-    name: 'Classic Pink',
-    primary: '#FF69B4',
-    secondary: '#FFB6D9',
-    accent: '#FF1493',
-    background: '#FFF0F5',
+    name: 'Classic Blue',
+    primary: '#3B82F6',
+    secondary: '#93C5FD',
+    accent: '#1E40AF',
+    background: '#F0F7FF',
     text: '#333333'
   },
   {
     id: 'rose-red',
-    name: 'Rose Red',
-    primary: '#C71585',
-    secondary: '#FF69B4',
-    accent: '#FF1493',
-    background: '#FFF5EE',
+    name: 'Deep Blue',
+    primary: '#1E40AF',
+    secondary: '#3B82F6',
+    accent: '#1E40AF',
+    background: '#E0E7FF',
     text: '#2F2F2F'
   },
   {
@@ -132,20 +132,20 @@ export const COLOR_SCHEMES: ColorScheme[] = [
   },
   {
     id: 'hot-pink',
-    name: 'Hot Pink',
-    primary: '#FF20E0',
-    secondary: '#FF69B4',
-    accent: '#FF1493',
-    background: '#FFF0FB',
+    name: 'Sky Blue',
+    primary: '#3B82F6',
+    secondary: '#93C5FD',
+    accent: '#1E40AF',
+    background: '#F0F7FF',
     text: '#2F2F2F'
   },
   {
     id: 'fuchsia',
-    name: 'Fuchsia',
-    primary: '#FF00FF',
-    secondary: '#FF69B4',
-    accent: '#FF1493',
-    background: '#FFF5FE',
+    name: 'Ocean Waves',
+    primary: '#0369A1',
+    secondary: '#3B82F6',
+    accent: '#1E40AF',
+    background: '#F0FAFF',
     text: '#333333'
   },
   {

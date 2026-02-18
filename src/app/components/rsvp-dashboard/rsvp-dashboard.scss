@@ -95,12 +95,12 @@
   }
 
   &.btn-danger {
-    background: #ffebee;
-    border-color: #ffcdd2;
+    background: #DBEAFE;
+    border-color: #BFDBFE;
     color: #c62828;
 
     &:hover {
-      background: #ffcdd2;
+      background: #BFDBFE;
     }
   }
 }
@@ -116,7 +116,7 @@
   h1 {
     font-size: 1.75rem;
     font-weight: 700;
-    color: var(--accent, #FF1493);
+    color: var(--accent, #1E40AF);
   }
 
   p {
@@ -219,7 +219,7 @@
 
 .stat-yes { color: #4CAF50; }
 .stat-no { color: #e53935; }
-.stat-percent { color: var(--accent, #FF1493); }
+.stat-percent { color: var(--accent, #1E40AF); }
 
 .stat-label {
   display: block;

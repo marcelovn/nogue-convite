@@ -1,19 +1,16 @@
 <div class="auth-wrapper">
   <div class="auth-center">
-    <!-- Title -->
     <h1 class="page-title">Nogue Convites</h1>
-    <p class="page-subtitle">Crie convites que ninguém consegue recusar</p>
+    <p class="page-subtitle">Convites interativos que ninguém recusa</p>
 
-    <!-- Auth Card -->
     <div class="auth-card">
-      <h2 class="card-title">Bem-vindo de volta</h2>
+      <h2 class="card-title">Entrar</h2>
 
       <form [formGroup]="loginForm" (ngSubmit)="onLogin()">
-        <!-- Email -->
         <div class="form-group">
           <label for="email">Email</label>
           <div class="input-wrapper">
-            <span class="input-icon">📧</span>
+            <span class="input-icon">✉</span>
             <input
               type="email"
               id="email"
@@ -27,11 +24,10 @@
           }
         </div>
 
-        <!-- Password -->
         <div class="form-group">
           <label for="password">Senha</label>
           <div class="input-wrapper">
-            <span class="input-icon">🔒</span>
+            <span class="input-icon">🔑</span>
             <input
               type="password"
               id="password"
@@ -46,10 +42,9 @@
         </div>
 
         @if (error()) {
-          <div class="error-message">⚠️ {{ error() }}</div>
+          <div class="error-message">{{ error() }}</div>
         }
 
-        <!-- Login Button -->
         <button
           type="submit"
           class="btn btn-primary"
@@ -58,23 +53,20 @@
           @if (authService.isLoading()) {
             <span class="spinner-small"></span> Entrando...
           } @else {
-            Entrar →
+            Entrar
           }
         </button>
       </form>
 
-      <!-- Divider -->
       <div class="divider-section">
-        <span class="divider-text">OU</span>
+        <span class="divider-text">ou</span>
       </div>
 
-      <!-- Sign Up Link -->
       <p class="auth-footer-link">
-        Não tem conta? <a routerLink="/register">Crie uma</a>
+        Não tem conta? <a routerLink="/register">Criar conta</a>
       </p>
     </div>
 
-    <!-- Footer Text -->
-    <p class="footer-message">Compartilhe momentos inesquecíveis com estilo</p>
+    <p class="footer-message">Compartilhe momentos especiais</p>
   </div>
 </div>

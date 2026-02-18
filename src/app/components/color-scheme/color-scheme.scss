@@ -1,12 +1,11 @@
 .color-scheme-selector {
-  margin-bottom: 1.5rem;
-  padding: 0 0.5rem;
+  margin-bottom: 1.25rem;
 }
 
 .color-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 0.4rem;
+  gap: 0.35rem;
 }
 
 .color-swatch {
@@ -14,22 +13,20 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 0.3rem;
-  padding: 0.5rem 0.3rem;
+  gap: 0.25rem;
+  padding: 0.5rem 0.25rem;
   background: #fff;
-  border: 2px solid transparent;
-  border-radius: 10px;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all 0.2s ease;
 
   &:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+    border-color: #d1d5db;
   }
 
   &.selected {
-    border-color: #333;
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+    border-color: #1a1a1a;
   }
 }
 
@@ -55,18 +52,18 @@
 
 .selected-indicator {
   position: absolute;
-  top: 4px;
-  right: 4px;
-  background: #333;
+  top: 3px;
+  right: 3px;
+  background: #1a1a1a;
   color: #fff;
-  width: 16px;
-  height: 16px;
+  width: 14px;
+  height: 14px;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 0.6rem;
-  font-weight: 700;
+  font-size: 0.55rem;
+  font-weight: 600;
 }
 
 @media (max-width: 480px) {

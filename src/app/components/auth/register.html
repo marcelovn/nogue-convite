@@ -1,15 +1,12 @@
 <div class="auth-wrapper">
   <div class="auth-center">
-    <!-- Title -->
     <h1 class="page-title">Nogue Convites</h1>
     <p class="page-subtitle">Crie sua conta e comece a enviar convites</p>
 
-    <!-- Auth Card -->
     <div class="auth-card">
-      <h2 class="card-title">Criar Conta</h2>
+      <h2 class="card-title">Criar conta</h2>
 
       <form [formGroup]="registerForm" (ngSubmit)="onRegister()">
-        <!-- Display Name -->
         <div class="form-group">
           <label for="displayName">Nome</label>
           <div class="input-wrapper">
@@ -19,7 +16,7 @@
               id="displayName"
               formControlName="displayName"
               class="form-input"
-              placeholder="Seu nome completo"
+              placeholder="Seu nome"
             />
           </div>
           @if (registerForm.get('displayName')?.invalid && registerForm.get('displayName')?.touched) {
@@ -27,11 +24,10 @@
           }
         </div>
 
-        <!-- Email -->
         <div class="form-group">
           <label for="email">Email</label>
           <div class="input-wrapper">
-            <span class="input-icon">📧</span>
+            <span class="input-icon">✉</span>
             <input
               type="email"
               id="email"
@@ -45,11 +41,10 @@
           }
         </div>
 
-        <!-- Password -->
         <div class="form-group">
           <label for="password">Senha</label>
           <div class="input-wrapper">
-            <span class="input-icon">🔒</span>
+            <span class="input-icon">🔑</span>
             <input
               type="password"
               id="password"
@@ -63,11 +58,10 @@
           }
         </div>
 
-        <!-- Confirm Password -->
         <div class="form-group">
-          <label for="confirmPassword">Confirmar Senha</label>
+          <label for="confirmPassword">Confirmar senha</label>
           <div class="input-wrapper">
-            <span class="input-icon">🔐</span>
+            <span class="input-icon">🔑</span>
             <input
               type="password"
               id="confirmPassword"
@@ -81,12 +75,10 @@
           }
         </div>
 
-        <!-- Error Message -->
         @if (error()) {
-          <div class="error-message">⚠️ {{ error() }}</div>
+          <div class="error-message">{{ error() }}</div>
         }
 
-        <!-- Register Button -->
         <button
           type="submit"
           class="btn btn-primary"
@@ -95,23 +87,20 @@
           @if (authService.isLoading()) {
             <span class="spinner-small"></span> Criando...
           } @else {
-            Criar Conta →
+            Criar conta
           }
         </button>
       </form>
 
-      <!-- Divider -->
       <div class="divider-section">
-        <span class="divider-text">OU</span>
+        <span class="divider-text">ou</span>
       </div>
 
-      <!-- Login Link -->
       <p class="auth-footer-link">
-        Já tem conta? <a routerLink="/login">Entre aqui</a>
+        Já tem conta? <a routerLink="/login">Entrar</a>
       </p>
     </div>
 
-    <!-- Footer Text -->
-    <p class="footer-message">Compartilhe momentos inesquecíveis com estilo</p>
+    <p class="footer-message">Compartilhe momentos especiais</p>
   </div>
 </div>

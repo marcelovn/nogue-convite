@@ -1,11 +1,11 @@
 .theme-selector {
-  margin-bottom: 2rem;
+  margin-bottom: 1.5rem;
 }
 
 .theme-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-  gap: 1rem;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 0.75rem;
 }
 
 .theme-card {
@@ -14,76 +14,73 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 0.5rem;
-  padding: 1.25rem 1rem;
-  border-radius: 12px;
-  border: 2px solid transparent;
+  gap: 0.35rem;
+  padding: 1rem 0.75rem;
+  border-radius: 10px;
+  border: 1px solid #e5e7eb;
   cursor: pointer;
-  transition: all 0.3s ease;
-  min-height: 120px;
+  transition: all 0.2s ease;
+  min-height: 100px;
   text-align: center;
 
   &:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+    border-color: #d1d5db;
   }
 
   &.selected {
-    border-width: 3px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+    border-color: #1E40AF;
+    border-width: 2px;
   }
 
   &.premium {
-    opacity: 0.7;
+    opacity: 0.5;
     cursor: not-allowed;
 
     &:hover {
-      transform: none;
-      box-shadow: none;
+      border-color: #e5e7eb;
     }
   }
 }
 
 .pro-badge {
   position: absolute;
-  top: 8px;
-  right: 8px;
-  background: linear-gradient(135deg, #FFD700, #FFA500);
+  top: 6px;
+  right: 6px;
+  background: #d97706;
   color: #fff;
-  font-size: 0.65rem;
-  font-weight: 700;
-  padding: 2px 8px;
-  border-radius: 10px;
+  font-size: 0.6rem;
+  font-weight: 600;
+  padding: 1px 6px;
+  border-radius: 4px;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
 }
 
 .theme-name {
-  font-weight: 600;
-  font-size: 0.9rem;
-  color: #333;
+  font-weight: 500;
+  font-size: 0.813rem;
+  color: #1a1a1a;
 }
 
 .theme-desc {
-  font-size: 0.7rem;
-  color: #888;
+  font-size: 0.65rem;
+  color: #6b7280;
   line-height: 1.3;
 }
 
 .check-mark {
   position: absolute;
-  top: 8px;
-  left: 8px;
-  background: #4CAF50;
+  top: 6px;
+  left: 6px;
+  background: #16a34a;
   color: #fff;
-  width: 22px;
-  height: 22px;
+  width: 18px;
+  height: 18px;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 0.75rem;
-  font-weight: 700;
+  font-size: 0.65rem;
+  font-weight: 600;
 }
 
 @media (max-width: 480px) {

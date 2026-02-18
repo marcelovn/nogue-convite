@@ -1,6 +1,6 @@
 <div class="editor-container">
   <header class="editor-header">
-    <h1>✨ Criar Convite Irrecusável</h1>
+    <h1>Criar convite</h1>
   </header>
 
   <!-- Progress Steps -->
@@ -24,7 +24,7 @@
   <!-- Step 1: Info -->
   @if (currentStep() === 1) {
     <section class="editor-step card-base">
-      <h2 class="section-title">📝 Informações do Convite</h2>
+      <h2 class="section-title">Informações do convite</h2>
 
       <div class="form-group">
         <label for="senderName">Seu nome</label>
@@ -79,8 +79,8 @@
   <!-- Step 3: Mechanic -->
   @if (currentStep() === 3) {
     <section class="editor-step card-base">
-      <h2 class="section-title">🎮 Mecânica do Botão "Não"</h2>
-      <p class="section-subtitle">Escolha como fazer com que a pessoa NÃO conseguir rejeitar o convite!</p>
+      <h2 class="section-title">Mecânica do botão "Não"</h2>
+      <p class="section-subtitle">Escolha o comportamento do botão de recusa</p>
 
       <div class="mechanic-grid">
         @for (mech of mechanics; track mech.id) {
@@ -104,19 +104,19 @@
 
       <div class="step-actions">
         <button class="btn btn-secondary" (click)="prevStep()" [disabled]="isLoading()">← Voltar</button>
-        <button class="btn btn-secondary" (click)="previewCard()" [disabled]="isLoading()">👁 Preview</button>
+        <button class="btn btn-secondary" (click)="previewCard()" [disabled]="isLoading()">Preview</button>
         <button class="btn btn-whatsapp" (click)="saveAndShareWhatsApp()" [disabled]="isLoading()">
           @if (isLoading()) {
             <span class="spinner"></span>
           } @else {
-            📲 WhatsApp
+            WhatsApp
           }
         </button>
         <button class="btn btn-primary" (click)="saveAndShare()" [disabled]="isLoading()">
           @if (isLoading()) {
             <span class="spinner"></span>
           } @else {
-            ✨ Criar
+            Criar convite
           }
         </button>
       </div>

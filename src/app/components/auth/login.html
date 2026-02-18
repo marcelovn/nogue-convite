@@ -1,53 +1,105 @@
 <div class="auth-wrapper">
   <div class="auth-container">
-    <div class="auth-card">
-      <h1>Entrar</h1>
-      
-      <form [formGroup]="loginForm" (ngSubmit)="onLogin()">
-        <div class="form-group">
-          <label for="email">Email:</label>
-          <input
-            type="email"
-            id="email"
-            formControlName="email"
-            class="form-input"
-            placeholder="seu@email.com"
-          />
-          @if (loginForm.get('email')?.invalid && loginForm.get('email')?.touched) {
-            <span class="error">Email inválido</span>
+    <!-- Left side: branding (visible on desktop) -->
+    <div class="auth-branding">
+      <div class="branding-content">
+        <div class="logo-circle">
+          <span class="logo-icon">💌</span>
+        </div>
+        <h1 class="brand-title">Nogue Convites</h1>
+        <p class="brand-subtitle">Crie convites interativos e irrecusáveis para seu evento!</p>
+        <div class="brand-features">
+          <div class="feature-item">
+            <span>🎨</span> Temas e cores personalizáveis
+          </div>
+          <div class="feature-item">
+            <span>🎉</span> Botão "Não" impossível de clicar
+          </div>
+          <div class="feature-item">
+            <span>📊</span> Painel de confirmações em tempo real
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right side: form -->
+    <div class="auth-form-side">
+      <!-- Mobile-only header -->
+      <div class="auth-header-mobile">
+        <div class="logo-circle-sm">
+          <span class="logo-icon-sm">💌</span>
+        </div>
+        <h1 class="auth-title-mobile">Nogue Convites</h1>
+        <p class="auth-subtitle-mobile">Entre para criar convites irrecusáveis!</p>
+      </div>
+
+      <div class="auth-card">
+        <h2 class="card-title">Entrar</h2>
+
+        <form [formGroup]="loginForm" (ngSubmit)="onLogin()">
+          <div class="form-group">
+            <label for="email">Email</label>
+            <div class="input-wrapper">
+              <span class="input-icon">📧</span>
+              <input
+                type="email"
+                id="email"
+                formControlName="email"
+                class="form-input"
+                placeholder="seu@email.com"
+              />
+            </div>
+            @if (loginForm.get('email')?.invalid && loginForm.get('email')?.touched) {
+              <span class="error">Email inválido</span>
+            }
+          </div>
+
+          <div class="form-group">
+            <label for="password">Senha</label>
+            <div class="input-wrapper">
+              <span class="input-icon">🔒</span>
+              <input
+                type="password"
+                id="password"
+                formControlName="password"
+                class="form-input"
+                placeholder="Sua senha"
+              />
+            </div>
+            @if (loginForm.get('password')?.invalid && loginForm.get('password')?.touched) {
+              <span class="error">Senha é obrigatória</span>
+            }
+          </div>
+
+          @if (error()) {
+            <div class="error-message">{{ error() }}</div>
           }
+
+          <button
+            type="submit"
+            class="btn btn-primary"
+            [disabled]="!loginForm.valid || authService.isLoading()"
+          >
+            {{ authService.isLoading() ? 'Entrando...' : 'Entrar' }}
+            @if (!authService.isLoading()) {
+              <span class="arrow">→</span>
+            }
+          </button>
+        </form>
+
+        <p class="auth-link">
+          Não tem conta? <a routerLink="/register">Criar conta</a>
+        </p>
+<!-- 
+        <div class="divider-section">
+          <span class="divider-text">OU</span>
         </div>
 
-        <div class="form-group">
-          <label for="password">Senha:</label>
-          <input
-            type="password"
-            id="password"
-            formControlName="password"
-            class="form-input"
-            placeholder="Sua senha"
-          />
-          @if (loginForm.get('password')?.invalid && loginForm.get('password')?.touched) {
-            <span class="error">Senha é obrigatória</span>
-          }
-        </div>
-
-        @if (error()) {
-          <div class="error-message">{{ error() }}</div>
-        }
-
-        <button 
-          type="submit" 
-          class="btn btn-primary"
-          [disabled]="!loginForm.valid || authService.isLoading()"
-        >
-          {{ authService.isLoading() ? 'Entrando...' : 'Entrar' }}
-        </button>
-      </form>
-
-      <p class="auth-link">
-        Não tem conta? <a routerLink="/register">Criar conta</a>
-      </p>
+        <a routerLink="/" class="btn btn-guest">
+          <span class="guest-icon">✨</span>
+          Continuar como Visitante
+        </a> -->
+      </div>
     </div>
   </div>
 </div>

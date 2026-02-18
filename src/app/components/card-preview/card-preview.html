@@ -1,4 +1,4 @@
-<div class="preview-wrapper" [style.background-color]="schemeBackground()">
+<div class="preview-wrapper">
   @if (isLoading()) {
     <div class="loading-screen">
       <div class="spinner-large"></div>
@@ -6,10 +6,11 @@
     </div>
   } @else if (card(); as cardData) {
     <div class="invite-card"
+         [class.has-photo]="cardData.photoUrl"
          [style.font-family]="themeFont() + ', sans-serif'"
          [style.background-color]="themeBgColor()"
          [style.color]="schemeText()"
-         [style.background-image]="cardData.photoUrl ? 'url(' + cardData.photoUrl + ')' : 'none'">>
+         [style.background-image]="cardData.photoUrl ? 'url(' + cardData.photoUrl + ')' : null">
 
       @if (!isLiveInvite()) {
         <button class="back-btn" (click)="goBack()">← Voltar ao editor</button>

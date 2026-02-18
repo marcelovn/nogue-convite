@@ -1,77 +1,100 @@
 <div class="auth-wrapper">
   <div class="auth-container">
+    <div class="auth-header">
+      <div class="logo-circle">
+        <span class="logo-icon">💌</span>
+      </div>
+      <h1 class="auth-title">Nogue Convites</h1>
+      <p class="auth-subtitle">Crie sua conta e comece a enviar convites!</p>
+    </div>
+
     <div class="auth-card">
-      <h1>Criar Conta</h1>
-      
+      <h2 class="card-title">Criar Conta</h2>
+
       <form [formGroup]="registerForm" (ngSubmit)="onRegister()">
-      <div class="form-group">
-        <label for="displayName">Nome:</label>
-        <input
-          type="text"
-          id="displayName"
-          formControlName="displayName"
-          class="form-input"
-          placeholder="Seu nome"
-        />
-        @if (registerForm.get('displayName')?.invalid && registerForm.get('displayName')?.touched) {
-          <span class="error">Nome é obrigatório</span>
+        <div class="form-group">
+          <label for="displayName">Nome</label>
+          <div class="input-wrapper">
+            <span class="input-icon">👤</span>
+            <input
+              type="text"
+              id="displayName"
+              formControlName="displayName"
+              class="form-input"
+              placeholder="Seu nome"
+            />
+          </div>
+          @if (registerForm.get('displayName')?.invalid && registerForm.get('displayName')?.touched) {
+            <span class="error">Nome é obrigatório</span>
+          }
+        </div>
+
+        <div class="form-group">
+          <label for="email">Email</label>
+          <div class="input-wrapper">
+            <span class="input-icon">📧</span>
+            <input
+              type="email"
+              id="email"
+              formControlName="email"
+              class="form-input"
+              placeholder="seu@email.com"
+            />
+          </div>
+          @if (registerForm.get('email')?.invalid && registerForm.get('email')?.touched) {
+            <span class="error">Email inválido</span>
+          }
+        </div>
+
+        <div class="form-group">
+          <label for="password">Senha</label>
+          <div class="input-wrapper">
+            <span class="input-icon">🔒</span>
+            <input
+              type="password"
+              id="password"
+              formControlName="password"
+              class="form-input"
+              placeholder="Mínimo 6 caracteres"
+            />
+          </div>
+          @if (registerForm.get('password')?.invalid && registerForm.get('password')?.touched) {
+            <span class="error">Senha deve ter mínimo 6 caracteres</span>
+          }
+        </div>
+
+        <div class="form-group">
+          <label for="confirmPassword">Confirmar Senha</label>
+          <div class="input-wrapper">
+            <span class="input-icon">🔐</span>
+            <input
+              type="password"
+              id="confirmPassword"
+              formControlName="confirmPassword"
+              class="form-input"
+              placeholder="Confirme a senha"
+            />
+          </div>
+          @if (registerForm.get('confirmPassword')?.invalid && registerForm.get('confirmPassword')?.touched) {
+            <span class="error">As senhas não coincidem</span>
+          }
+        </div>
+
+        @if (error()) {
+          <div class="error-message">{{ error() }}</div>
         }
-      </div>
 
-      <div class="form-group">
-        <label for="email">Email:</label>
-        <input
-          type="email"
-          id="email"
-          formControlName="email"
-          class="form-input"
-          placeholder="seu@email.com"
-        />
-        @if (registerForm.get('email')?.invalid && registerForm.get('email')?.touched) {
-          <span class="error">Email inválido</span>
-        }
-      </div>
-
-      <div class="form-group">
-        <label for="password">Senha:</label>
-        <input
-          type="password"
-          id="password"
-          formControlName="password"
-          class="form-input"
-          placeholder="Mínimo 6 caracteres"
-        />
-        @if (registerForm.get('password')?.invalid && registerForm.get('password')?.touched) {
-          <span class="error">Senha deve ter mínimo 6 caracteres</span>
-        }
-      </div>
-
-      <div class="form-group">
-        <label for="confirmPassword">Confirmar Senha:</label>
-        <input
-          type="password"
-          id="confirmPassword"
-          formControlName="confirmPassword"
-          class="form-input"
-          placeholder="Confirme a senha"
-        />
-        @if (registerForm.get('confirmPassword')?.invalid && registerForm.get('confirmPassword')?.touched) {
-          <span class="error">As senhas não coincidem</span>
-        }
-      </div>
-
-      @if (error()) {
-        <div class="error-message">{{ error() }}</div>
-      }
-
-      <button 
-        type="submit" 
-        class="btn btn-primary"
-        [disabled]="!registerForm.valid || authService.isLoading()"
-      >
-        {{ authService.isLoading() ? 'Criando conta...' : 'Criar Conta' }}
-      </button>
-    </form>
+        <button
+          type="submit"
+          class="btn btn-primary"
+          [disabled]="!registerForm.valid || authService.isLoading()"
+        >
+          {{ authService.isLoading() ? 'Criando conta...' : 'Criar Conta' }}
+          @if (!authService.isLoading()) {
+            <span class="arrow">→</span>
+          }
+        </button>
+      </form>
 
       <p class="auth-link">
         Já tem conta? <a routerLink="/login">Entrar</a>

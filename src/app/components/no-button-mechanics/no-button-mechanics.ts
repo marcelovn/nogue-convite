@@ -19,7 +19,7 @@ export class NoButtonMechanics {
   noScale = signal(1);
   noPosition = signal({ x: 0, y: 0 });
   extraYesButtons = signal<{ x: number; y: number }[]>([]);
-  yesText = signal('Sim \u2764');
+  yesText = signal('Sim ');
   hasResponded = signal(false);
   showConfetti = signal(false);
 

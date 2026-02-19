@@ -9,6 +9,17 @@
     (cancelled)="confirmDeleteId.set(null)" />
 }
 
+@if (confirmClearId()) {
+  <app-confirm-dialog
+    title="Zerar respostas"
+    message="Tem certeza que deseja limpar todas as respostas deste convite? Esta ação não pode ser desfeita."
+    confirmLabel="Zerar"
+    cancelLabel="Cancelar"
+    [danger]="true"
+    (confirmed)="confirmClear()"
+    (cancelled)="confirmClearId.set(null)" />
+}
+
 <div class="dashboard-container animate-fade-in">
   <!-- Perfil -->
   <section class="profile-section">
@@ -67,6 +78,7 @@
             <div class="skeleton-btn" style="width: 45px"></div>
             <div class="skeleton-btn" style="width: 75px"></div>
             <div class="skeleton-btn" style="width: 45px"></div>
+            <div class="skeleton-btn" style="width: 50px"></div>
             <div class="skeleton-btn" style="width: 60px"></div>
           </div>
         </div>
@@ -108,6 +120,7 @@
             <button class="btn btn-ghost" (click)="copyLink(card.id!)">
               {{ linkCopied() === card.id ? '✓ Copiado' : 'Link' }}
             </button>
+            <button class="btn btn-ghost btn-warning" (click)="clearResponses(card.id!)">Zerar</button>
             <button class="btn btn-ghost btn-danger" (click)="deleteCard(card.id!)">Excluir</button>
           </div>
         </div>

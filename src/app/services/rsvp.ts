@@ -95,6 +95,27 @@ export class RsvpService {
     return this.entries.filter(e => e.cardId === cardId);
   }
 
+  /**
+   * Limpa/zera todas as respostas RSVP de um convite específico
+   */
+  async clearResponses(cardId: string): Promise<void> {
+    try {
+      const { error } = await this.supabaseService.getClient()
+        .from('rsvp_entries')
+        .delete()
+        .eq('card_id', cardId);
+
+      if (error) throw error;
+
+      // Remove from local cache
+      this.entries = this.entries.filter(e => e.cardId !== cardId);
+      this.rsvpEntries.set([...this.entries]);
+    } catch (error) {
+      console.error('Erro ao limpar respostas:', error);
+      throw error;
+    }
+  }
+
   private async loadFromSupabase(): Promise<void> {
     try {
       const { data, error } = await this.supabaseService.getClient()

@@ -43,6 +43,7 @@ export class CardPreview implements OnInit {
   inviteToken = signal<string | null>(null);
   tokenValid = signal(true);
   errorMessage = signal('');
+  isViewMode = signal(false);
 
   readonly floatingParticles = [
     { id: 0, left: '7%',  delay: '0s',   duration: '7s',   size: '1.8rem' },
@@ -71,6 +72,12 @@ export class CardPreview implements OnInit {
   ngOnInit(): void {
     const cardId = this.route.snapshot.paramMap.get('id');
     const token = this.route.snapshot.paramMap.get('token');
+    const mode = this.route.snapshot.queryParamMap.get('mode');
+    
+    // Check if viewing in view-only mode (from dashboard)
+    if (mode === 'view') {
+      this.isViewMode.set(true);
+    }
 
     // Se um token foi fornecido, armazená-lo e validar seu status
     if (token) {
@@ -152,6 +159,11 @@ export class CardPreview implements OnInit {
   }
 
   onResponse(response: 'yes' | 'no'): void {
+    // Don't record responses in view-only mode
+    if (this.isViewMode()) {
+      return;
+    }
+    
     const cardData = this.card();
     const token = this.inviteToken();
 

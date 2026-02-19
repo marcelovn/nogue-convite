@@ -68,6 +68,11 @@
         }
 
         <div class="rsvp-section">
+          @if (isViewMode()) {
+            <div class="view-mode-message" [style.color]="schemePrimary()">
+              Você está visualizando este convite. As respostas não serão registradas.
+            </div>
+          }
           <p class="rsvp-title" [style.color]="schemePrimary()">Você confirma presença?</p>
 
           <app-no-button-mechanics

@@ -26,6 +26,7 @@ export class RsvpDashboard implements OnInit, OnDestroy {
   statsMap = signal<Map<string, RSVPStats>>(new Map());
   linkCopied = signal<string | null>(null);
   confirmDeleteId = signal<string | null>(null);
+  confirmClearId = signal<string | null>(null);
   isLoading = signal(true);
   
   private subscriptions: Subscription[] = [];
@@ -73,7 +74,7 @@ export class RsvpDashboard implements OnInit, OnDestroy {
   }
 
   viewCard(cardId: string): void {
-    this.router.navigate(['/invite', cardId]);
+    this.router.navigate(['/invite', cardId], { queryParams: { mode: 'view' } });
   }
 
   deleteCard(cardId: string): void {
@@ -86,6 +87,19 @@ export class RsvpDashboard implements OnInit, OnDestroy {
     this.confirmDeleteId.set(null);
     this.cardService.deleteCard(cardId).catch(error => {
       console.error('Erro ao deletar:', error);
+    });
+  }
+
+  clearResponses(cardId: string): void {
+    this.confirmClearId.set(cardId);
+  }
+
+  confirmClear(): void {
+    const cardId = this.confirmClearId();
+    if (!cardId) return;
+    this.confirmClearId.set(null);
+    this.rsvpService.clearResponses(cardId).catch(error => {
+      console.error('Erro ao limpar respostas:', error);
     });
   }
 

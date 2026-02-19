@@ -180,7 +180,7 @@ export class CardPreview implements OnInit {
   private showSuccessMessage(): void {
     // Desabilitar os botões de resposta após confirmação
     this.tokenValid.set(false);
-    this.errorMessage.set('Obrigado! Sua presença foi confirmada! 🎉');
+    this.errorMessage.set('Obrigado! Sua presença foi confirmada!');
   }
 
   goBack(): void {

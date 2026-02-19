@@ -20,7 +20,7 @@ export class CardEditor {
   private router = inject(Router);
 
   senderName = signal('');
-  cardTitle = signal('Você está convidado! 🎉');
+  cardTitle = signal('Você está convidado!');
   cardMessage = signal('Venha celebrar esse momento especial conosco!');
   selectedMechanic = signal<Card['noButtonMechanic']>('teleporting');
   selectedEmoji = signal('');

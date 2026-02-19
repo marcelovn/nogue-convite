@@ -1,9 +1,8 @@
 <div class="mechanics-container" #buttonsContainer [class.disabled]="disabled()">
   @if (hasResponded()) {
     <div class="response-success animate-fade-in">
-      <div class="confetti-emoji">🎉</div>
       <h2>Presença Confirmada!</h2>
-      <p>Obrigado por confirmar! Esperamos você lá! ❤️</p>
+      <p>Obrigado por confirmar! Esperamos você lá!</p>
     </div>
   } @else {
     <div class="buttons-area">
@@ -24,7 +23,7 @@
           [style.transform]="'translate(' + noPosition().x + 'px, ' + noPosition().y + 'px) scale(' + noScale() + ')'"
           (mouseenter)="onNoHover()"
           (click)="onNoClick()">
-          Não 😢
+          Não
         </button>
       }
 
@@ -35,7 +34,7 @@
           [disabled]="disabled()"
           [style.transform]="'translate(' + extra.x + 'px, ' + extra.y + 'px)'"
           (click)="onYesClick()">
-          Sim ❤
+          Sim
         </button>
       }
     </div>

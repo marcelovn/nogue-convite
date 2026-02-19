@@ -1,4 +1,4 @@
-<div class="mechanics-container" #buttonsContainer>
+<div class="mechanics-container" #buttonsContainer [class.disabled]="disabled()">
   @if (hasResponded()) {
     <div class="response-success animate-fade-in">
       <div class="confetti-emoji">🎉</div>
@@ -10,6 +10,7 @@
       <!-- Yes Button -->
       <button
         class="btn-yes"
+        [disabled]="disabled()"
         [style.transform]="'scale(' + yesScale() + ')'"
         (click)="onYesClick()">
         {{ yesText() }}
@@ -19,6 +20,7 @@
       @if (noScale() > 0) {
         <button
           class="btn-no"
+          [disabled]="disabled()"
           [style.transform]="'translate(' + noPosition().x + 'px, ' + noPosition().y + 'px) scale(' + noScale() + ')'"
           (mouseenter)="onNoHover()"
           (click)="onNoClick()">
@@ -30,6 +32,7 @@
       @for (extra of extraYesButtons(); track $index) {
         <button
           class="btn-yes btn-yes-extra"
+          [disabled]="disabled()"
           [style.transform]="'translate(' + extra.x + 'px, ' + extra.y + 'px)'"
           (click)="onYesClick()">
           Sim ❤

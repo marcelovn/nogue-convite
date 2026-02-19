@@ -10,6 +10,7 @@ import { Card } from '../../models/card.model';
 export class NoButtonMechanics {
   mechanic = input<Card['noButtonMechanic']>('teleporting');
   responded = output<'yes' | 'no'>();
+  disabled = input(false);
 
   buttonsContainer = viewChild<ElementRef>('buttonsContainer');
 
@@ -23,12 +24,14 @@ export class NoButtonMechanics {
   showConfetti = signal(false);
 
   onYesClick(): void {
+    if (this.disabled()) return;
     this.hasResponded.set(true);
     this.showConfetti.set(true);
     this.responded.emit('yes');
   }
 
   onNoClick(): void {
+    if (this.disabled()) return;
     const clicks = this.noClicks() + 1;
     this.noClicks.set(clicks);
 

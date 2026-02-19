@@ -2,6 +2,7 @@ import { Injectable, signal } from '@angular/core';
 import { RSVPEntry, RSVPStats } from '../models/card.model';
 import { SupabaseService } from './supabase';
 import { AuthService } from './auth';
+import { InviteTokenService } from './invite-token';
 
 @Injectable({
   providedIn: 'root',
@@ -13,7 +14,8 @@ export class RsvpService {
 
   constructor(
     private supabaseService: SupabaseService,
-    private authService: AuthService
+    private authService: AuthService,
+    private inviteTokenService: InviteTokenService
   ) {
     // Load RSVPs once when user authenticates
     this.authService.isAuthenticated;
@@ -49,6 +51,29 @@ export class RsvpService {
       this.entries.push(newEntry);
       this.rsvpEntries.set([...this.entries]);
     }
+  }
+
+  /**
+   * Adiciona resposta RSVP via token de convite
+   * Valida o token, marca-o como usado e adiciona a resposta
+   */
+  async addResponseViaToken(token: string, entry: RSVPEntry): Promise<void> {
+    // Validar token
+    const cardId = await this.inviteTokenService.validateToken(token);
+    if (!cardId) {
+      throw new Error('Token inválido, expirado ou já utilizado');
+    }
+
+    // Verificar se o cardId do token corresponde ao cardId da entrada
+    if (cardId !== entry.cardId) {
+      throw new Error('Token não corresponde ao convite');
+    }
+
+    // Marcar token como usado
+    await this.inviteTokenService.markTokenAsUsed(token, entry.guestEmail);
+
+    // Adicionar a resposta
+    await this.addResponse(entry);
   }
 
   getStats(cardId: string): RSVPStats {

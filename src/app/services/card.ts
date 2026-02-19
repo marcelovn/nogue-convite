@@ -3,6 +3,7 @@ import { BehaviorSubject, Observable } from 'rxjs';
 import { Card } from '../models/card.model';
 import { SupabaseService } from './supabase';
 import { AuthService } from './auth';
+import { InviteTokenService } from './invite-token';
 
 @Injectable({
   providedIn: 'root'
@@ -17,7 +18,8 @@ export class CardService {
 
   constructor(
     private supabaseService: SupabaseService,
-    private authService: AuthService
+    private authService: AuthService,
+    private inviteTokenService: InviteTokenService
   ) {
     // Auto-reload cards when authentication state changes
     effect(() => {
@@ -74,6 +76,9 @@ export class CardService {
       .from('cards')
       .update({ share_link: actualShareLink })
       .eq('id', newCard.id);
+    
+    // Gerar token de convite único
+    await this.inviteTokenService.generateToken(newCard.id);
     
     const cardModel: Card = {
       id: newCard.id,
@@ -208,6 +213,24 @@ export class CardService {
 
   getWhatsAppDirectUrl(phone: string, cardId: string, senderName: string): string {
     const link = this.getShareLink(cardId);
+    const message = `🎉 Olá! Você recebeu um convite especial de ${senderName || 'alguém'}!\n\n💌 Abra o convite e confirme sua presença:\n${link}`;
+    const cleanPhone = phone.replace(/\D/g, '');
+    return `https://wa.me/${cleanPhone}?text=${encodeURIComponent(message)}`;
+  }
+
+  async getShareLinkWithToken(cardId: string): Promise<string> {
+    const token = await this.inviteTokenService.generateToken(cardId);
+    return `${window.location.origin}/invite/${cardId}/${token}`;
+  }
+
+  async getWhatsAppShareUrlWithToken(cardId: string, senderName: string): Promise<string> {
+    const link = await this.getShareLinkWithToken(cardId);
+    const message = `🎉 Olá! Você recebeu um convite especial de ${senderName || 'alguém'}!\n\n💌 Abra o convite e confirme sua presença:\n${link}`;
+    return `https://wa.me/?text=${encodeURIComponent(message)}`;
+  }
+
+  async getWhatsAppDirectUrlWithToken(phone: string, cardId: string, senderName: string): Promise<string> {
+    const link = await this.getShareLinkWithToken(cardId);
     const message = `🎉 Olá! Você recebeu um convite especial de ${senderName || 'alguém'}!\n\n💌 Abra o convite e confirme sua presença:\n${link}`;
     const cleanPhone = phone.replace(/\D/g, '');
     return `https://wa.me/${cleanPhone}?text=${encodeURIComponent(message)}`;

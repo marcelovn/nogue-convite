@@ -6,6 +6,7 @@ import { CardService } from '../../services/card';
 import { ThemeService } from '../../services/theme';
 import { RsvpService } from '../../services/rsvp';
 import { AuthService } from '../../services/auth';
+import { InviteTokenService } from '../../services/invite-token';
 import { Card } from '../../models/card.model';
 import { THEMES, COLOR_SCHEMES } from '../../models/constants';
 
@@ -23,6 +24,7 @@ export class CardPreview implements OnInit {
   private cardService = inject(CardService);
   private themeService = inject(ThemeService);
   private rsvpService = inject(RsvpService);
+  private inviteTokenService = inject(InviteTokenService);
   public authService = inject(AuthService);
 
   card = signal<Card | null>(null);
@@ -38,6 +40,9 @@ export class CardPreview implements OnInit {
   schemePrimary = signal('#FF69B4');
   schemeBackground = signal('#FFF0F5');
   schemeText = signal('#333333');
+  inviteToken = signal<string | null>(null);
+  tokenValid = signal(true);
+  errorMessage = signal('');
 
   readonly floatingParticles = [
     { id: 0, left: '7%',  delay: '0s',   duration: '7s',   size: '1.8rem' },
@@ -65,6 +70,37 @@ export class CardPreview implements OnInit {
 
   ngOnInit(): void {
     const cardId = this.route.snapshot.paramMap.get('id');
+    const token = this.route.snapshot.paramMap.get('token');
+
+    console.log('🔍 CardPreview ngOnInit:', { cardId, token, hasToken: !!token });
+
+    // Se um token foi fornecido, armazená-lo e validar seu status
+    if (token) {
+      this.inviteToken.set(token);
+      console.log('✅ Token capturado da URL:', token.substring(0, 8) + '...');
+      // Validar status do token ao carregar
+      this.inviteTokenService.checkTokenStatus(token).then(status => {
+        console.log('🔐 Status do token:', status);
+        if (status.alreadyUsed) {
+          this.tokenValid.set(false);
+          this.errorMessage.set('Este convite já foi confirmado');
+          console.warn('⛔ Token já foi usado');
+        } else if (status.expired) {
+          this.tokenValid.set(false);
+          this.errorMessage.set('Este convite expirou');
+          console.warn('⏰ Token expirou');
+        } else {
+          console.log('✅ Token válido');
+        }
+        // Se isValid = true, deixar tokenValid = true (padrão)
+      }).catch(err => {
+        console.error('Erro ao validar token:', err);
+        this.tokenValid.set(false);
+        this.errorMessage.set('Erro ao validar convite');
+      });
+    } else {
+      console.warn('⚠️ Nenhum token na URL - acesso sem restrição');
+    }
 
     if (cardId) {
       // Live invite view - primeiro tenta da memória
@@ -129,15 +165,43 @@ export class CardPreview implements OnInit {
 
   onResponse(response: 'yes' | 'no'): void {
     const cardData = this.card();
+    const token = this.inviteToken();
+
+    console.log('📝 onResponse:', { response, hasToken: !!token, tokenValid: this.tokenValid() });
+
     if (cardData?.id) {
-      this.rsvpService.addResponse({
-        cardId: cardData.id,
-        response,
-      }).catch(error => {
-        console.error('Erro ao registrar resposta:', error);
-        alert('Erro ao registrar sua resposta. Tente novamente.');
-      });
+      if (token) {
+        // Se há um token, usar o método que valida o token
+        console.log('🔐 Registrando resposta COM validação de token');
+        this.rsvpService.addResponseViaToken(token, {
+          cardId: cardData.id,
+          response,
+        }).then(() => {
+          console.log('✅ Resposta registrada com sucesso');
+          this.showSuccessMessage();
+        }).catch(error => {
+          console.error('❌ Erro ao registrar resposta:', error);
+          this.errorMessage.set('Erro: ' + (error.message || 'Não foi possível registrar sua resposta'));
+          this.tokenValid.set(false);
+        });
+      } else {
+        // Sem token, permitir resposta sem autenticação
+        console.log('⚠️ Registrando resposta SEM validação de token');
+        this.rsvpService.addResponse({
+          cardId: cardData.id,
+          response,
+        }).catch(error => {
+          console.error('Erro ao registrar resposta:', error);
+          alert('Erro ao registrar sua resposta. Tente novamente.');
+        });
+      }
     }
+  }
+
+  private showSuccessMessage(): void {
+    // Desabilitar os botões de resposta após confirmação
+    this.tokenValid.set(false);
+    this.errorMessage.set('Obrigado! Sua presença foi confirmada! 🎉');
   }
 
   goBack(): void {
@@ -150,36 +214,77 @@ export class CardPreview implements OnInit {
   }
 
   copyLink(): void {
+    console.log('🔘 copyLink() chamado');
     const cardData = this.card();
+    console.log('📊 cardData:', { id: cardData?.id, senderName: cardData?.senderName });
+    
     if (cardData?.id) {
-      const link = `${window.location.origin}/invite/${cardData.id}`;
-      navigator.clipboard.writeText(link);
-      this.linkCopied.set(true);
-      setTimeout(() => this.linkCopied.set(false), 2000);
+      console.log('✅ CardData.id válido:', cardData.id);
+      // Gerar novo token e copiar link com token
+      this.inviteTokenService.generateToken(cardData.id).then(token => {
+        const link = `${window.location.origin}/invite/${cardData.id}/${token}`;
+        console.log('📎 Link gerado com TOKEN:', link);
+        navigator.clipboard.writeText(link);
+        this.linkCopied.set(true);
+        setTimeout(() => this.linkCopied.set(false), 2000);
+      }).catch(error => {
+        console.error('❌ Erro ao gerar token:', error);
+        // Fallback: copiar sem token
+        const link = `${window.location.origin}/invite/${cardData.id}`;
+        console.warn('⚠️ Fallback: Link copiado SEM token:', link);
+        navigator.clipboard.writeText(link);
+        this.linkCopied.set(true);
+        setTimeout(() => this.linkCopied.set(false), 2000);
+      });
+    } else {
+      console.warn('⚠️ cardData.id é undefined');
     }
   }
 
   shareWhatsApp(): void {
     const cardData = this.card();
-    if (cardData?.id) {
-      const url = this.cardService.getWhatsAppShareUrl(
-        cardData.id,
-        cardData.senderName
-      );
-      window.open(url, '_blank');
+    if (cardData && cardData.id) {
+      const cardId = cardData.id;
+      // Gerar novo token e compartilhar com link seguro
+      this.inviteTokenService.generateToken(cardId).then(token => {
+        const link = `${window.location.origin}/invite/${cardId}/${token}`;
+        const message = `🎉 Olá! Você recebeu um convite especial de ${cardData.senderName || 'alguém'}!\n\n💌 Abra o convite e confirme sua presença:\n${link}`;
+        const url = `https://wa.me/?text=${encodeURIComponent(message)}`;
+        window.open(url, '_blank');
+      }).catch(error => {
+        console.error('Erro ao gerar token:', error);
+        // Fallback: compartilhar sem token
+        const url = this.cardService.getWhatsAppShareUrl(
+          cardId,
+          cardData.senderName
+        );
+        window.open(url, '_blank');
+      });
     }
   }
 
   shareWhatsAppDirect(): void {
     const cardData = this.card();
     const phone = this.whatsappPhone();
-    if (cardData?.id && phone) {
-      const url = this.cardService.getWhatsAppDirectUrl(
-        phone,
-        cardData.id,
-        cardData.senderName
-      );
-      window.open(url, '_blank');
+    if (cardData && cardData.id && phone) {
+      const cardId = cardData.id;
+      // Gerar novo token e compartilhar com link seguro
+      this.inviteTokenService.generateToken(cardId).then(token => {
+        const link = `${window.location.origin}/invite/${cardId}/${token}`;
+        const message = `🎉 Olá! Você recebeu um convite especial de ${cardData.senderName || 'alguém'}!\n\n💌 Abra o convite e confirme sua presença:\n${link}`;
+        const cleanPhone = phone.replace(/\D/g, '');
+        const url = `https://wa.me/${cleanPhone}?text=${encodeURIComponent(message)}`;
+        window.open(url, '_blank');
+      }).catch(error => {
+        console.error('Erro ao gerar token:', error);
+        // Fallback: compartilhar sem token
+        const url = this.cardService.getWhatsAppDirectUrl(
+          phone,
+          cardId,
+          cardData.senderName
+        );
+        window.open(url, '_blank');
+      });
     }
   }
 

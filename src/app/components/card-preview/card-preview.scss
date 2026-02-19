@@ -140,6 +140,39 @@
   @media (min-width: 600px) { font-size: 2.9rem; }
 }
 
+.error-message {
+  margin: 1rem 0;
+  padding: 1rem;
+  border-radius: 12px;
+  border-left: 4px solid currentColor;
+  font-size: 0.95rem;
+  line-height: 1.5;
+  backdrop-filter: blur(8px);
+  animation: slideDown 0.3s ease-out;
+
+  strong {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+  }
+
+  p {
+    margin: 0;
+    opacity: 0.9;
+  }
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 .card-music {
   margin: 1.5rem 0;
   display: flex;

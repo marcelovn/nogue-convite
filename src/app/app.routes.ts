@@ -12,7 +12,8 @@ export const routes: Routes = [
   { path: 'register', component: RegisterComponent },
   { path: 'editor', component: CardEditor, canActivate: [authGuard] },
   { path: 'preview', component: CardPreview },
-  { path: 'invite/:id', component: CardPreview },
+  { path: 'invite/:id/:token', component: CardPreview },  // Específica ANTES
+  { path: 'invite/:id', component: CardPreview },        // Genérica DEPOIS
   { path: 'dashboard', component: RsvpDashboard, canActivate: [authGuard] },
   { path: '**', redirectTo: '' },
 ];

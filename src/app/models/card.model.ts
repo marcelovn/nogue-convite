@@ -53,3 +53,13 @@ export interface RSVPStats {
   no: number;
   percentageYes: number;
 }
+
+export interface InviteToken {
+  id?: string;
+  cardId: string;
+  token: string;
+  expiresAt: Date;
+  usedAt?: Date;
+  usedBy?: string;
+  createdAt?: Date;
+}

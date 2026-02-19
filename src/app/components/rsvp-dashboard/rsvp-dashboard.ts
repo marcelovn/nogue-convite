@@ -4,6 +4,7 @@ import { DatePipe, CommonModule } from '@angular/common';
 import { CardService } from '../../services/card';
 import { RsvpService } from '../../services/rsvp';
 import { AuthService } from '../../services/auth';
+import { InviteTokenService } from '../../services/invite-token';
 import { Card, RSVPStats } from '../../models/card.model';
 import { Subscription } from 'rxjs';
 import { ConfirmDialog } from '../confirm-dialog/confirm-dialog';
@@ -18,6 +19,7 @@ export class RsvpDashboard implements OnInit, OnDestroy {
   private cardService = inject(CardService);
   private rsvpService = inject(RsvpService);
   private router = inject(Router);
+  private inviteTokenService = inject(InviteTokenService);
   public authService = inject(AuthService);
 
   cards = signal<Card[]>([]);
@@ -86,19 +88,35 @@ export class RsvpDashboard implements OnInit, OnDestroy {
   }
 
   copyLink(cardId: string): void {
-    const link = `${window.location.origin}/invite/${cardId}`;
-    navigator.clipboard.writeText(link);
-    this.linkCopied.set(cardId);
-    setTimeout(() => this.linkCopied.set(null), 2000);
+    this.inviteTokenService.generateToken(cardId).then(token => {
+      const link = `${window.location.origin}/invite/${cardId}/${token}`;
+      navigator.clipboard.writeText(link);
+      this.linkCopied.set(cardId);
+      setTimeout(() => this.linkCopied.set(null), 2000);
+    }).catch(error => {
+      console.error('Erro ao gerar token:', error);
+      // Fallback sem token
+      const link = `${window.location.origin}/invite/${cardId}`;
+      navigator.clipboard.writeText(link);
+      this.linkCopied.set(cardId);
+      setTimeout(() => this.linkCopied.set(null), 2000);
+    });
   }
 
   shareWhatsApp(card: Card): void {
     if (card.id) {
-      const url = this.cardService.getWhatsAppShareUrl(
-        card.id,
-        card.senderName
-      );
-      window.open(url, '_blank');
+      const cardId = card.id;
+      this.inviteTokenService.generateToken(cardId).then(token => {
+        const link = `${window.location.origin}/invite/${cardId}/${token}`;
+        const message = `🎉 Olá! Você recebeu um convite especial de ${card.senderName || 'alguém'}!\n\n💌 Abra o convite e confirme sua presença:\n${link}`;
+        const url = `https://wa.me/?text=${encodeURIComponent(message)}`;
+        window.open(url, '_blank');
+      }).catch(error => {
+        console.error('Erro ao gerar token:', error);
+        // Fallback sem token
+        const url = this.cardService.getWhatsAppShareUrl(cardId, card.senderName);
+        window.open(url, '_blank');
+      });
     }
   }
 

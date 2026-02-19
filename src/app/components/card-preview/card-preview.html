@@ -34,6 +34,13 @@
       <div class="card-content">
         <h1 class="card-title" [style.color]="schemePrimary()">{{ cardData.title }}</h1>
 
+        @if (!tokenValid()) {
+          <div class="error-message" [style.background-color]="schemePrimary() + '20'" [style.color]="schemePrimary()">
+            <strong>⚠️ {{ errorMessage() || 'Este convite não pode mais receber confirmações' }}</strong>
+            <p>O convite já foi confirmado ou expirou.</p>
+          </div>
+        }
+
         <p class="card-message">{{ cardData.message }}</p>
 
         <p class="card-sender">
@@ -56,6 +63,7 @@
 
           <app-no-button-mechanics
             [mechanic]="cardData.noButtonMechanic"
+            [disabled]="!tokenValid()"
             (responded)="onResponse($event)" />
         </div>
       </div>

@@ -7,6 +7,11 @@
   position: relative;
   overflow: visible;
   padding: 1rem 1rem 1.25rem;
+
+  &.disabled {
+    opacity: 0.6;
+    pointer-events: none;
+  }
 }
 
 .buttons-area {

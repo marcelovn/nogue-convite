@@ -26,6 +26,7 @@ export class RsvpDashboard implements OnInit, OnDestroy {
   statsMap = signal<Map<string, RSVPStats>>(new Map());
   linkCopied = signal<string | null>(null);
   confirmDeleteId = signal<string | null>(null);
+  isLoading = signal(true);
   
   private subscriptions: Subscription[] = [];
 
@@ -42,6 +43,7 @@ export class RsvpDashboard implements OnInit, OnDestroy {
     const cardsSub = this.cardService.cards$.subscribe(cards => {
       this.cards.set(cards);
       this.updateStatsMap();
+      this.isLoading.set(false);
     });
     this.subscriptions.push(cardsSub);
   }

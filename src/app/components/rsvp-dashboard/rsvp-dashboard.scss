@@ -288,3 +288,11 @@
     }
   }
 }
+
+/* ===== Skeleton Card ===== */
+.skeleton-card {
+  .card-actions {
+    display: flex;
+    gap: 0.5rem;
+  }
+}

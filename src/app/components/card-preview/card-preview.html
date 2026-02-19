@@ -1,8 +1,17 @@
 <div class="preview-wrapper">
   @if (isLoading()) {
-    <div class="loading-screen">
-      <div class="spinner-large"></div>
-      <p>Carregando seu convite...</p>
+    <div class="invite-card skeleton-invite">
+      <div class="card-content">
+        <div class="skeleton-text-dark" style="width: 60%; height: 2.4rem; margin: 0 auto 2rem"></div>
+        <div class="skeleton-text-dark" style="width: 80%; margin: 0 auto 0.8rem"></div>
+        <div class="skeleton-text-dark" style="width: 65%; margin: 0 auto 0.8rem"></div>
+        <div class="skeleton-text-dark" style="width: 50%; margin: 0 auto 2rem"></div>
+        <div class="skeleton-text-dark" style="width: 40%; margin: 0 auto 3rem"></div>
+        <div style="display: flex; gap: 1.5rem; justify-content: center;">
+          <div class="skeleton-dark" style="width: 120px; height: 50px; border-radius: 50px"></div>
+          <div class="skeleton-dark" style="width: 100px; height: 50px; border-radius: 50px"></div>
+        </div>
+      </div>
     </div>
   } @else if (card(); as cardData) {
     <div class="invite-card"

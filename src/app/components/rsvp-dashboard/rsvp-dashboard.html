@@ -12,16 +12,29 @@
 <div class="dashboard-container animate-fade-in">
   <!-- Perfil -->
   <section class="profile-section">
-    <div class="profile-card card-base">
-      <div class="profile-header">
-        <div class="profile-info">
-          <h2>Olá, {{ getUserName() }}</h2>
-          <p>{{ authService.currentUser()?.email }}</p>
+    @if (isLoading()) {
+      <div class="profile-card card-base">
+        <div class="profile-header">
+          <div class="profile-info">
+            <div class="skeleton-text-lg" style="width: 55%; margin-bottom: 0.4rem"></div>
+            <div class="skeleton-text-sm" style="width: 40%"></div>
+          </div>
+          <div class="skeleton-btn" style="width: 70px"></div>
+          <div class="skeleton-btn" style="width: 50px"></div>
         </div>
-        <span class="profile-badge">{{ cards().length }} {{ cards().length === 1 ? 'convite' : 'convites' }}</span>
-        <button class="btn btn-danger" (click)="logout()">Sair</button>
       </div>
-    </div>
+    } @else {
+      <div class="profile-card card-base">
+        <div class="profile-header">
+          <div class="profile-info">
+            <h2>Olá, {{ getUserName() }}</h2>
+            <p>{{ authService.currentUser()?.email }}</p>
+          </div>
+          <span class="profile-badge">{{ cards().length }} {{ cards().length === 1 ? 'convite' : 'convites' }}</span>
+          <button class="btn btn-danger" (click)="logout()">Sair</button>
+        </div>
+      </div>
+    }
   </section>
 
   <!-- Convites -->
@@ -32,7 +45,34 @@
     <button class="btn btn-primary" (click)="createNew()">Novo convite</button>
   </header>
 
-  @if (cards().length === 0) {
+  @if (isLoading()) {
+    <!-- Skeleton Cards -->
+    <div class="cards-grid">
+      @for (i of [1, 2, 3]; track i) {
+        <div class="dashboard-card card-base skeleton-card">
+          <div class="card-header">
+            <div class="skeleton-text-lg" style="width: 65%"></div>
+            <div class="skeleton-text-sm" style="width: 40%; margin-top: 0.5rem"></div>
+          </div>
+          <div class="card-info" style="margin-top: 1rem">
+            <div class="skeleton-text" style="width: 50%"></div>
+          </div>
+          <div class="stats-bar" style="margin-top: 1rem">
+            <div style="text-align: center">
+              <div class="skeleton-text-lg" style="width: 30px; margin: 0 auto 0.3rem"></div>
+              <div class="skeleton-text-sm" style="width: 80px; margin: 0 auto"></div>
+            </div>
+          </div>
+          <div class="card-actions" style="margin-top: 1rem">
+            <div class="skeleton-btn" style="width: 45px"></div>
+            <div class="skeleton-btn" style="width: 75px"></div>
+            <div class="skeleton-btn" style="width: 45px"></div>
+            <div class="skeleton-btn" style="width: 60px"></div>
+          </div>
+        </div>
+      }
+    </div>
+  } @else if (cards().length === 0) {
     <div class="empty-state card-base">
       <span class="empty-icon">📫</span>
       <h2>Nenhum convite criado</h2>

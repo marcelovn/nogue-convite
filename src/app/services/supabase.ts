@@ -24,7 +24,7 @@ export class SupabaseService {
     const appOrigin = typeof window !== 'undefined'
       ? window.location.origin
       : environment.appUrl;
-    const emailRedirectTo = appOrigin ? `${appOrigin}/auth/callback` : undefined;
+    const emailRedirectTo = appOrigin ? `${appOrigin}/login` : undefined;
 
     const { data, error } = await this.supabase.auth.signUp({
       email,
@@ -61,7 +61,7 @@ export class SupabaseService {
     const appOrigin = typeof window !== 'undefined'
       ? window.location.origin
       : environment.appUrl;
-    const emailRedirectTo = appOrigin ? `${appOrigin}/auth/callback` : undefined;
+    const emailRedirectTo = appOrigin ? `${appOrigin}/login` : undefined;
 
     return this.supabase.auth.resend({
       type: 'signup',

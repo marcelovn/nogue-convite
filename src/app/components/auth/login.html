@@ -121,66 +121,60 @@
     <div class="auth-card">
       <h2 class="card-title">Entrar</h2>
 
-      @if (isProcessing()) {
-        <div style="display: flex; align-items: center; justify-content: center; flex-direction: column; gap: 20px; padding: 40px 20px;">
-          <div style="width: 50px; height: 50px; border: 3px solid #e5e7eb; border-top: 3px solid #2563eb; border-radius: 50%; animation: spin 1s linear infinite;"></div>
-          <div style="text-align: center; color: #4b5563; font-size: 16px;">{{ message() }}</div>
-        </div>
-      } @else {
-        <form [formGroup]="loginForm" (ngSubmit)="onLogin()">
-          <div class="form-group">
-            <label for="email">Email</label>
-            <input
-              type="email"
-              id="email"
-              formControlName="email"
-              class="form-input"
-              placeholder="seu@email.com"
-            />
-            @if (loginForm.get('email')?.invalid && loginForm.get('email')?.touched) {
-              <span class="error">Email inválido</span>
-            }
-          </div>
-
-          <div class="form-group">
-            <label for="password">Senha</label>
-            <input
-              type="password"
-              id="password"
-              formControlName="password"
-              class="form-input"
-              placeholder="Mínimo 6 caracteres"
-            />
-            @if (loginForm.get('password')?.invalid && loginForm.get('password')?.touched) {
-              <span class="error">Senha é obrigatória</span>
-            }
-          </div>
-
-          @if (error()) {
-            <div class="error-message">{{ error() }}</div>
+      <form [formGroup]="loginForm" (ngSubmit)="onLogin()">
+        <div class="form-group">
+          <label for="email">Email</label>
+          <input
+            type="email"
+            id="email"
+            formControlName="email"
+            class="form-input"
+            placeholder="seu@email.com"
+          />
+          @if (loginForm.get('email')?.invalid && loginForm.get('email')?.touched) {
+            <span class="error">Email inválido</span>
           }
-
-          <button
-            type="submit"
-            class="btn btn-primary"
-            [disabled]="!loginForm.valid || authService.isLoading()"
-          >
-            @if (authService.isLoading()) {
-              <span class="spinner-small"></span> Entrando...
-            } @else {
-              Entrar
-            }
-          </button>
-        </form>
-
-        <div class="divider-section">
-          <span class="divider-text">ou</span>
         </div>
 
-        <p class="auth-footer-link">
-          Não tem conta? <a routerLink="/register">Criar conta</a>
-        </p>
-      }
+        <div class="form-group">
+          <label for="password">Senha</label>
+          <input
+            type="password"
+            id="password"
+            formControlName="password"
+            class="form-input"
+            placeholder="Mínimo 6 caracteres"
+          />
+          @if (loginForm.get('password')?.invalid && loginForm.get('password')?.touched) {
+            <span class="error">Senha é obrigatória</span>
+          }
+        </div>
+
+        @if (error()) {
+          <div class="error-message">{{ error() }}</div>
+        }
+
+        <button
+          type="submit"
+          class="btn btn-primary"
+          [disabled]="!loginForm.valid || authService.isLoading()"
+        >
+          @if (authService.isLoading()) {
+            <span class="spinner-small"></span> Entrando...
+          } @else {
+            Entrar
+          }
+        </button>
+      </form>
+
+      <div class="divider-section">
+        <span class="divider-text">ou</span>
+      </div>
+
+      <p class="auth-footer-link">
+        Não tem conta? <a routerLink="/register">Criar conta</a>
+      </p>
+    </div>
 
     <p class="footer-message">Compartilhe momentos especiais</p>
   </div>

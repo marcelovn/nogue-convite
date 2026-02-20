@@ -21,9 +21,15 @@ export class SupabaseService {
 
   // Autenticação
   async signUp(email: string, password: string, displayName: string) {
+    const emailRedirectTo = environment.appUrl ||
+      (typeof window !== 'undefined' ? window.location.origin : undefined);
+
     const { data, error } = await this.supabase.auth.signUp({
       email,
-      password
+      password,
+      options: {
+        emailRedirectTo
+      }
     });
 
     if (!error && data.user) {

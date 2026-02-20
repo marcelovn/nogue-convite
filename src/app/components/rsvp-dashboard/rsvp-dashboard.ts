@@ -70,7 +70,7 @@ export class RsvpDashboard implements OnInit, OnDestroy {
 
   getUserName(): string {
     const user = this.authService.currentUser();
-    return user?.email?.split('@')[0] || 'Usuário';
+    return this.authService.displayName() || user?.email?.split('@')[0] || 'Usuário';
   }
 
   viewCard(cardId: string): void {

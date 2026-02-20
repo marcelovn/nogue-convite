@@ -57,6 +57,14 @@ export class SupabaseService {
     return data.user;
   }
 
+  async getUserProfile(userId: string) {
+    return this.supabase
+      .from('users')
+      .select('display_name')
+      .eq('id', userId)
+      .maybeSingle();
+  }
+
   async resendSignupConfirmation(email: string) {
     const appOrigin = typeof window !== 'undefined'
       ? window.location.origin

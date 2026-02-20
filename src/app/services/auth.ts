@@ -7,6 +7,7 @@ import { Router } from '@angular/router';
 })
 export class AuthService {
   currentUser = signal<any>(null);
+  displayName = signal<string | null>(null);
   isLoading = signal(false);
   isAuthenticated = signal(false);
 
@@ -23,6 +24,9 @@ export class AuthService {
       if (user) {
         this.currentUser.set(user);
         this.isAuthenticated.set(true);
+        this.loadDisplayName(user.id);
+      } else {
+        this.displayName.set(null);
       }
     });
 
@@ -30,7 +34,22 @@ export class AuthService {
     this.supabaseService.onAuthStateChange((user) => {
       this.currentUser.set(user);
       this.isAuthenticated.set(!!user);
+      if (user) {
+        this.loadDisplayName(user.id);
+      } else {
+        this.displayName.set(null);
+      }
     });
+  }
+
+  private async loadDisplayName(userId: string) {
+    const { data, error } = await this.supabaseService.getUserProfile(userId);
+    if (error) {
+      this.displayName.set(null);
+      return;
+    }
+
+    this.displayName.set(data?.display_name ?? null);
   }
 
   async register(email: string, password: string, displayName: string) {

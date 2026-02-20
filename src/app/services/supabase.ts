@@ -21,8 +21,10 @@ export class SupabaseService {
 
   // Autenticação
   async signUp(email: string, password: string, displayName: string) {
-    const emailRedirectTo = environment.appUrl ||
-      (typeof window !== 'undefined' ? window.location.origin : undefined);
+    const appOrigin = typeof window !== 'undefined'
+      ? window.location.origin
+      : environment.appUrl;
+    const emailRedirectTo = appOrigin ? `${appOrigin}/login` : undefined;
 
     const { data, error } = await this.supabase.auth.signUp({
       email,

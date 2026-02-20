@@ -44,7 +44,7 @@ export class RegisterComponent {
     const result = await this.authService.register(email, password, displayName);
     
     if (result.error) {
-      this.error.set(result.error.message || 'Erro ao criar conta');
+      this.error.set(this.authService.getAuthErrorMessage(result.error, 'register'));
     }
   }
 }

@@ -68,4 +68,36 @@ export class AuthService {
       this.isLoading.set(false);
     }
   }
+
+  getAuthErrorMessage(error: { message?: string } | null | undefined, action: 'login' | 'register'): string {
+    const rawMessage = error?.message?.trim();
+
+    if (!rawMessage) {
+      return action === 'login' ? 'Erro ao fazer login' : 'Erro ao criar conta';
+    }
+
+    const message = rawMessage.toLowerCase();
+
+    if (message.includes('invalid login credentials')) {
+      return 'E-mail ou senha inválidos';
+    }
+
+    if (message.includes('email not confirmed')) {
+      return 'E-mail ainda não confirmado. Verifique sua caixa de entrada.';
+    }
+
+    if (message.includes('user already registered')) {
+      return 'Este e-mail já está cadastrado';
+    }
+
+    if (message.includes('password should be at least')) {
+      return 'A senha deve ter pelo menos 6 caracteres';
+    }
+
+    if (message.includes('unable to validate email address')) {
+      return 'E-mail inválido';
+    }
+
+    return action === 'login' ? 'Erro ao fazer login' : 'Erro ao criar conta';
+  }
 }

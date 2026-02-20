@@ -33,7 +33,7 @@ export class LoginComponent {
     const result = await this.authService.login(email, password);
     
     if (result.error) {
-      this.error.set(result.error.message || 'Erro ao fazer login');
+      this.error.set(this.authService.getAuthErrorMessage(result.error, 'login'));
     }
   }
 }

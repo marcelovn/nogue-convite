@@ -24,7 +24,7 @@ export class SupabaseService {
     const appOrigin = typeof window !== 'undefined'
       ? window.location.origin
       : environment.appUrl;
-    const emailRedirectTo = appOrigin ? `${appOrigin}/login` : undefined;
+    const emailRedirectTo = appOrigin ? `${appOrigin}/auth/callback` : undefined;
 
     const { data, error } = await this.supabase.auth.signUp({
       email,
@@ -55,6 +55,21 @@ export class SupabaseService {
   async getCurrentUser() {
     const { data } = await this.supabase.auth.getUser();
     return data.user;
+  }
+
+  async resendSignupConfirmation(email: string) {
+    const appOrigin = typeof window !== 'undefined'
+      ? window.location.origin
+      : environment.appUrl;
+    const emailRedirectTo = appOrigin ? `${appOrigin}/auth/callback` : undefined;
+
+    return this.supabase.auth.resend({
+      type: 'signup',
+      email,
+      options: {
+        emailRedirectTo
+      }
+    });
   }
 
   onAuthStateChange(callback: (user: any) => void) {

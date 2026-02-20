@@ -33,6 +33,15 @@ export class LoginComponent {
     const result = await this.authService.login(email, password);
     
     if (result.error) {
+      if (this.authService.isEmailNotConfirmedError(result.error)) {
+        const resendResult = await this.authService.resendSignupConfirmation(email);
+
+        if (!resendResult.error) {
+          this.error.set('Seu e-mail ainda não foi confirmado. Enviamos um novo link de confirmação. Verifique sua caixa de entrada e spam.');
+          return;
+        }
+      }
+
       this.error.set(this.authService.getAuthErrorMessage(result.error, 'login'));
     }
   }

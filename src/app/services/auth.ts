@@ -100,4 +100,13 @@ export class AuthService {
 
     return action === 'login' ? 'Erro ao fazer login' : 'Erro ao criar conta';
   }
+
+  async resendSignupConfirmation(email: string) {
+    return this.supabaseService.resendSignupConfirmation(email);
+  }
+
+  isEmailNotConfirmedError(error: { message?: string } | null | undefined): boolean {
+    const message = error?.message?.toLowerCase() || '';
+    return message.includes('email not confirmed');
+  }
 }

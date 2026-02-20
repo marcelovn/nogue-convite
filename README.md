@@ -1,6 +1,6 @@
 # Nogue-Convites - Interactive Invitation Cards
 
-Plataforma SaaS para criação de convites digitais interativos e gamificados. Inspirada em card.evara.my, com foco em aumentar a taxa de confirmação de presença (RSVP) através de mecânicas divertidas.
+Plataforma SaaS para criação de convites digitais interativos e gamificados. Inspirada em card.evara.my, com foco em aumentar a taxa de confirmação de presença (RSVP) através de mecânicas divertidas
 
 ## Recursos Principais
 

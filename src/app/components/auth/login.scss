@@ -407,6 +407,12 @@
   margin-top: 20px;
 }
 
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
 @media (max-width: 767px) {
   .auth-wrapper { padding: 16px; align-items: flex-start; padding-top: 48px; }
   .page-title { font-size: 22px; color: #1e3a5f; }

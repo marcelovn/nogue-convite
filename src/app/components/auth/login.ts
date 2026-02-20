@@ -1,6 +1,6 @@
 import { Component, signal, OnInit, effect } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
-import { RouterLink, Router } from '@angular/router';
+import { RouterLink, Router, ActivatedRoute } from '@angular/router';
 import { AuthService } from '../../services/auth';
 import { SupabaseService } from '../../services/supabase';
 
@@ -22,7 +22,8 @@ export class LoginComponent implements OnInit {
     private fb: FormBuilder,
     public authService: AuthService,
     private supabaseService: SupabaseService,
-    private router: Router
+    private router: Router,
+    private route: ActivatedRoute
   ) {
     this.loginForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
@@ -37,42 +38,76 @@ export class LoginComponent implements OnInit {
   private async processConfirmationLink() {
     const hash = window.location.hash;
     
-    // Verificar se há token de confirmação no hash
+    // Verificar se há token de confirmação no hash (antiga forma com access_token)
     if (hash && hash.includes('access_token') && hash.includes('type=signup')) {
-      this.hasConfirmationHash.set(true);
-      this.isProcessing.set(true);
-      this.message.set('Processando confirmação de email...');
-      
-      try {
-        // Aguardar mais tempo para o Supabase processar o hash interno
-        await new Promise(resolve => setTimeout(resolve, 1500));
+      await this.handleHashConfirmation();
+      return;
+    }
 
-        const client = this.supabaseService.getClient();
-        
-        // Usar getUser ao invés de getSession para ter mais precisão
-        const { data: userData, error: userError } = await client.auth.getUser();
+    // Verificar se há token_hash nos query params (nova forma do template atualizado)
+    this.route.queryParams.subscribe(async (params) => {
+      if (params['token_hash'] && params['type'] === 'signup') {
+        this.hasConfirmationHash.set(true);
+        this.isProcessing.set(true);
+        this.message.set('Processando confirmação de email...');
 
-        if (userData.user) {
-          // Email foi confirmado e usuário está autenticado
-          this.message.set('Email confirmado com sucesso! Redirecionando...');
-          // Limpar hash imediatamente
-          window.history.replaceState({}, document.title, window.location.pathname);
-          
+        try {
+          // Aguardar tempo para o Supabase processar
           await new Promise(resolve => setTimeout(resolve, 1500));
-          this.router.navigate(['/dashboard']);
-          return;
-        }
 
-        // Se chegou aqui, possivelmente o link expirou ou não processou
-        this.error.set('Link de confirmação expirado ou inválido. Faça login para receber um novo link.');
-      } catch (err) {
-        console.error('Erro ao processar confirmação:', err);
-        this.error.set('Erro ao processar confirmação. Por favor, faça login.');
-      } finally {
-        this.isProcessing.set(false);
-        // Limpar hash para não ficar na URL
-        window.history.replaceState({}, document.title, window.location.pathname);
+          const client = this.supabaseService.getClient();
+          const { data: userData } = await client.auth.getUser();
+
+          if (userData.user) {
+            // Email foi confirmado e usuário está autenticado
+            this.message.set('Email confirmado com sucesso! Redirecionando...');
+            window.history.replaceState({}, document.title, window.location.pathname);
+            
+            await new Promise(resolve => setTimeout(resolve, 1500));
+            this.router.navigate(['/dashboard']);
+            return;
+          }
+
+          // Se chegou aqui, possivelmente o link expirou ou não processou
+          this.error.set('Link de confirmação expirado ou inválido. Faça login para receber um novo link.');
+        } catch (err) {
+          console.error('Erro ao processar confirmação:', err);
+          this.error.set('Erro ao processar confirmação. Por favor, faça login.');
+        } finally {
+          this.isProcessing.set(false);
+          window.history.replaceState({}, document.title, window.location.pathname);
+        }
       }
+    });
+  }
+
+  private async handleHashConfirmation() {
+    this.hasConfirmationHash.set(true);
+    this.isProcessing.set(true);
+    this.message.set('Processando confirmação de email...');
+    
+    try {
+      await new Promise(resolve => setTimeout(resolve, 1500));
+
+      const client = this.supabaseService.getClient();
+      const { data: userData } = await client.auth.getUser();
+
+      if (userData.user) {
+        this.message.set('Email confirmado com sucesso! Redirecionando...');
+        window.history.replaceState({}, document.title, window.location.pathname);
+        
+        await new Promise(resolve => setTimeout(resolve, 1500));
+        this.router.navigate(['/dashboard']);
+        return;
+      }
+
+      this.error.set('Link de confirmação expirado ou inválido. Faça login para receber um novo link.');
+    } catch (err) {
+      console.error('Erro ao processar confirmação:', err);
+      this.error.set('Erro ao processar confirmação. Por favor, faça login.');
+    } finally {
+      this.isProcessing.set(false);
+      window.history.replaceState({}, document.title, window.location.pathname);
     }
   }
 

@@ -96,7 +96,7 @@
       @for (card of cards(); track card.id) {
         @let stats = getStats(card.id!);
         <div class="dashboard-card card-base">
-          <div class="card-header">
+          <div class="card-header clickable" (click)="editCard(card.id!)">
             <h3>{{ card.title }}</h3>
             <span class="card-date">
               {{ card.createdAt ? 'Criado em ' + (card.createdAt | date:'dd/MM/yyyy') : '' }}
@@ -115,6 +115,7 @@
           </div>
 
           <div class="card-actions">
+            <button class="btn btn-primary btn-edit" (click)="editCard(card.id!)">✏️ Editar</button>
             <button class="btn btn-ghost" (click)="viewCard(card.id!)">Ver</button>
             <button class="btn btn-ghost btn-whatsapp-sm" (click)="shareWhatsApp(card)">WhatsApp</button>
             <button class="btn btn-ghost" (click)="copyLink(card.id!)">

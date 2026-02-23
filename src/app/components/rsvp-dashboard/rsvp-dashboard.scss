@@ -154,11 +154,26 @@
 .card-header {
   margin-bottom: 0.75rem;
 
+  &.clickable {
+    cursor: pointer;
+    border-radius: 8px;
+    padding: 0.25rem 0.25rem 0;
+    margin: -0.25rem -0.25rem 0.75rem;
+    transition: background 0.15s;
+
+    &:hover {
+      background: #f5f8ff;
+
+      h3 { color: var(--accent, #1E40AF); }
+    }
+  }
+
   h3 {
     font-size: 1rem;
     font-weight: 600;
     color: #1a1a1a;
     margin-bottom: 0.15rem;
+    transition: color 0.15s;
   }
 
   .card-date {
@@ -223,6 +238,17 @@
     min-width: 60px;
     font-size: 0.75rem;
     padding: 0.45rem 0.6rem !important;
+  }
+
+  .btn-edit {
+    background: var(--accent, #1E40AF);
+    color: #fff;
+    font-weight: 600;
+    flex: 2 1 auto;
+
+    &:hover {
+      background: #1e3a8a;
+    }
   }
 }
 

@@ -1,9 +1,12 @@
 @if (showNavigation()) {
   <nav class="main-nav">
     <div class="nav-container">
+      <div class="nav-brand">
+        <img ngSrc="/assets/logo.svg" width="28" height="28" alt="" class="brand-logo" />
         <span class="brand-text">Convitei</span>
+      </div>
       <div class="nav-links">
-        <a routerLink="/editor" routerLinkActive="active">Criar</a>
+        <a routerLink="/editor" routerLinkActive="active">Criar Grátis</a>
         <a routerLink="/dashboard" routerLinkActive="active">Painel</a>
       </div>
     </div>

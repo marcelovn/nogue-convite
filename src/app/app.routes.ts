@@ -2,6 +2,7 @@ import { Routes } from '@angular/router';
 import { CardEditor } from './components/card-editor/card-editor';
 import { CardPreview } from './components/card-preview/card-preview';
 import { RsvpDashboard } from './components/rsvp-dashboard/rsvp-dashboard';
+import { InviteManager } from './components/invite-manager/invite-manager';
 import { LoginComponent } from './components/auth/login';
 import { RegisterComponent } from './components/auth/register';
 import { authGuard } from './guards/auth.guard';
@@ -12,6 +13,7 @@ export const routes: Routes = [
   { path: 'register', component: RegisterComponent },
   { path: 'editor', component: CardEditor, canActivate: [authGuard] },
   { path: 'preview', component: CardPreview },
+  { path: 'manage/:id', component: InviteManager, canActivate: [authGuard] },
   { path: 'invite/:id/:token', component: CardPreview },  // Específica ANTES
   { path: 'invite/:id', component: CardPreview },        // Genérica DEPOIS
   { path: 'dashboard', component: RsvpDashboard, canActivate: [authGuard] },

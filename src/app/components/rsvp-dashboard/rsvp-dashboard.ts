@@ -1,4 +1,4 @@
-import { Component, inject, signal, OnInit, OnDestroy, effect } from '@angular/core';
+import { Component, inject, signal, OnInit, OnDestroy, effect, HostListener } from '@angular/core';
 import { Router } from '@angular/router';
 import { DatePipe, CommonModule } from '@angular/common';
 import { CardService } from '../../services/card';
@@ -28,6 +28,7 @@ export class RsvpDashboard implements OnInit, OnDestroy {
   confirmDeleteId = signal<string | null>(null);
   confirmClearId = signal<string | null>(null);
   isLoading = signal(true);
+  openMenuId = signal<string | null>(null);
   
   private subscriptions: Subscription[] = [];
 
@@ -47,6 +48,14 @@ export class RsvpDashboard implements OnInit, OnDestroy {
       this.isLoading.set(false);
     });
     this.subscriptions.push(cardsSub);
+  }
+
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(event: MouseEvent): void {
+    const target = event.target as HTMLElement;
+    if (!target.closest('.card-menu-btn') && !target.closest('.card-dropdown-menu')) {
+      this.closeMenu();
+    }
   }
 
   ngOnDestroy(): void {
@@ -83,6 +92,15 @@ export class RsvpDashboard implements OnInit, OnDestroy {
 
   manageGuests(cardId: string): void {
     this.router.navigate(['/manage', cardId], { queryParams: { section: 'guests' } });
+  }
+
+  toggleMenu(cardId: string, event: Event): void {
+    event.stopPropagation();
+    this.openMenuId.set(this.openMenuId() === cardId ? null : cardId);
+  }
+
+  closeMenu(): void {
+    this.openMenuId.set(null);
   }
 
   deleteCard(cardId: string): void {

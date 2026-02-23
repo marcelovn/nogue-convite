@@ -99,6 +99,27 @@
       @for (card of cards(); track card.id) {
         @let stats = getStats(card.id!);
         <div class="dashboard-card card-base">
+          <button class="card-menu-btn" (click)="toggleMenu(card.id!, $event)" title="Mais opções">
+            ⋮
+          </button>
+          
+          @if (openMenuId() === card.id) {
+            <div class="card-dropdown-menu">
+              <button class="dropdown-item" (click)="copyLink(card.id!); closeMenu()">
+                <span class="dropdown-icon">🔗</span>
+                {{ linkCopied() === card.id ? '✓ Link copiado' : 'Copiar link' }}
+              </button>
+              <button class="dropdown-item dropdown-warning" (click)="clearResponses(card.id!); closeMenu()">
+                <span class="dropdown-icon">↺</span>
+                Zerar respostas
+              </button>
+              <button class="dropdown-item dropdown-danger" (click)="deleteCard(card.id!); closeMenu()">
+                <span class="dropdown-icon">🗑️</span>
+                Excluir convite
+              </button>
+            </div>
+          }
+          
           <div class="card-header clickable" (click)="editCard(card.id!)">
             <h3>{{ card.title }}</h3>
             <span class="card-date">
@@ -124,11 +145,6 @@
             </button>
             <button class="btn btn-ghost" (click)="viewCard(card.id!)">Ver</button>
             <button class="btn btn-ghost btn-whatsapp-sm" (click)="shareWhatsApp(card)">WhatsApp</button>
-            <button class="btn btn-ghost" (click)="copyLink(card.id!)">
-              {{ linkCopied() === card.id ? '✓ Copiado' : 'Link' }}
-            </button>
-            <button class="btn btn-ghost btn-warning" (click)="clearResponses(card.id!)">Zerar</button>
-            <button class="btn btn-ghost btn-danger" (click)="deleteCard(card.id!)">Excluir</button>
           </div>
         </div>
       }

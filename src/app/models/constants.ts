@@ -1,4 +1,4 @@
-import { CardTheme, ColorScheme } from './card.model';
+import { CardTheme, ColorScheme, ChallengeGameOption } from './card.model';
 
 export const THEMES: CardTheme[] = [
   {
@@ -101,4 +101,37 @@ export const NO_BUTTON_MECHANICS = [
   { id: 'growing-yes', label: 'Sim Cresce', description: '📈 Botão "Sim" cresce gigante' },
   { id: 'multiplying-yes', label: 'Sim Multiplica', description: '✨ Vários "Sim" aparecem na tela' },
   { id: 'shrinking-no', label: 'Não Encolhe', description: '🔍 Botão "Não" fica minúsculo' }
+];
+
+export const CHALLENGE_GAME_OPTIONS: ChallengeGameOption[] = [
+  {
+    id: 'quick-math',
+    name: 'Conta Rápida',
+    description: 'Resolva uma soma simples',
+  },
+  {
+    id: 'emoji-count',
+    name: 'Contagem de Emoji',
+    description: 'Conte quantos emojis apareceram',
+  },
+  {
+    id: 'word-scramble',
+    name: 'Palavra Embaralhada',
+    description: 'Descubra a palavra correta',
+  },
+  {
+    id: 'memory-number',
+    name: 'Memória Numérica',
+    description: 'Memorize um número por alguns segundos',
+  },
+  {
+    id: 'bigger-number',
+    name: 'Maior Número',
+    description: 'Escolha o maior entre dois valores',
+  },
+  {
+    id: 'true-false',
+    name: 'Verdadeiro ou Falso',
+    description: 'Responda uma afirmação rápida',
+  },
 ];

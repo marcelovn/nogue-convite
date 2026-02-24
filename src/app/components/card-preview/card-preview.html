@@ -40,13 +40,73 @@
         </div>
       }
 
+      @if (isChallengeLocked()) {
+        <div class="challenge-overlay" [style.color]="schemePrimary()">
+          <div class="challenge-lock challenge-lock-full" [style.border-color]="schemePrimary() + '55'">
+            <h3 [style.color]="schemePrimary()">🔒 Desbloqueie sua resposta</h3>
+            <p>Complete o desafio para liberar o convite.</p>
+
+            <div class="challenge-list">
+              @if (requiredChallengeGame(); as gameId) {
+                <button
+                  class="challenge-btn"
+                  [class.completed]="isChallengeCompleted(gameId)"
+                  [disabled]="isChallengeCompleted(gameId)"
+                  (click)="startChallenge(gameId)">
+                  @if (isChallengeCompleted(gameId)) {
+                    ✅ {{ getChallengeLabel(gameId) }}
+                  } @else {
+                    🎯 {{ getChallengeLabel(gameId) }}
+                  }
+                </button>
+              }
+            </div>
+
+            @if (activeChallenge()) {
+              <div class="challenge-play">
+                <p class="challenge-prompt">{{ challengePrompt() }}</p>
+
+                @if (challengeDisplay() && (activeChallenge() !== 'memory-number' || isMemoryHintVisible())) {
+                  <p class="challenge-display">{{ challengeDisplay() }}</p>
+                }
+
+                @if (activeChallenge() === 'bigger-number') {
+                  <div class="challenge-actions">
+                    @for (option of challengeDisplay().split(' | '); track option) {
+                      <button class="btn btn-secondary" (click)="answerBiggerNumber(option)">{{ option }}</button>
+                    }
+                  </div>
+                } @else if (activeChallenge() === 'true-false') {
+                  <div class="challenge-actions">
+                    <button class="btn btn-secondary" (click)="answerTrueFalse(true)">Verdadeiro</button>
+                    <button class="btn btn-secondary" (click)="answerTrueFalse(false)">Falso</button>
+                  </div>
+                } @else {
+                  <div class="challenge-answer">
+                    <input
+                      type="text"
+                      placeholder="Digite sua resposta"
+                      [ngModel]="challengeInput()"
+                      (ngModelChange)="challengeInput.set($event)" />
+                    <button class="btn btn-secondary" (click)="submitChallengeAnswer(challengeInput())">Validar</button>
+                  </div>
+                }
+              </div>
+            }
+
+            @if (challengeFeedback()) {
+              <p class="challenge-feedback">{{ challengeFeedback() }}</p>
+            }
+          </div>
+        </div>
+      }
+
       <div class="card-content">
         <h1 class="card-title" [style.color]="schemePrimary()">{{ cardData.title }}</h1>
 
-        @if (!tokenValid()) {
+        @if (!tokenValid() && !isViewMode()) {
           <div class="error-message" [style.background-color]="schemePrimary() + '20'" [style.color]="schemePrimary()">
             <strong>⚠️ {{ errorMessage() || 'Este convite não pode mais receber confirmações' }}</strong>
-            <p>O convite já foi confirmado ou expirou.</p>
           </div>
         }
 
@@ -73,11 +133,12 @@
               Você está visualizando este convite. As respostas não serão registradas.
             </div>
           }
+
           <p class="rsvp-title" [style.color]="schemePrimary()">Você confirma presença?</p>
 
           <app-no-button-mechanics
             [mechanic]="cardData.noButtonMechanic"
-            [disabled]="!tokenValid()"
+            [disabled]="!tokenValid() || isChallengeLocked() || requiresIndividualToken()"
             (responded)="onResponse($event)" />
         </div>
       </div>

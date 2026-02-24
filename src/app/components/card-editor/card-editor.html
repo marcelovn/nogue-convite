@@ -119,6 +119,39 @@
         }
       </div>
 
+      <div class="challenge-block">
+        <div class="challenge-header">
+          <h3 class="section-title">Desafios para desbloquear RSVP</h3>
+          <button class="btn btn-secondary btn-sm" (click)="toggleChallengeMode()">
+            {{ challengeModeEnabled() ? 'Desativar' : 'Ativar' }}
+          </button>
+        </div>
+        <p class="section-subtitle">
+          Quando ativado, o convidado precisa vencer 1 jogo para liberar os botões de resposta.
+        </p>
+
+        @if (challengeModeEnabled()) {
+          <p class="challenge-count" [class.invalid]="!selectedChallengeGame()">
+            @if (selectedChallengeGame()) {
+              Jogo selecionado: 1/1
+            } @else {
+              Selecione 1 jogo
+            }
+          </p>
+          <div class="challenge-grid">
+            @for (game of challengeOptions; track game.id) {
+              <button
+                class="challenge-card"
+                [class.selected]="selectedChallengeGame() === game.id"
+                (click)="toggleChallengeGame(game.id)">
+                <span class="challenge-name">{{ game.name }}</span>
+                <span class="challenge-desc">{{ game.description }}</span>
+              </button>
+            }
+          </div>
+        }
+      </div>
+
       <div class="step-actions">
         <button class="btn btn-secondary" (click)="prevStep()" [disabled]="isLoading()">← Voltar</button>
         <button class="btn btn-secondary" (click)="previewCard()" [disabled]="isLoading()">Preview</button>

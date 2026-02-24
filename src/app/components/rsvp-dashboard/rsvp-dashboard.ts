@@ -140,10 +140,15 @@ export class RsvpDashboard implements OnInit, OnDestroy {
   }
 
   copyLink(cardId: string): void {
-    // Copia o link imediatamente no clique (antes de qualquer chamada async)
-    // para garantir que o navegador reconheça o gesto do usuário
-    const link = `${window.location.origin}/invite/${cardId}`;
-    this.copyToClipboard(link);
+    // Gera um token único para garantir que o link seja de uso único
+    this.inviteTokenService.generateToken(cardId).then(token => {
+      const link = `${window.location.origin}/invite/${cardId}/${token}`;
+      this.copyToClipboard(link);
+    }).catch(() => {
+      // Fallback sem token caso a geração falhe
+      const link = `${window.location.origin}/invite/${cardId}`;
+      this.copyToClipboard(link);
+    });
   }
 
   private copyToClipboard(text: string): void {

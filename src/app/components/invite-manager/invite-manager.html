@@ -139,6 +139,44 @@
           }
         </div>
 
+        <!-- Seção: Desafios -->
+        <div class="accordion-item" [class.open]="activeSection() === 'challenges'">
+          <button class="accordion-header" (click)="activeSection.set('challenges')">
+            <span class="acc-icon">🧩</span>
+            <span class="acc-title">Desafios para desbloqueio</span>
+            <span class="acc-arrow">{{ activeSection() === 'challenges' ? '▲' : '▼' }}</span>
+          </button>
+          @if (activeSection() === 'challenges') {
+            <div class="accordion-body">
+              <p class="section-hint">Ative para exigir 1 jogo antes de permitir RSVP.</p>
+              <button class="btn btn-ghost" (click)="toggleChallengeMode()">
+                {{ challengeModeEnabled() ? 'Desativar modo desafio' : 'Ativar modo desafio' }}
+              </button>
+
+              @if (challengeModeEnabled()) {
+                <p class="challenge-count" [class.invalid]="!selectedChallengeGame()">
+                  @if (selectedChallengeGame()) {
+                    Jogo selecionado: 1/1
+                  } @else {
+                    Selecione 1 jogo
+                  }
+                </p>
+                <div class="mechanic-grid challenge-grid">
+                  @for (game of challengeOptions; track game.id) {
+                    <button
+                      class="mechanic-card"
+                      [class.selected]="selectedChallengeGame() === game.id"
+                      (click)="toggleChallengeGame(game.id)">
+                      <span class="mechanic-label">{{ game.name }}</span>
+                      <span class="mechanic-desc">{{ game.description }}</span>
+                    </button>
+                  }
+                </div>
+              }
+            </div>
+          }
+        </div>
+
         <!-- Seção: Emoji -->
         <div class="accordion-item" [class.open]="activeSection() === 'emoji'">
           <button class="accordion-header" (click)="activeSection.set('emoji')">

@@ -3,13 +3,13 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { CardService } from '../../services/card';
 import { ThemeService } from '../../services/theme';
-import { Card, CardTheme, ColorScheme } from '../../models/card.model';
-import { THEMES, COLOR_SCHEMES, NO_BUTTON_MECHANICS } from '../../models/constants';
+import { Card, CardTheme, ColorScheme, ChallengeGameId } from '../../models/card.model';
+import { THEMES, COLOR_SCHEMES, NO_BUTTON_MECHANICS, CHALLENGE_GAME_OPTIONS } from '../../models/constants';
 import { ThemeSelector } from '../theme-selector/theme-selector';
 import { ColorScheme as ColorSchemeComponent } from '../color-scheme/color-scheme';
 import { GuestsManager } from '../guests-manager/guests-manager';
 
-type EditSection = 'text' | 'theme' | 'colors' | 'mechanic' | 'emoji' | 'guests';
+type EditSection = 'text' | 'theme' | 'colors' | 'mechanic' | 'challenges' | 'emoji' | 'guests';
 
 @Component({
   selector: 'app-invite-manager',
@@ -35,9 +35,12 @@ export class InviteManager implements OnInit {
   cardTitle = signal('');
   cardMessage = signal('');
   selectedMechanic = signal<Card['noButtonMechanic']>('teleporting');
+  challengeModeEnabled = signal(false);
+  selectedChallengeGame = signal<ChallengeGameId | null>(null);
   selectedEmoji = signal('');
 
   readonly mechanics = NO_BUTTON_MECHANICS;
+  readonly challengeOptions = CHALLENGE_GAME_OPTIONS;
 
   readonly FLOATING_EMOJIS = [
     { emoji: '', label: 'Nenhum' },
@@ -58,6 +61,8 @@ export class InviteManager implements OnInit {
       title: this.cardTitle(),
       message: this.cardMessage(),
       noButtonMechanic: this.selectedMechanic(),
+      challengeModeEnabled: this.challengeModeEnabled(),
+      challengeGame: this.selectedChallengeGame() ?? undefined,
       floatingEmoji: this.selectedEmoji(),
       theme: this.themeService.selectedTheme()?.id ?? base.theme,
       colorScheme: this.themeService.selectedColorScheme()?.id ?? base.colorScheme,
@@ -116,6 +121,8 @@ export class InviteManager implements OnInit {
     this.cardTitle.set(card.title);
     this.cardMessage.set(card.message);
     this.selectedMechanic.set(card.noButtonMechanic);
+    this.challengeModeEnabled.set(card.challengeModeEnabled ?? false);
+    this.selectedChallengeGame.set(card.challengeGame ?? null);
     this.selectedEmoji.set(card.floatingEmoji ?? '');
 
     const theme = THEMES.find(t => t.id === card.theme);
@@ -127,6 +134,22 @@ export class InviteManager implements OnInit {
   onThemeChanged(_theme: CardTheme): void {}
   onSchemeChanged(_scheme: ColorScheme): void {}
 
+  toggleChallengeMode(): void {
+    this.challengeModeEnabled.update(value => !value);
+    if (!this.challengeModeEnabled()) {
+      this.selectedChallengeGame.set(null);
+    }
+  }
+
+  toggleChallengeGame(gameId: ChallengeGameId): void {
+    if (this.selectedChallengeGame() === gameId) {
+      this.selectedChallengeGame.set(null);
+      return;
+    }
+
+    this.selectedChallengeGame.set(gameId);
+  }
+
   toggleSection(section: EditSection): void {
     this.activeSection.set(this.activeSection() === section ? this.activeSection() : section);
   }
@@ -135,6 +158,11 @@ export class InviteManager implements OnInit {
     const card = this.card();
     if (!card?.id) return;
 
+    if (this.challengeModeEnabled() && !this.selectedChallengeGame()) {
+      alert('Selecione 1 jogo para manter o modo desafio ativo.');
+      return;
+    }
+
     try {
       this.isSaving.set(true);
       await this.cardService.updateCard(card.id, {
@@ -142,6 +170,8 @@ export class InviteManager implements OnInit {
         title: this.cardTitle(),
         message: this.cardMessage(),
         noButtonMechanic: this.selectedMechanic(),
+        challengeModeEnabled: this.challengeModeEnabled(),
+        challengeGame: this.selectedChallengeGame() ?? undefined,
         floatingEmoji: this.selectedEmoji(),
         theme: this.themeService.selectedTheme()?.id ?? card.theme,
         colorScheme: this.themeService.selectedColorScheme()?.id ?? card.colorScheme,

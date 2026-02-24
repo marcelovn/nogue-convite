@@ -131,6 +131,70 @@
 .mechanic-label { font-weight: 500; font-size: 0.8rem; color: #1a1a1a; }
 .mechanic-desc { font-size: 0.7rem; color: #6b7280; }
 
+.challenge-block {
+  margin-bottom: 1.5rem;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  padding: 0.9rem;
+  background: #fafafa;
+}
+
+.challenge-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.6rem;
+}
+
+.challenge-count {
+  margin: 0.6rem 0;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #166534;
+
+  &.invalid {
+    color: #b91c1c;
+  }
+}
+
+.challenge-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.7rem;
+}
+
+.challenge-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  text-align: left;
+  background: #fff;
+  border: 2px solid #e5e7eb;
+  border-radius: 10px;
+  padding: 0.7rem;
+  cursor: pointer;
+
+  &:hover {
+    border-color: #9ca3af;
+  }
+
+  &.selected {
+    border-color: #1E40AF;
+    background: #eff6ff;
+  }
+}
+
+.challenge-name {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: #111827;
+}
+
+.challenge-desc {
+  font-size: 0.72rem;
+  color: #6b7280;
+}
+
 .step-actions {
   display: flex;
   justify-content: center;
@@ -245,5 +309,6 @@
 @media (max-width: 480px) {
   .editor-container { padding: 1rem; }
   .mechanic-grid { grid-template-columns: 1fr; }
+  .challenge-grid { grid-template-columns: 1fr; }
   .step-actions .btn { flex: 1 1 calc(50% - 0.25rem); min-width: 0; font-size: 0.8rem; }
 }

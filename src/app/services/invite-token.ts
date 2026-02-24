@@ -79,7 +79,12 @@ export class InviteTokenService {
    * Apenas checa se está expirado ou já foi usado
    * Retorna { isValid: boolean, alreadyUsed: boolean, expired: boolean }
    */
-  async checkTokenStatus(token: string): Promise<{ isValid: boolean; alreadyUsed: boolean; expired: boolean }> {
+  async checkTokenStatus(token: string): Promise<{
+    isValid: boolean;
+    alreadyUsed: boolean;
+    expired: boolean;
+    cardId: string | null;
+  }> {
     const { data, error } = await this.supabaseService.getClient()
       .from('invite_tokens')
       .select('*')
@@ -88,7 +93,7 @@ export class InviteTokenService {
 
     if (error || !data) {
       console.error('Token não encontrado:', error);
-      return { isValid: false, alreadyUsed: false, expired: false };
+      return { isValid: false, alreadyUsed: false, expired: false, cardId: null };
     }
 
     const inviteToken: InviteToken = {
@@ -102,10 +107,11 @@ export class InviteTokenService {
     };
 
     const alreadyUsed = !!inviteToken.usedAt;
-    const expired = new Date() > inviteToken.expiresAt;
+    const expiresAtValid = !Number.isNaN(inviteToken.expiresAt.getTime());
+    const expired = expiresAtValid ? new Date() > inviteToken.expiresAt : false;
     const isValid = !alreadyUsed && !expired;
 
-    return { isValid, alreadyUsed, expired };
+    return { isValid, alreadyUsed, expired, cardId: inviteToken.cardId };
   }
 
   /**

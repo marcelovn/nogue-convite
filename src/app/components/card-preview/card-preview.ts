@@ -8,7 +8,7 @@ import { RsvpService } from '../../services/rsvp';
 import { AuthService } from '../../services/auth';
 import { InviteTokenService } from '../../services/invite-token';
 import { GuestService } from '../../services/guest.service';
-import { Card } from '../../models/card.model';
+import { Card, ChallengeGameId } from '../../models/card.model';
 import { Guest } from '../../models/guest.model';
 import { THEMES, COLOR_SCHEMES } from '../../models/constants';
 
@@ -48,6 +48,16 @@ export class CardPreview implements OnInit {
   tokenValid = signal(true);
   errorMessage = signal('');
   isViewMode = signal(false);
+  challengeModeRequired = signal(false);
+  challengeUnlocked = signal(true);
+  requiredChallengeGame = signal<ChallengeGameId | null>(null);
+  challengeCompleted = signal(false);
+  activeChallenge = signal<ChallengeGameId | null>(null);
+  challengePrompt = signal('');
+  challengeDisplay = signal('');
+  challengeInput = signal('');
+  challengeFeedback = signal('');
+  isMemoryHintVisible = signal(false);
 
   readonly floatingParticles = [
     { id: 0, left: '7%',  delay: '0s',   duration: '7s',   size: '1.8rem' },
@@ -73,6 +83,15 @@ export class CardPreview implements OnInit {
     });
   }
 
+  readonly challengeGameLabels: Record<ChallengeGameId, string> = {
+    'quick-math': 'Conta Rápida',
+    'emoji-count': 'Contagem de Emoji',
+    'word-scramble': 'Palavra Embaralhada',
+    'memory-number': 'Memória Numérica',
+    'bigger-number': 'Maior Número',
+    'true-false': 'Verdadeiro ou Falso',
+  };
+
   ngOnInit(): void {
     const cardId = this.route.snapshot.paramMap.get('id');
     const token = this.route.snapshot.paramMap.get('token');
@@ -88,6 +107,14 @@ export class CardPreview implements OnInit {
       this.inviteToken.set(token);
       this.isLoading.set(true);
       
+      // Guardar na localStorage para bloquear reenvios mesmo antes de a DB confirmar
+      const lsKey = `rsvp_done_${token}`;
+      if (!this.isViewMode() && localStorage.getItem(lsKey)) {
+        this.tokenValid.set(false);
+        this.errorMessage.set('Convite único já utilizado. Este link não pode mais ser usado.');
+        // Ainda carregamos o card para exibir o convite (somente leitura)
+      }
+
       // Tentar buscar convidado por token primeiro
       this.guestService.getGuestByToken(token).then(guest => {
         if (guest) {
@@ -99,12 +126,10 @@ export class CardPreview implements OnInit {
             this.guestService.markAsViewed(guest.id!);
           }
           
-          // Verificar se já confirmou
-          if (guest.status === 'confirmed' || guest.status === 'declined') {
+          // Verificar se já confirmou (DB ou localStorage)
+          if (!this.isViewMode() && (guest.status === 'confirmed' || guest.status === 'declined' || localStorage.getItem(lsKey))) {
             this.tokenValid.set(false);
-            this.errorMessage.set(guest.status === 'confirmed' 
-              ? 'Você já confirmou sua presença!'
-              : 'Você já respondeu a este convite.');
+            this.errorMessage.set('Convite único já utilizado. Este link não pode mais ser usado.');
           }
           
           // Carregar o card
@@ -112,12 +137,22 @@ export class CardPreview implements OnInit {
         } else {
           // Tentar como token de convite (sistema antigo)
           return this.inviteTokenService.checkTokenStatus(token).then(status => {
-            if (status.alreadyUsed) {
-              this.tokenValid.set(false);
-              this.errorMessage.set('Este convite já foi confirmado');
-            } else if (status.expired) {
-              this.tokenValid.set(false);
-              this.errorMessage.set('Este convite expirou');
+            if (!this.isViewMode()) {
+              if (status.alreadyUsed) {
+                this.tokenValid.set(false);
+                this.errorMessage.set('Convite único já utilizado. Este link não pode mais ser usado.');
+              } else if (status.expired) {
+                this.tokenValid.set(false);
+                this.errorMessage.set('Convite único expirado. Peça um novo link ao anfitrião.');
+              } else if (!status.isValid) {
+                this.tokenValid.set(false);
+                this.errorMessage.set('Token inválido para este convite.');
+              }
+            }
+
+            // Sempre carregar o card para exibir (somente leitura se bloqueado)
+            if (status.cardId) {
+              return this.cardService.getCardFromDb(status.cardId);
             }
             return null;
           });
@@ -126,6 +161,7 @@ export class CardPreview implements OnInit {
         if (dbCard) {
           this.card.set(dbCard);
           this.isLiveInvite.set(true);
+          this.configureChallengeMode(dbCard);
           this.applyCardStyle(dbCard);
           this.autoPlayAudio();
         }
@@ -147,6 +183,8 @@ export class CardPreview implements OnInit {
       if (card) {
         this.card.set(card);
         this.isLiveInvite.set(true);
+        this.applyNonTokenRestriction();
+        this.configureChallengeMode(card);
         this.applyCardStyle(card);
         this.autoPlayAudio();
       } else {
@@ -156,6 +194,8 @@ export class CardPreview implements OnInit {
           if (dbCard) {
             this.card.set(dbCard);
             this.isLiveInvite.set(true);
+            this.applyNonTokenRestriction();
+            this.configureChallengeMode(dbCard);
             this.applyCardStyle(dbCard);
             this.autoPlayAudio();
           }
@@ -170,6 +210,7 @@ export class CardPreview implements OnInit {
       this.cardService.getCurrentCard().subscribe(c => {
         if (c) {
           this.card.set(c);
+          this.configureChallengeMode(c);
           this.applyCardStyle(c);
           this.autoPlayAudio();
         }
@@ -207,15 +248,39 @@ export class CardPreview implements OnInit {
     if (this.isViewMode()) {
       return;
     }
+
+    if (this.isChallengeLocked()) {
+      this.challengeFeedback.set('Complete o desafio para liberar sua resposta.');
+      return;
+    }
+
+    if (this.requiresIndividualToken()) {
+      this.tokenValid.set(false);
+      this.errorMessage.set('Este link não é individual. Use o link único enviado ao convidado para confirmar presença.');
+      return;
+    }
+
+    // Chave de localStorage para bloquear reenvios
+    const lsKey = this.getResponseLsKey();
+    if (lsKey && localStorage.getItem(lsKey)) {
+      this.tokenValid.set(false);
+      this.errorMessage.set('Você já respondeu a este convite.');
+      return;
+    }
     
     const cardData = this.card();
     const token = this.inviteToken();
     const currentGuest = this.guest();
 
     if (cardData?.id) {
+      // Bloquear imediatamente (otimista) antes do async
+      if (lsKey) {
+        localStorage.setItem(lsKey, '1');
+      }
+
       // Se é um convidado individual, registrar via GuestService
-      if (currentGuest?.id) {
-        this.guestService.recordResponse(currentGuest.id, response).then(() => {
+      if (currentGuest?.id && currentGuest?.token) {
+        this.guestService.recordResponse(currentGuest.id, response, currentGuest.token).then(() => {
           this.showSuccessMessage();
         }).catch(error => {
           this.errorMessage.set('Erro: ' + (error.message || 'Não foi possível registrar sua resposta'));
@@ -234,22 +299,220 @@ export class CardPreview implements OnInit {
           this.tokenValid.set(false);
         });
       }
-      // Sem token (preview mode)
+      // Sem token (acesso direto por cardId)
       else {
         this.rsvpService.addResponse({
           cardId: cardData.id,
           response,
+        }).then(() => {
+          this.showSuccessMessage();
         }).catch(error => {
+          // Se falhou e não é duplicata, remover o bloqueio
+          if (lsKey) localStorage.removeItem(lsKey);
           alert('Erro ao registrar sua resposta. Tente novamente.');
         });
       }
     }
   }
 
+  isChallengeLocked(): boolean {
+    return this.challengeModeRequired() && !this.challengeUnlocked();
+  }
+
+  requiresIndividualToken(): boolean {
+    return this.isLiveInvite() && !this.isViewMode() && !this.inviteToken() && !this.authService.isAuthenticated();
+  }
+
+  isChallengeCompleted(gameId: ChallengeGameId): boolean {
+    return this.challengeCompleted() && this.requiredChallengeGame() === gameId;
+  }
+
+  startChallenge(gameId: ChallengeGameId): void {
+    if (this.isChallengeCompleted(gameId)) {
+      return;
+    }
+
+    this.activeChallenge.set(gameId);
+    this.challengeInput.set('');
+    this.challengeFeedback.set('');
+    this.challengeDisplay.set('');
+    this.isMemoryHintVisible.set(false);
+
+    switch (gameId) {
+      case 'quick-math': {
+        const first = this.randomInt(8, 25);
+        const second = this.randomInt(3, 18);
+        this.challengePrompt.set(`Quanto é ${first} + ${second}?`);
+        this.activeExpectedAnswer = String(first + second);
+        return;
+      }
+      case 'emoji-count': {
+        const count = this.randomInt(4, 9);
+        this.challengePrompt.set('Digite a quantidade correta de balões.');
+        this.challengeDisplay.set('🎈 '.repeat(count).trim());
+        this.activeExpectedAnswer = String(count);
+        return;
+      }
+      case 'word-scramble': {
+        const words = ['AMOR', 'FESTA', 'CONVITE', 'ALEGRIA', 'CARINHO'];
+        const selectedWord = words[this.randomInt(0, words.length - 1)];
+        const shuffled = selectedWord.split('').sort(() => Math.random() - 0.5).join('');
+        this.challengePrompt.set('Descubra a palavra embaralhada.');
+        this.challengeDisplay.set(shuffled);
+        this.activeExpectedAnswer = selectedWord;
+        return;
+      }
+      case 'memory-number': {
+        const number = String(this.randomInt(1000, 9999));
+        this.challengePrompt.set('Memorize o número por 2 segundos e digite depois.');
+        this.challengeDisplay.set(number);
+        this.activeExpectedAnswer = number;
+        this.isMemoryHintVisible.set(true);
+        setTimeout(() => {
+          if (this.activeChallenge() === 'memory-number') {
+            this.isMemoryHintVisible.set(false);
+          }
+        }, 2000);
+        return;
+      }
+      case 'bigger-number': {
+        const first = this.randomInt(10, 99);
+        const second = this.randomInt(10, 99);
+        this.challengePrompt.set(`Qual número é maior: ${first} ou ${second}?`);
+        this.challengeDisplay.set(`${first} | ${second}`);
+        this.activeExpectedAnswer = String(Math.max(first, second));
+        return;
+      }
+      case 'true-false': {
+        const first = this.randomInt(2, 9);
+        const second = this.randomInt(2, 9);
+        const shownResult = this.randomInt(0, 1) === 1 ? first * second : first * second + this.randomInt(1, 3);
+        const isTrue = shownResult === first * second;
+        this.challengePrompt.set(`A afirmação é verdadeira? ${first} x ${second} = ${shownResult}`);
+        this.challengeDisplay.set('Responda com verdadeiro ou falso');
+        this.activeExpectedAnswer = isTrue ? 'verdadeiro' : 'falso';
+        return;
+      }
+    }
+  }
+
+  submitChallengeAnswer(rawAnswer: string): void {
+    const challenge = this.activeChallenge();
+    if (!challenge) {
+      return;
+    }
+
+    const normalizedAnswer = rawAnswer.trim().toLowerCase();
+    const expected = this.activeExpectedAnswer.trim().toLowerCase();
+
+    if (!normalizedAnswer) {
+      this.challengeFeedback.set('Digite uma resposta para validar o desafio.');
+      return;
+    }
+
+    if (normalizedAnswer === expected) {
+      this.challengeCompleted.set(true);
+      this.challengeFeedback.set('✅ Desafio concluído!');
+      this.activeChallenge.set(null);
+      this.challengeInput.set('');
+      this.challengePrompt.set('');
+      this.challengeDisplay.set('');
+      this.isMemoryHintVisible.set(false);
+      this.challengeUnlocked.set(true);
+      return;
+    }
+
+    this.challengeFeedback.set('Resposta incorreta. Tente novamente!');
+  }
+
+  answerBiggerNumber(value: string): void {
+    this.submitChallengeAnswer(value);
+  }
+
+  answerTrueFalse(isTrue: boolean): void {
+    this.submitChallengeAnswer(isTrue ? 'verdadeiro' : 'falso');
+  }
+
+  getChallengeLabel(gameId: ChallengeGameId): string {
+    return this.challengeGameLabels[gameId] ?? gameId;
+  }
+
   private showSuccessMessage(): void {
     // Desabilitar os botões de resposta após confirmação
     this.tokenValid.set(false);
     this.errorMessage.set('Obrigado! Sua presença foi confirmada!');
+  }
+
+  private activeExpectedAnswer = '';
+
+  private configureChallengeMode(card: Card): void {
+    const configuredGame = this.sanitizeChallengeGame(card.challengeGame);
+    const shouldRequireChallenges =
+      !!card.challengeModeEnabled &&
+      !!configuredGame &&
+      this.isLiveInvite() &&
+      !this.isViewMode();
+
+    this.requiredChallengeGame.set(configuredGame);
+    this.challengeCompleted.set(false);
+    this.challengeModeRequired.set(shouldRequireChallenges);
+    this.challengeUnlocked.set(!shouldRequireChallenges);
+    this.activeChallenge.set(null);
+    this.challengeFeedback.set('');
+    this.challengePrompt.set('');
+    this.challengeDisplay.set('');
+    this.challengeInput.set('');
+    this.isMemoryHintVisible.set(false);
+    this.activeExpectedAnswer = '';
+  }
+
+  private sanitizeChallengeGame(gameId: ChallengeGameId | undefined): ChallengeGameId | null {
+    const validIds = new Set<ChallengeGameId>([
+      'quick-math',
+      'emoji-count',
+      'word-scramble',
+      'memory-number',
+      'bigger-number',
+      'true-false',
+    ]);
+
+    if (!gameId) {
+      return null;
+    }
+
+    return validIds.has(gameId) ? gameId : null;
+  }
+
+  private randomInt(min: number, max: number): number {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+  }
+
+  private applyNonTokenRestriction(): void {
+    // Verificar localStorage para bloquear re-submissão após refresh
+    const cardId = this.card()?.id ?? this.route.snapshot.paramMap.get('id');
+    if (cardId && localStorage.getItem(`rsvp_done_card_${cardId}`)) {
+      this.tokenValid.set(false);
+      this.errorMessage.set('Você já respondeu a este convite.');
+      return;
+    }
+
+    if (this.requiresIndividualToken()) {
+      this.tokenValid.set(false);
+      this.errorMessage.set('Este convite exige link único individual. Peça ao anfitrião o link correto de confirmação.');
+    }
+  }
+
+  /**
+   * Retorna a chave de localStorage para bloquear reenvio.
+   * Token path: rsvp_done_<token> (por token, cada link tem chave única)
+   * CardId path: rsvp_done_card_<cardId> (por card)
+   */
+  private getResponseLsKey(): string | null {
+    const token = this.inviteToken();
+    if (token) return `rsvp_done_${token}`;
+    const cardId = this.card()?.id ?? this.route.snapshot.paramMap.get('id');
+    if (cardId) return `rsvp_done_card_${cardId}`;
+    return null;
   }
 
   goBack(): void {

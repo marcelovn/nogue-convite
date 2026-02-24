@@ -223,30 +223,60 @@ export class GuestService {
    * Marca convidado como "visualizado"
    */
   async markAsViewed(guestId: string): Promise<void> {
-    const guest = this.guests.find(g => g.id === guestId);
-    if (guest && guest.status === 'pending') {
-      await this.updateGuestStatus(guestId, 'viewed', { viewedAt: new Date() });
-    } else if (guest && guest.status === 'sent') {
-      await this.updateGuestStatus(guestId, 'viewed', { viewedAt: new Date() });
-    }
+    // Atualiza diretamente no Supabase sem depender do array em memória,
+    // pois convidados não autenticados nunca populam this.guests.
+    await this.updateGuestStatus(guestId, 'viewed', { viewedAt: new Date() });
   }
 
   /**
    * Registra resposta do convidado
    */
   async recordResponse(
-    guestId: string, 
-    response: 'yes' | 'no', 
-    adults?: number, 
+    guestId: string,
+    response: 'yes' | 'no',
+    token: string,
+    adults?: number,
     children?: number
   ): Promise<void> {
     const status = response === 'yes' ? 'confirmed' : 'declined';
-    await this.updateGuestStatus(guestId, status, {
-      response,
-      confirmedAt: new Date(),
-      adults,
-      children
-    });
+    const nowIso = new Date().toISOString();
+
+    const { data, error } = await this.supabaseService.getClient()
+      .from('guests')
+      .update({
+        status,
+        response,
+        confirmed_at: nowIso,
+        adults,
+        children,
+      })
+      .eq('id', guestId)
+      .eq('token', token)
+      .in('status', ['pending', 'sent', 'viewed'])
+      .select('id,status,response,confirmed_at,adults,children');
+
+    if (error) {
+      throw error;
+    }
+
+    if (!data || data.length === 0) {
+      throw new Error('Este convite já foi respondido anteriormente.');
+    }
+
+    const index = this.guests.findIndex(g => g.id === guestId);
+    if (index !== -1) {
+      this.guests[index] = {
+        ...this.guests[index],
+        status,
+        response,
+        confirmedAt: new Date(nowIso),
+        adults,
+        children,
+      };
+      this.guestsSignal.set([...this.guests]);
+    }
+
+    await this.rsvpService.reloadFromSupabase();
   }
 
   /**

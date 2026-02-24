@@ -49,6 +49,8 @@ export class CardService {
       theme: card.theme,
       color_scheme: card.colorScheme,
       no_button_mechanic: card.noButtonMechanic,
+      challenge_mode_enabled: card.challengeModeEnabled ?? false,
+      challenge_games: card.challengeGame ? [card.challengeGame] : [],
       share_link: shareLink,
       yes_count: 0,
       no_count: 0
@@ -89,6 +91,8 @@ export class CardService {
       theme: newCard.theme,
       colorScheme: newCard.color_scheme,
       noButtonMechanic: newCard.no_button_mechanic,
+      challengeModeEnabled: newCard.challenge_mode_enabled ?? false,
+      challengeGame: this.parseChallengeGame(newCard.challenge_games),
       floatingEmoji: newCard.floating_emoji,
       photoUrl: newCard.photo_url,
       musicUrl: newCard.music_url,
@@ -106,15 +110,17 @@ export class CardService {
   async updateCard(id: string, card: Partial<Card>): Promise<void> {
     const updateData: any = {};
     
-    if (card.senderName) updateData.sender_name = card.senderName;
-    if (card.title) updateData.title = card.title;
-    if (card.message) updateData.message = card.message;
-    if (card.theme) updateData.theme = card.theme;
-    if (card.colorScheme) updateData.color_scheme = card.colorScheme;
-    if (card.noButtonMechanic) updateData.no_button_mechanic = card.noButtonMechanic;
-    if (card.photoUrl) updateData.photo_url = card.photoUrl;
-    if (card.musicUrl) updateData.music_url = card.musicUrl;
-    if (card.floatingEmoji) updateData.floating_emoji = card.floatingEmoji;
+    if (card.senderName !== undefined) updateData.sender_name = card.senderName;
+    if (card.title !== undefined) updateData.title = card.title;
+    if (card.message !== undefined) updateData.message = card.message;
+    if (card.theme !== undefined) updateData.theme = card.theme;
+    if (card.colorScheme !== undefined) updateData.color_scheme = card.colorScheme;
+    if (card.noButtonMechanic !== undefined) updateData.no_button_mechanic = card.noButtonMechanic;
+    if (card.photoUrl !== undefined) updateData.photo_url = card.photoUrl;
+    if (card.musicUrl !== undefined) updateData.music_url = card.musicUrl;
+    if (card.floatingEmoji !== undefined) updateData.floating_emoji = card.floatingEmoji;
+    if (card.challengeModeEnabled !== undefined) updateData.challenge_mode_enabled = card.challengeModeEnabled;
+    if (card.challengeGame !== undefined) updateData.challenge_games = card.challengeGame ? [card.challengeGame] : [];
 
     const { error } = await this.supabaseService.getClient()
       .from('cards')
@@ -159,6 +165,8 @@ export class CardService {
         theme: data.theme,
         colorScheme: data.color_scheme,
         noButtonMechanic: data.no_button_mechanic,
+        challengeModeEnabled: data.challenge_mode_enabled ?? false,
+        challengeGame: this.parseChallengeGame(data.challenge_games),
         floatingEmoji: data.floating_emoji,
         photoUrl: data.photo_url,
         musicUrl: data.music_url,
@@ -305,6 +313,8 @@ export class CardService {
         theme: card.theme,
         colorScheme: card.color_scheme,
         noButtonMechanic: card.no_button_mechanic,
+        challengeModeEnabled: card.challenge_mode_enabled ?? false,
+        challengeGame: this.parseChallengeGame(card.challenge_games),
         floatingEmoji: card.floating_emoji,
         photoUrl: card.photo_url,
         musicUrl: card.music_url,
@@ -319,5 +329,14 @@ export class CardService {
       console.error('Erro ao carregar cartões:', error);
       this.hasLoaded.set(true);
     }
+  }
+
+  private parseChallengeGame(value: unknown): Card['challengeGame'] {
+    if (!Array.isArray(value)) {
+      return undefined;
+    }
+
+    const firstValid = value.find(gameId => typeof gameId === 'string');
+    return typeof firstValid === 'string' ? firstValid as Card['challengeGame'] : undefined;
   }
 }

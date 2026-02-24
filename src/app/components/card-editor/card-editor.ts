@@ -5,8 +5,8 @@ import { ThemeSelector } from '../theme-selector/theme-selector';
 import { ColorScheme } from '../color-scheme/color-scheme';
 import { CardService } from '../../services/card';
 import { ThemeService } from '../../services/theme';
-import { Card, CardTheme, ColorScheme as ColorSchemeModel } from '../../models/card.model';
-import { NO_BUTTON_MECHANICS } from '../../models/constants';
+import { Card, CardTheme, ColorScheme as ColorSchemeModel, ChallengeGameId } from '../../models/card.model';
+import { CHALLENGE_GAME_OPTIONS, NO_BUTTON_MECHANICS } from '../../models/constants';
 
 @Component({
   selector: 'app-card-editor',
@@ -23,9 +23,12 @@ export class CardEditor {
   cardTitle = signal('Você está convidado!');
   cardMessage = signal('Venha celebrar esse momento especial conosco!');
   selectedMechanic = signal<Card['noButtonMechanic']>('teleporting');
+  challengeModeEnabled = signal(false);
+  selectedChallengeGame = signal<ChallengeGameId | null>(null);
   selectedEmoji = signal('');
   isLoading = signal(false);
   mechanics = NO_BUTTON_MECHANICS;
+  challengeOptions = CHALLENGE_GAME_OPTIONS;
   currentStep = signal(1);
 
   readonly FLOATING_EMOJIS = [
@@ -74,6 +77,11 @@ export class CardEditor {
   }
 
   async saveAndShare(): Promise<void> {
+    if (this.challengeModeEnabled() && !this.selectedChallengeGame()) {
+      alert('Selecione 1 jogo para ativar o modo desafio.');
+      return;
+    }
+
     try {
       this.isLoading.set(true);
       const card = this.buildCard();
@@ -99,6 +107,11 @@ export class CardEditor {
   }
 
   async saveAndShareWhatsApp(): Promise<void> {
+    if (this.challengeModeEnabled() && !this.selectedChallengeGame()) {
+      alert('Selecione 1 jogo para ativar o modo desafio.');
+      return;
+    }
+
     try {
       this.isLoading.set(true);
       const card = this.buildCard();
@@ -125,6 +138,23 @@ export class CardEditor {
     }
   }
 
+  toggleChallengeMode(): void {
+    this.challengeModeEnabled.update(value => !value);
+
+    if (!this.challengeModeEnabled()) {
+      this.selectedChallengeGame.set(null);
+    }
+  }
+
+  toggleChallengeGame(gameId: ChallengeGameId): void {
+    if (this.selectedChallengeGame() === gameId) {
+      this.selectedChallengeGame.set(null);
+      return;
+    }
+
+    this.selectedChallengeGame.set(gameId);
+  }
+
   private buildCard(): Card {
     return {
       senderName: this.senderName(),
@@ -133,6 +163,8 @@ export class CardEditor {
       theme: this.themeService.selectedTheme().id,
       colorScheme: this.themeService.selectedColorScheme().id,
       noButtonMechanic: this.selectedMechanic(),
+      challengeModeEnabled: this.challengeModeEnabled(),
+      challengeGame: this.selectedChallengeGame() ?? undefined,
       floatingEmoji: this.selectedEmoji(),
     };
   }

@@ -6,6 +6,8 @@ export interface Card {
   theme: string;
   colorScheme: string;
   noButtonMechanic: 'teleporting' | 'growing-yes' | 'multiplying-yes' | 'shrinking-no';
+  challengeModeEnabled?: boolean;
+  challengeGame?: ChallengeGameId;
   floatingEmoji?: string;
   photoUrl?: string;
   musicUrl?: string;
@@ -25,6 +27,20 @@ export interface CardTheme {
   isPremium: boolean;
   backgroundColor: string;
   accentColor: string;
+}
+
+export type ChallengeGameId =
+  | 'quick-math'
+  | 'emoji-count'
+  | 'word-scramble'
+  | 'memory-number'
+  | 'bigger-number'
+  | 'true-false';
+
+export interface ChallengeGameOption {
+  id: ChallengeGameId;
+  name: string;
+  description: string;
 }
 
 export interface ColorScheme {

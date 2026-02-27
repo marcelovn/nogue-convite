@@ -105,33 +105,13 @@ export const NO_BUTTON_MECHANICS = [
 
 export const CHALLENGE_GAME_OPTIONS: ChallengeGameOption[] = [
   {
-    id: 'quick-math',
-    name: 'Conta Rápida',
-    description: 'Resolva uma soma simples',
+    id: 'snake',
+    name: 'Cobrinha 🐍',
+    description: 'Jogue a cobrinha com sua foto como personagem',
   },
   {
-    id: 'emoji-count',
-    name: 'Contagem de Emoji',
-    description: 'Conte quantos emojis apareceram',
-  },
-  {
-    id: 'word-scramble',
-    name: 'Palavra Embaralhada',
-    description: 'Descubra a palavra correta',
-  },
-  {
-    id: 'memory-number',
-    name: 'Memória Numérica',
-    description: 'Memorize um número por alguns segundos',
-  },
-  {
-    id: 'bigger-number',
-    name: 'Maior Número',
-    description: 'Escolha o maior entre dois valores',
-  },
-  {
-    id: 'true-false',
-    name: 'Verdadeiro ou Falso',
-    description: 'Responda uma afirmação rápida',
+    id: 'space-shooter',
+    name: 'Nave Espacial 🚀',
+    description: 'Pilote sua nave (com sua foto) e destrua os inimigos',
   },
 ];

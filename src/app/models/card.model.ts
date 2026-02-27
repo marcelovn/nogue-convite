@@ -30,12 +30,8 @@ export interface CardTheme {
 }
 
 export type ChallengeGameId =
-  | 'quick-math'
-  | 'emoji-count'
-  | 'word-scramble'
-  | 'memory-number'
-  | 'bigger-number'
-  | 'true-false';
+  | 'snake'
+  | 'space-shooter';
 
 export interface ChallengeGameOption {
   id: ChallengeGameId;

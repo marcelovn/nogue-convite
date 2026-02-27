@@ -1,0 +1,65 @@
+<div class="game-challenge">
+
+  <div class="canvas-wrap">
+    <canvas #gameCanvas
+      (touchstart)="onTouchStart($event)"
+      (touchmove)="onTouchMove($event)"
+      (touchend)="onTouchEnd($event)"></canvas>
+
+    @if (status() === 'won' || status() === 'lost') {
+      <div class="overlay" [class.won]="status() === 'won'" [class.lost]="status() === 'lost'">
+        <p class="overlay-message">{{ messageSignal() }}</p>
+        @if (status() === 'lost') {
+          <button class="btn-play" (click)="startGame()">🔄 Tentar novamente</button>
+        }
+      </div>
+    }
+  </div>
+
+  @if (status() === 'idle') {
+    <button class="btn-play" (click)="startGame()">
+      {{ gameId === 'snake' ? '🐍 Jogar Cobrinha' : '🚀 Jogar Atirador' }}
+    </button>
+  }
+
+  @if (status() === 'playing') {
+    <div class="dpad">
+      @if (gameId === 'snake') {
+        <div class="dpad-grid">
+          <button class="dpad-btn dpad-up"
+            (touchstart)="$event.preventDefault(); onDpad('ArrowUp')"
+            (click)="onDpad('ArrowUp')">▲</button>
+          <button class="dpad-btn dpad-left"
+            (touchstart)="$event.preventDefault(); onDpad('ArrowLeft')"
+            (click)="onDpad('ArrowLeft')">◀</button>
+          <button class="dpad-btn dpad-right"
+            (touchstart)="$event.preventDefault(); onDpad('ArrowRight')"
+            (click)="onDpad('ArrowRight')">▶</button>
+          <button class="dpad-btn dpad-down"
+            (touchstart)="$event.preventDefault(); onDpad('ArrowDown')"
+            (click)="onDpad('ArrowDown')">▼</button>
+        </div>
+      } @else {
+        <div class="shooter-controls">
+          <button class="dpad-btn hold-btn"
+            (touchstart)="$event.preventDefault(); onHoldStart('ArrowLeft')"
+            (touchend)="onHoldEnd('ArrowLeft')"
+            (mousedown)="onHoldStart('ArrowLeft')"
+            (mouseup)="onHoldEnd('ArrowLeft')"
+            (mouseleave)="onHoldEnd('ArrowLeft')">◀</button>
+          <button class="dpad-btn shoot-btn"
+            (touchstart)="$event.preventDefault(); onShoot()"
+            (click)="onShoot()">🔫</button>
+          <button class="dpad-btn hold-btn"
+            (touchstart)="$event.preventDefault(); onHoldStart('ArrowRight')"
+            (touchend)="onHoldEnd('ArrowRight')"
+            (mousedown)="onHoldStart('ArrowRight')"
+            (mouseup)="onHoldEnd('ArrowRight')"
+            (mouseleave)="onHoldEnd('ArrowRight')">▶</button>
+        </div>
+        <p class="shooter-hint">Segure ◀ ▶ para mover · 🔫 para atirar</p>
+      }
+    </div>
+  }
+
+</div>

@@ -2,6 +2,7 @@ import { Component, inject, signal, OnInit, ViewChild, ElementRef, effect } from
 import { ActivatedRoute, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { NoButtonMechanics } from '../no-button-mechanics/no-button-mechanics';
+import { GameChallengeComponent } from '../game-challenge/game-challenge';
 import { CardService } from '../../services/card';
 import { ThemeService } from '../../services/theme';
 import { RsvpService } from '../../services/rsvp';
@@ -14,7 +15,7 @@ import { THEMES, COLOR_SCHEMES } from '../../models/constants';
 
 @Component({
   selector: 'app-card-preview',
-  imports: [NoButtonMechanics, FormsModule],
+  imports: [NoButtonMechanics, FormsModule, GameChallengeComponent],
   templateUrl: './card-preview.html',
   styleUrl: './card-preview.scss',
 })
@@ -54,11 +55,7 @@ export class CardPreview implements OnInit {
   challengeCompleted = signal(false);
   rsvpConfirmed = signal(false);
   activeChallenge = signal<ChallengeGameId | null>(null);
-  challengePrompt = signal('');
-  challengeDisplay = signal('');
-  challengeInput = signal('');
   challengeFeedback = signal('');
-  isMemoryHintVisible = signal(false);
 
   readonly floatingParticles = [
     { id: 0, left: '7%',  delay: '0s',   duration: '7s',   size: '1.8rem' },
@@ -85,12 +82,8 @@ export class CardPreview implements OnInit {
   }
 
   readonly challengeGameLabels: Record<ChallengeGameId, string> = {
-    'quick-math': 'Conta Rápida',
-    'emoji-count': 'Contagem de Emoji',
-    'word-scramble': 'Palavra Embaralhada',
-    'memory-number': 'Memória Numérica',
-    'bigger-number': 'Maior Número',
-    'true-false': 'Verdadeiro ou Falso',
+    'snake': 'Cobrinha 🐍',
+    'space-shooter': 'Nave Espacial 🚀',
   };
 
   ngOnInit(): void {
@@ -337,106 +330,14 @@ export class CardPreview implements OnInit {
     if (this.isChallengeCompleted(gameId)) {
       return;
     }
-
     this.activeChallenge.set(gameId);
-    this.challengeInput.set('');
     this.challengeFeedback.set('');
-    this.challengeDisplay.set('');
-    this.isMemoryHintVisible.set(false);
-
-    switch (gameId) {
-      case 'quick-math': {
-        const first = this.randomInt(8, 25);
-        const second = this.randomInt(3, 18);
-        this.challengePrompt.set(`Quanto é ${first} + ${second}?`);
-        this.activeExpectedAnswer = String(first + second);
-        return;
-      }
-      case 'emoji-count': {
-        const count = this.randomInt(4, 9);
-        this.challengePrompt.set('Digite a quantidade correta de balões.');
-        this.challengeDisplay.set('🎈 '.repeat(count).trim());
-        this.activeExpectedAnswer = String(count);
-        return;
-      }
-      case 'word-scramble': {
-        const words = ['AMOR', 'FESTA', 'CONVITE', 'ALEGRIA', 'CARINHO'];
-        const selectedWord = words[this.randomInt(0, words.length - 1)];
-        const shuffled = selectedWord.split('').sort(() => Math.random() - 0.5).join('');
-        this.challengePrompt.set('Descubra a palavra embaralhada.');
-        this.challengeDisplay.set(shuffled);
-        this.activeExpectedAnswer = selectedWord;
-        return;
-      }
-      case 'memory-number': {
-        const number = String(this.randomInt(1000, 9999));
-        this.challengePrompt.set('Memorize o número por 2 segundos e digite depois.');
-        this.challengeDisplay.set(number);
-        this.activeExpectedAnswer = number;
-        this.isMemoryHintVisible.set(true);
-        setTimeout(() => {
-          if (this.activeChallenge() === 'memory-number') {
-            this.isMemoryHintVisible.set(false);
-          }
-        }, 2000);
-        return;
-      }
-      case 'bigger-number': {
-        const first = this.randomInt(10, 99);
-        const second = this.randomInt(10, 99);
-        this.challengePrompt.set(`Qual número é maior: ${first} ou ${second}?`);
-        this.challengeDisplay.set(`${first} | ${second}`);
-        this.activeExpectedAnswer = String(Math.max(first, second));
-        return;
-      }
-      case 'true-false': {
-        const first = this.randomInt(2, 9);
-        const second = this.randomInt(2, 9);
-        const shownResult = this.randomInt(0, 1) === 1 ? first * second : first * second + this.randomInt(1, 3);
-        const isTrue = shownResult === first * second;
-        this.challengePrompt.set(`A afirmação é verdadeira? ${first} x ${second} = ${shownResult}`);
-        this.challengeDisplay.set('Responda com verdadeiro ou falso');
-        this.activeExpectedAnswer = isTrue ? 'verdadeiro' : 'falso';
-        return;
-      }
-    }
   }
 
-  submitChallengeAnswer(rawAnswer: string): void {
-    const challenge = this.activeChallenge();
-    if (!challenge) {
-      return;
-    }
-
-    const normalizedAnswer = rawAnswer.trim().toLowerCase();
-    const expected = this.activeExpectedAnswer.trim().toLowerCase();
-
-    if (!normalizedAnswer) {
-      this.challengeFeedback.set('Digite uma resposta para validar o desafio.');
-      return;
-    }
-
-    if (normalizedAnswer === expected) {
-      this.challengeCompleted.set(true);
-      this.challengeFeedback.set('✅ Desafio concluído!');
-      this.activeChallenge.set(null);
-      this.challengeInput.set('');
-      this.challengePrompt.set('');
-      this.challengeDisplay.set('');
-      this.isMemoryHintVisible.set(false);
-      this.challengeUnlocked.set(true);
-      return;
-    }
-
-    this.challengeFeedback.set('Resposta incorreta. Tente novamente!');
-  }
-
-  answerBiggerNumber(value: string): void {
-    this.submitChallengeAnswer(value);
-  }
-
-  answerTrueFalse(isTrue: boolean): void {
-    this.submitChallengeAnswer(isTrue ? 'verdadeiro' : 'falso');
+  onGameChallengeCompleted(): void {
+    this.challengeCompleted.set(true);
+    this.activeChallenge.set(null);
+    this.challengeUnlocked.set(true);
   }
 
   getChallengeLabel(gameId: ChallengeGameId): string {
@@ -448,8 +349,6 @@ export class CardPreview implements OnInit {
     this.tokenValid.set(false);
     this.errorMessage.set('Obrigado! Sua presença foi confirmada!');
   }
-
-  private activeExpectedAnswer = '';
 
   private configureChallengeMode(card: Card): void {
     const configuredGame = this.sanitizeChallengeGame(card.challengeGame);
@@ -465,28 +364,13 @@ export class CardPreview implements OnInit {
     this.challengeUnlocked.set(!shouldRequireChallenges);
     this.activeChallenge.set(null);
     this.challengeFeedback.set('');
-    this.challengePrompt.set('');
-    this.challengeDisplay.set('');
-    this.challengeInput.set('');
-    this.isMemoryHintVisible.set(false);
-    this.activeExpectedAnswer = '';
   }
 
   private sanitizeChallengeGame(gameId: ChallengeGameId | undefined): ChallengeGameId | null {
-    const validIds = new Set<ChallengeGameId>([
-      'quick-math',
-      'emoji-count',
-      'word-scramble',
-      'memory-number',
-      'bigger-number',
-      'true-false',
-    ]);
-
-    if (!gameId) {
-      return null;
+    if (gameId === 'snake' || gameId === 'space-shooter') {
+      return gameId;
     }
-
-    return validIds.has(gameId) ? gameId : null;
+    return null;
   }
 
   private randomInt(min: number, max: number): number {

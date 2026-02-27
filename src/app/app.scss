@@ -36,6 +36,20 @@
 
 .brand-logo {
   display: block;
+  animation: brand-float 3s ease-in-out infinite;
+  transition: transform 0.2s ease, filter 0.2s ease;
+  cursor: pointer;
+
+  &:hover {
+    animation-play-state: paused;
+    transform: scale(1.2) rotate(-8deg);
+    filter: drop-shadow(0 4px 10px rgba(30, 99, 255, 0.4));
+  }
+}
+
+@keyframes brand-float {
+  0%, 100% { transform: translateY(0); }
+  50%       { transform: translateY(-4px); }
 }
 
 .brand-text {

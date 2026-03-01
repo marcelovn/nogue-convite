@@ -1,0 +1,167 @@
+@if (isLoading()) {
+  <div class="finance-loading">Carregando finanças...</div>
+} @else {
+
+  <!-- Barra de progresso -->
+  @if (budgetTotal && budgetTotal > 0) {
+    <div class="progress-wrap">
+      <div class="progress-bar">
+        <div class="progress-fill" [style.width.%]="budgetProgress()"></div>
+      </div>
+      <span class="progress-label">{{ budgetProgress() }}% do orçamento comprometido</span>
+    </div>
+  }
+
+  <!-- Resumo -->
+  <div class="finance-summary">
+    @if (budgetTotal) {
+      <div class="summary-item">
+        <span class="summary-label">Orçamento</span>
+        <span class="summary-value">{{ budgetTotal | currency:'BRL':'symbol':'1.2-2' }}</span>
+      </div>
+    }
+    <div class="summary-item">
+      <span class="summary-label">Comprometido</span>
+      <span class="summary-value" [class.negative]="totalCommitted() > 0">{{ totalCommitted() | currency:'BRL':'symbol':'1.2-2' }}</span>
+    </div>
+    <div class="summary-item">
+      <span class="summary-label">Pago ✅</span>
+      <span class="summary-value paid">{{ totalPaid() | currency:'BRL':'symbol':'1.2-2' }}</span>
+    </div>
+    <div class="summary-item">
+      <span class="summary-label">Pendente ⏳</span>
+      <span class="summary-value pending">{{ totalPending() | currency:'BRL':'symbol':'1.2-2' }}</span>
+    </div>
+  </div>
+
+  <!-- Linha de entradas -->
+  @if (totalReceipts() > 0 || entradas().length > 0) {
+    <div class="receipts-summary">
+      🎁 Entradas recebidas:
+      <strong>{{ totalReceipts() | currency:'BRL':'symbol':'1.2-2' }}</strong>
+    </div>
+  }
+
+  <!-- Seção Gastos -->
+  <div class="finance-section">
+    <button class="section-toggle" (click)="expenseSectionOpen.set(!expenseSectionOpen())">
+      <span>💸 Gastos ({{ gastos().length }})</span>
+      <span class="toggle-arrow">{{ expenseSectionOpen() ? '▲' : '▼' }}</span>
+    </button>
+
+    @if (expenseSectionOpen()) {
+      <div class="section-body">
+        @for (e of gastos(); track e.id) {
+          @if (editingId() === e.id) {
+            <div class="expense-edit-row">
+              <input type="text" placeholder="Descrição" [ngModel]="editDescription()" (ngModelChange)="editDescription.set($event)" />
+              <input type="number" placeholder="Valor" [ngModel]="editAmount()" (ngModelChange)="editAmount.set($event)" />
+              <input type="text" placeholder="Fornecedor (opcional)" [ngModel]="editSupplierName()" (ngModelChange)="editSupplierName.set($event)" />
+              <input type="text" placeholder="Contato (opcional)" [ngModel]="editSupplierContact()" (ngModelChange)="editSupplierContact.set($event)" />
+              <div class="edit-actions">
+                <button class="btn btn-primary btn-sm" (click)="confirmEdit(e)">Salvar</button>
+                <button class="btn btn-ghost btn-sm" (click)="cancelEdit()">Cancelar</button>
+              </div>
+            </div>
+          } @else {
+            <div class="expense-row">
+              <button
+                class="paid-toggle"
+                [class.is-paid]="e.paid"
+                (click)="togglePaid(e)"
+                [title]="e.paid ? 'Marcar como pendente' : 'Marcar como pago'">
+                {{ e.paid ? '✅' : '⏳' }}
+              </button>
+              <div class="expense-main">
+                <span class="expense-desc">{{ e.description }}</span>
+                @if (e.supplierName) {
+                  <span class="expense-meta">{{ e.supplierName }}{{ e.supplierContact ? ' · ' + e.supplierContact : '' }}</span>
+                }
+              </div>
+              <span class="expense-amount" [class.paid-amount]="e.paid">
+                {{ e.amount | currency:'BRL':'symbol':'1.2-2' }}
+              </span>
+              <div class="expense-actions">
+                <button class="btn-icon" (click)="startEdit(e)" title="Editar">✏️</button>
+                <button class="btn-icon btn-icon-danger" (click)="deleteExpense(e.id!)" title="Excluir">🗑️</button>
+              </div>
+            </div>
+          }
+        }
+
+        @if (addingExpense()) {
+          <div class="expense-add-row">
+            <div class="add-row-main">
+              <input type="text" placeholder="Descrição *" [ngModel]="newExpDesc()" (ngModelChange)="newExpDesc.set($event)" />
+              <input type="number" placeholder="Valor *" [ngModel]="newExpAmount()" (ngModelChange)="newExpAmount.set($event)" />
+            </div>
+            <button class="btn-supplier-toggle" (click)="showSupplierFields.set(!showSupplierFields())">
+              {{ showSupplierFields() ? '▲ Ocultar fornecedor' : '+ Informar fornecedor' }}
+            </button>
+            @if (showSupplierFields()) {
+              <div class="supplier-fields">
+                <input type="text" placeholder="Nome do fornecedor" [ngModel]="newExpSupplierName()" (ngModelChange)="newExpSupplierName.set($event)" />
+                <input type="text" placeholder="Contato (telefone, e-mail...)" [ngModel]="newExpSupplierContact()" (ngModelChange)="newExpSupplierContact.set($event)" />
+              </div>
+            }
+            <div class="edit-actions">
+              <button class="btn btn-primary btn-sm" (click)="confirmAddExpense()" [disabled]="!newExpDesc().trim() || !newExpAmount()">Adicionar</button>
+              <button class="btn btn-ghost btn-sm" (click)="cancelAddExpense()">Cancelar</button>
+            </div>
+          </div>
+        } @else {
+          <button class="btn-add-item" (click)="startAddExpense()">+ Adicionar gasto</button>
+        }
+      </div>
+    }
+  </div>
+
+  <!-- Seção Entradas -->
+  <div class="finance-section">
+    <button class="section-toggle" (click)="receiptSectionOpen.set(!receiptSectionOpen())">
+      <span>🎁 Entradas / Presentes ({{ entradas().length }})</span>
+      <span class="toggle-arrow">{{ receiptSectionOpen() ? '▲' : '▼' }}</span>
+    </button>
+
+    @if (receiptSectionOpen()) {
+      <div class="section-body">
+        @for (e of entradas(); track e.id) {
+          @if (editingId() === e.id) {
+            <div class="expense-edit-row">
+              <input type="text" placeholder="Descrição" [ngModel]="editDescription()" (ngModelChange)="editDescription.set($event)" />
+              <input type="number" placeholder="Valor" [ngModel]="editAmount()" (ngModelChange)="editAmount.set($event)" />
+              <div class="edit-actions">
+                <button class="btn btn-primary btn-sm" (click)="confirmEdit(e)">Salvar</button>
+                <button class="btn btn-ghost btn-sm" (click)="cancelEdit()">Cancelar</button>
+              </div>
+            </div>
+          } @else {
+            <div class="expense-row">
+              <div class="expense-main">
+                <span class="expense-desc">{{ e.description }}</span>
+              </div>
+              <span class="expense-amount paid-amount">{{ e.amount | currency:'BRL':'symbol':'1.2-2' }}</span>
+              <div class="expense-actions">
+                <button class="btn-icon" (click)="startEdit(e)" title="Editar">✏️</button>
+                <button class="btn-icon btn-icon-danger" (click)="deleteExpense(e.id!)" title="Excluir">🗑️</button>
+              </div>
+            </div>
+          }
+        }
+
+        @if (addingReceipt()) {
+          <div class="expense-add-row">
+            <input type="text" placeholder="Descrição *" [ngModel]="newRecDesc()" (ngModelChange)="newRecDesc.set($event)" />
+            <input type="number" placeholder="Valor *" [ngModel]="newRecAmount()" (ngModelChange)="newRecAmount.set($event)" />
+            <div class="edit-actions">
+              <button class="btn btn-primary btn-sm" (click)="confirmAddReceipt()" [disabled]="!newRecDesc().trim() || !newRecAmount()">Adicionar</button>
+              <button class="btn btn-ghost btn-sm" (click)="cancelAddReceipt()">Cancelar</button>
+            </div>
+          </div>
+        } @else {
+          <button class="btn-add-item" (click)="startAddReceipt()">+ Adicionar entrada</button>
+        }
+      </div>
+    }
+  </div>
+}

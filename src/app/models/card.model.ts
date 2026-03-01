@@ -1,5 +1,6 @@
 export interface Card {
   id?: string;
+  eventId?: string;
   senderName: string;
   title: string;
   message: string;

@@ -23,130 +23,202 @@
 <div class="dashboard-container animate-fade-in">
   <header class="dashboard-header">
     <div class="dashboard-title-wrap">
-      <h1>Meus convites</h1>
-      <p class="invite-unique-note">{{ cards().length }} {{ cards().length === 1 ? 'convite' : 'convites' }}</p>
+      <h1>Meus eventos</h1>
     </div>
     <div class="dashboard-header-actions">
       <button class="btn btn-ghost" (click)="logout()">Sair</button>
-      <button class="btn btn-primary" (click)="createNew()">Novo convite</button>
+      @if (activeTab() === 'events') {
+        <button class="btn btn-primary" (click)="createNewEvent()">Novo evento</button>
+      } @else {
+        <button class="btn btn-primary" (click)="createNew()">Novo convite</button>
+      }
     </div>
   </header>
 
-  @if (isLoading()) {
-    <!-- Skeleton Cards -->
-    <div class="cards-grid">
-      @for (i of [1, 2, 3]; track i) {
-        <div class="dashboard-card card-base skeleton-card">
-          <div class="card-header">
-            <div class="skeleton-text-lg" style="width: 65%"></div>
-            <div class="skeleton-text-sm" style="width: 40%; margin-top: 0.5rem"></div>
-          </div>
-          <div class="card-info" style="margin-top: 1rem">
-            <div class="skeleton-text" style="width: 50%"></div>
-          </div>
-          <div class="stats-bar" style="margin-top: 1rem">
-            <div style="text-align: center">
-              <div class="skeleton-text-lg" style="width: 30px; margin: 0 auto 0.3rem"></div>
-              <div class="skeleton-text-sm" style="width: 80px; margin: 0 auto"></div>
-            </div>
-          </div>
-          <div class="card-actions" style="margin-top: 1rem">
-            <div class="skeleton-btn" style="width: 45px"></div>
-            <div class="skeleton-btn" style="width: 75px"></div>
-            <div class="skeleton-btn" style="width: 45px"></div>
-            <div class="skeleton-btn" style="width: 50px"></div>
-            <div class="skeleton-btn" style="width: 60px"></div>
-          </div>
-        </div>
-      }
-    </div>
-  } @else if (cards().length === 0) {
-    <div class="empty-state card-base">
-      <span class="empty-icon">📫</span>
-      <h2>Nenhum convite criado</h2>
-      <p>Crie seu primeiro convite e tenha confirmações em minutos no WhatsApp</p>
-      <button class="btn btn-primary" (click)="createNew()">Criar convite</button>
-    </div>
-  } @else {
-    <div class="cards-grid">
-      @for (card of cards(); track card.id) {
-        @let stats = getStats(card.id!);
-        <div class="dashboard-card card-base">
-          <button class="card-menu-btn" (click)="toggleMenu(card.id!, $event)" title="Mais opções">
-            ⋮
-          </button>
-          
-          @if (openMenuId() === card.id) {
-            <div class="card-dropdown-menu">
-              <button class="dropdown-item" (click)="copyLink(card.id!); closeMenu()">
-                <span class="dropdown-icon">🔗</span>
-                {{ linkCopied() === card.id ? '✓ Link copiado' : 'Copiar link' }}
-              </button>
-              <button class="dropdown-item dropdown-warning" (click)="clearResponses(card.id!); closeMenu()">
-                <span class="dropdown-icon">↺</span>
-                Zerar respostas
-              </button>
-              <button class="dropdown-item dropdown-danger" (click)="deleteCard(card.id!); closeMenu()">
-                <span class="dropdown-icon">🗑️</span>
-                Excluir convite
-              </button>
-            </div>
-          }
-          
-          <div class="card-header clickable" (click)="editCard(card.id!)">
-            <h3>{{ card.title }}</h3>
-            <span class="card-date">
-              {{ card.createdAt ? 'Criado em ' + (card.createdAt | date:'dd/MM/yyyy') : '' }}
-            </span>
-          </div>
+  <!-- Abas -->
+  <div class="tabs-bar">
+    <button
+      class="tab-btn"
+      [class.active]="activeTab() === 'events'"
+      (click)="activeTab.set('events')">
+      Eventos
+    </button>
+    <button
+      class="tab-btn"
+      [class.active]="activeTab() === 'cards'"
+      (click)="activeTab.set('cards')">
+      Convites avulsos
+    </button>
+  </div>
 
-          <div class="stats-bar">
-            <div class="stat">
-              <span class="stat-number stat-yes">{{ stats.yes }}</span>
-              <span class="stat-label">Comparecerão</span>
+  <!-- Tab: Eventos -->
+  @if (activeTab() === 'events') {
+    @if (!eventsLoaded()) {
+      <div class="cards-grid">
+        @for (i of [1, 2, 3]; track i) {
+          <div class="dashboard-card card-base skeleton-card">
+            <div class="card-header">
+              <div class="skeleton-text-lg" style="width: 65%"></div>
+              <div class="skeleton-text-sm" style="width: 40%; margin-top: 0.5rem"></div>
             </div>
           </div>
-
-          <div class="card-actions">
-            <button class="btn btn-ghost" (click)="editCard(card.id!)">Editar</button>
-            <div class="btn-guests-wrapper">
-              <button 
-                class="btn btn-ghost btn-guests" 
-                (click)="manageGuests(card.id!)"
-                (mouseenter)="showGuestPopover(card.id!)"
-                (mouseleave)="hideGuestPopover()">
-                Convidados
-              </button>
-              @if (guestPopoverbCardId() === card.id) {
-                <div class="guest-popover" (mouseleave)="hideGuestPopover()">
-                  @if (guestPopoverLoading()) {
-                    <div class="popover-loading">Carregando...</div>
-                  } @else if (guestPopoverList().length === 0) {
-                    <div class="popover-empty">Nenhum convidado</div>
-                  } @else {
-                    <div class="popover-header">
-                      <h4>{{ guestPopoverList().length }} convidado(s)</h4>
-                    </div>
-                    <div class="popover-guests">
-                      @for (guest of guestPopoverList(); track guest.id) {
-                        <div class="popover-guest-item" [class]="getGuestStatusClass(guest.status)">
-                          <div class="popover-guest-name">{{ guest.name }}</div>
-                          <div class="popover-guest-status">{{ getGuestStatusLabel(guest.status) }}</div>
-                          @if (guest.adults || guest.children) {
-                            <div class="popover-guest-meta">{{ guest.adults || 0 }}A, {{ guest.children || 0 }}C</div>
-                          }
-                        </div>
-                      }
-                    </div>
-                  }
-                </div>
+        }
+      </div>
+    } @else if (events().length === 0) {
+      <div class="empty-state card-base">
+        <span class="empty-icon">🎉</span>
+        <h2>Nenhum evento criado</h2>
+        <p>Crie um evento para organizar convite, convidados e finanças em um só lugar</p>
+        <button class="btn btn-primary" (click)="createNewEvent()">Criar evento</button>
+      </div>
+    } @else {
+      <div class="cards-grid">
+        @for (event of events(); track event.id) {
+          <div class="dashboard-card card-base event-card" (click)="openEvent(event.id!)">
+            <div class="card-header">
+              <h3>{{ event.name }}</h3>
+              @if (event.eventDate) {
+                <span class="card-date">📅 {{ event.eventDate | date:'dd/MM/yyyy':'':'pt-BR' }}</span>
+              }
+              @if (event.eventLocation) {
+                <span class="card-date">📍 {{ event.eventLocation }}</span>
               }
             </div>
-            <button class="btn btn-ghost" (click)="viewCard(card.id!)">Ver</button>
-            <button class="btn btn-ghost btn-whatsapp-sm" (click)="shareWhatsApp(card)">WhatsApp</button>
+            <div class="event-card-footer">
+              @if (event.card) {
+                <span class="event-badge event-badge-invite">💌 Convite criado</span>
+              } @else {
+                <span class="event-badge event-badge-no-invite">Sem convite</span>
+              }
+              <button class="btn btn-primary btn-sm" (click)="openEvent(event.id!); $event.stopPropagation()">
+                Gerenciar
+              </button>
+            </div>
           </div>
-        </div>
-      }
-    </div>
+        }
+      </div>
+    }
+  }
+
+  <!-- Tab: Convites avulsos -->
+  @if (activeTab() === 'cards') {
+    @if (isLoading()) {
+      <div class="cards-grid">
+        @for (i of [1, 2, 3]; track i) {
+          <div class="dashboard-card card-base skeleton-card">
+            <div class="card-header">
+              <div class="skeleton-text-lg" style="width: 65%"></div>
+              <div class="skeleton-text-sm" style="width: 40%; margin-top: 0.5rem"></div>
+            </div>
+            <div class="card-info" style="margin-top: 1rem">
+              <div class="skeleton-text" style="width: 50%"></div>
+            </div>
+            <div class="stats-bar" style="margin-top: 1rem">
+              <div style="text-align: center">
+                <div class="skeleton-text-lg" style="width: 30px; margin: 0 auto 0.3rem"></div>
+                <div class="skeleton-text-sm" style="width: 80px; margin: 0 auto"></div>
+              </div>
+            </div>
+            <div class="card-actions" style="margin-top: 1rem">
+              <div class="skeleton-btn" style="width: 45px"></div>
+              <div class="skeleton-btn" style="width: 75px"></div>
+              <div class="skeleton-btn" style="width: 45px"></div>
+              <div class="skeleton-btn" style="width: 50px"></div>
+              <div class="skeleton-btn" style="width: 60px"></div>
+            </div>
+          </div>
+        }
+      </div>
+    } @else if (standaloneCards().length === 0) {
+      <div class="empty-state card-base">
+        <span class="empty-icon">📫</span>
+        <h2>Nenhum convite avulso</h2>
+        <p>Crie um convite rápido sem precisar criar um evento</p>
+        <button class="btn btn-primary" (click)="createNew()">Criar convite</button>
+      </div>
+    } @else {
+      <div class="cards-grid">
+        @for (card of standaloneCards(); track card.id) {
+          @let stats = getStats(card.id!);
+          <div class="dashboard-card card-base">
+            <button class="card-menu-btn" (click)="toggleMenu(card.id!, $event)" title="Mais opções">
+              ⋮
+            </button>
+
+            @if (openMenuId() === card.id) {
+              <div class="card-dropdown-menu">
+                <button class="dropdown-item" (click)="copyLink(card.id!); closeMenu()">
+                  <span class="dropdown-icon">🔗</span>
+                  {{ linkCopied() === card.id ? '✓ Link copiado' : 'Copiar link' }}
+                </button>
+                <button class="dropdown-item dropdown-warning" (click)="clearResponses(card.id!); closeMenu()">
+                  <span class="dropdown-icon">↺</span>
+                  Zerar respostas
+                </button>
+                <button class="dropdown-item dropdown-danger" (click)="deleteCard(card.id!); closeMenu()">
+                  <span class="dropdown-icon">🗑️</span>
+                  Excluir convite
+                </button>
+              </div>
+            }
+
+            <div class="card-header clickable"
+                 [style.background]="getCardScheme(card).background"
+                 (click)="editCard(card.id!)">
+              <h3>{{ card.title }}</h3>
+              <span class="card-date">
+                {{ card.createdAt ? 'Criado em ' + (card.createdAt | date:'dd/MM/yyyy') : '' }}
+              </span>
+            </div>
+
+            <div class="stats-bar">
+              <div class="stat">
+                <span class="stat-number stat-yes">{{ stats.yes }}</span>
+                <span class="stat-label">Comparecerão</span>
+              </div>
+            </div>
+
+            <div class="card-actions">
+              <button class="btn btn-ghost" (click)="editCard(card.id!)">Editar</button>
+              <div class="btn-guests-wrapper">
+                <button
+                  class="btn btn-ghost btn-guests"
+                  (click)="manageGuests(card.id!)"
+                  (mouseenter)="showGuestPopover(card.id!)"
+                  (mouseleave)="hideGuestPopover()">
+                  Convidados
+                </button>
+                @if (guestPopoverbCardId() === card.id) {
+                  <div class="guest-popover" (mouseleave)="hideGuestPopover()">
+                    @if (guestPopoverLoading()) {
+                      <div class="popover-loading">Carregando...</div>
+                    } @else if (guestPopoverList().length === 0) {
+                      <div class="popover-empty">Nenhum convidado</div>
+                    } @else {
+                      <div class="popover-header">
+                        <h4>{{ guestPopoverList().length }} convidado(s)</h4>
+                      </div>
+                      <div class="popover-guests">
+                        @for (guest of guestPopoverList(); track guest.id) {
+                          <div class="popover-guest-item" [class]="getGuestStatusClass(guest.status)">
+                            <div class="popover-guest-name">{{ guest.name }}</div>
+                            <div class="popover-guest-status">{{ getGuestStatusLabel(guest.status) }}</div>
+                            @if (guest.adults || guest.children) {
+                              <div class="popover-guest-meta">{{ guest.adults || 0 }}A, {{ guest.children || 0 }}C</div>
+                            }
+                          </div>
+                        }
+                      </div>
+                    }
+                  </div>
+                }
+              </div>
+              <button class="btn btn-ghost" (click)="viewCard(card.id!)">Ver</button>
+              <button class="btn btn-ghost btn-whatsapp-sm" (click)="shareWhatsApp(card)">WhatsApp</button>
+            </div>
+          </div>
+        }
+      </div>
+    }
   }
 </div>

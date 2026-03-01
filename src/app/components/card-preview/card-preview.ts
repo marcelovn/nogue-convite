@@ -1,4 +1,4 @@
-import { Component, inject, signal, OnInit, ViewChild, ElementRef, effect } from '@angular/core';
+import { Component, inject, signal, OnInit, ViewChild, ElementRef, effect, computed } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { NoButtonMechanics } from '../no-button-mechanics/no-button-mechanics';
@@ -9,7 +9,9 @@ import { RsvpService } from '../../services/rsvp';
 import { AuthService } from '../../services/auth';
 import { InviteTokenService } from '../../services/invite-token';
 import { GuestService } from '../../services/guest.service';
+import { EventService } from '../../services/event.service';
 import { Card, ChallengeGameId } from '../../models/card.model';
+import { AppEvent, EVENT_TYPE_LABELS } from '../../models/event.model';
 import { Guest } from '../../models/guest.model';
 import { THEMES, COLOR_SCHEMES } from '../../models/constants';
 
@@ -29,9 +31,28 @@ export class CardPreview implements OnInit {
   private rsvpService = inject(RsvpService);
   private inviteTokenService = inject(InviteTokenService);
   private guestService = inject(GuestService);
+  private eventService = inject(EventService);
   public authService = inject(AuthService);
 
   card = signal<Card | null>(null);
+  eventData = signal<AppEvent | null>(null);
+
+  readonly googleMapsUrl = computed(() => {
+    const loc = this.eventData()?.eventLocation;
+    return loc ? `https://maps.google.com/?q=${encodeURIComponent(loc)}` : '';
+  });
+
+  readonly eventDateFormatted = computed(() => {
+    const e = this.eventData();
+    if (!e?.eventDate) return '';
+    const [y, m, d] = e.eventDate.split('-');
+    return `${d}/${m}/${y}`;
+  });
+
+  readonly eventTypeLabel = computed(() => {
+    const type = this.eventData()?.eventType;
+    return type ? (EVENT_TYPE_LABELS[type] ?? '') : '';
+  });
   guest = signal<Guest | null>(null);
   isLoading = signal(false);
   isLiveInvite = signal(false);
@@ -158,6 +179,7 @@ export class CardPreview implements OnInit {
           this.configureChallengeMode(dbCard);
           this.applyCardStyle(dbCard);
           this.autoPlayAudio();
+          this.loadEventData(dbCard);
         }
         this.isLoading.set(false);
       }).catch(err => {
@@ -181,6 +203,7 @@ export class CardPreview implements OnInit {
         this.configureChallengeMode(card);
         this.applyCardStyle(card);
         this.autoPlayAudio();
+        this.loadEventData(card);
       } else {
         // Se não encontrar em memória, busca do Supabase
         this.isLoading.set(true);
@@ -192,6 +215,7 @@ export class CardPreview implements OnInit {
             this.configureChallengeMode(dbCard);
             this.applyCardStyle(dbCard);
             this.autoPlayAudio();
+            this.loadEventData(dbCard);
           }
           this.isLoading.set(false);
         }).catch(err => {
@@ -502,6 +526,16 @@ export class CardPreview implements OnInit {
       this.schemePrimary.set(scheme.primary);
       this.schemeBackground.set(scheme.background);
       this.schemeText.set(scheme.text);
+    }
+  }
+
+  private loadEventData(card: Card): void {
+    if (card.eventId) {
+      this.eventService.getEventById(card.eventId).then(ev => {
+        this.eventData.set(ev);
+      }).catch(() => {
+        // Evento não encontrado — não bloqueia o convite
+      });
     }
   }
 }

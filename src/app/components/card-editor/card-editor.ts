@@ -1,10 +1,11 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, signal, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { ThemeSelector } from '../theme-selector/theme-selector';
 import { ColorScheme } from '../color-scheme/color-scheme';
 import { CardService } from '../../services/card';
 import { ThemeService } from '../../services/theme';
+import { EventService } from '../../services/event.service';
 import { Card, CardTheme, ColorScheme as ColorSchemeModel, ChallengeGameId } from '../../models/card.model';
 import { CHALLENGE_GAME_OPTIONS, NO_BUTTON_MECHANICS } from '../../models/constants';
 
@@ -14,10 +15,14 @@ import { CHALLENGE_GAME_OPTIONS, NO_BUTTON_MECHANICS } from '../../models/consta
   templateUrl: './card-editor.html',
   styleUrl: './card-editor.scss',
 })
-export class CardEditor {
+export class CardEditor implements OnInit {
   private cardService = inject(CardService);
   private themeService = inject(ThemeService);
   private router = inject(Router);
+  private route = inject(ActivatedRoute);
+  private eventService = inject(EventService);
+
+  private eventId = signal<string | null>(null);
 
   senderName = signal('');
   cardTitle = signal('Você está convidado!');
@@ -45,6 +50,11 @@ export class CardEditor {
 
   get selectedTheme() { return this.themeService.selectedTheme; }
   get selectedColorScheme() { return this.themeService.selectedColorScheme; }
+
+  ngOnInit(): void {
+    const id = this.route.snapshot.paramMap.get('eventId');
+    this.eventId.set(id);
+  }
 
   nextStep(): void {
     if (this.currentStep() < 3) {
@@ -92,15 +102,23 @@ export class CardEditor {
       
       const id = await this.cardService.createCard(card);
       console.log('Convite criado com ID:', id);
-      
+
+      if (this.eventId()) {
+        this.eventService.attachCardToEvent(this.eventId()!, { ...card, id });
+      }
+
       // Garantir que o loading fica visível por pelo menos 1 segundo
       const elapsed = Date.now() - startTime;
       const minLoadingTime = 1000;
       if (elapsed < minLoadingTime) {
         await new Promise(resolve => setTimeout(resolve, minLoadingTime - elapsed));
       }
-      
-      await this.router.navigate(['/dashboard']);
+
+      if (this.eventId()) {
+        await this.router.navigate(['/events', this.eventId()]);
+      } else {
+        await this.router.navigate(['/dashboard']);
+      }
     } catch (error) {
       console.error('Erro ao salvar cartão:', error);
       alert('Erro ao salvar cartão. Tente novamente.');
@@ -122,16 +140,23 @@ export class CardEditor {
       const id = await this.cardService.createCard(card);
       const url = this.cardService.getWhatsAppShareUrl(id, card.senderName);
       window.open(url, '_blank');
-      console.log('Navegando para:', id);
-      
+
+      if (this.eventId()) {
+        this.eventService.attachCardToEvent(this.eventId()!, { ...card, id });
+      }
+
       // Garantir que o loading fica visível por pelo menos 1 segundo
       const elapsed = Date.now() - startTime;
       const minLoadingTime = 1000;
       if (elapsed < minLoadingTime) {
         await new Promise(resolve => setTimeout(resolve, minLoadingTime - elapsed));
       }
-      
-      await this.router.navigate(['/dashboard']);
+
+      if (this.eventId()) {
+        await this.router.navigate(['/events', this.eventId()]);
+      } else {
+        await this.router.navigate(['/dashboard']);
+      }
     } catch (error) {
       console.error('Erro ao salvar cartão:', error);
       alert('Erro ao salvar cartão. Tente novamente.');
@@ -194,6 +219,7 @@ export class CardEditor {
       challengeGame: this.selectedChallengeGame() ?? undefined,
       floatingEmoji: this.selectedEmoji(),
       photoUrl: this.photoUrl() ?? undefined,
+      eventId: this.eventId() ?? undefined,
     };
   }
 }

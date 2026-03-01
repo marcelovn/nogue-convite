@@ -60,6 +60,7 @@ export class CardService {
     if (card.photoUrl) insertData.photo_url = card.photoUrl;
     if (card.musicUrl) insertData.music_url = card.musicUrl;
     if (card.floatingEmoji) insertData.floating_emoji = card.floatingEmoji;
+    if (card.eventId) insertData.event_id = card.eventId;
     
     const { data, error } = await this.supabaseService.getClient()
       .from('cards')
@@ -121,6 +122,7 @@ export class CardService {
     if (card.floatingEmoji !== undefined) updateData.floating_emoji = card.floatingEmoji;
     if (card.challengeModeEnabled !== undefined) updateData.challenge_mode_enabled = card.challengeModeEnabled;
     if (card.challengeGame !== undefined) updateData.challenge_games = card.challengeGame ? [card.challengeGame] : [];
+    if (card.eventId !== undefined) updateData.event_id = card.eventId;
 
     const { error } = await this.supabaseService.getClient()
       .from('cards')
@@ -159,6 +161,7 @@ export class CardService {
 
       const card: Card = {
         id: data.id,
+        eventId: data.event_id ?? undefined,
         senderName: data.sender_name,
         title: data.title,
         message: data.message,
@@ -307,6 +310,7 @@ export class CardService {
 
       this.cards = (data || []).map(card => ({
         id: card.id,
+        eventId: card.event_id ?? undefined,
         senderName: card.sender_name,
         title: card.title,
         message: card.message,

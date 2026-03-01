@@ -87,6 +87,36 @@
 
         <p class="card-message">{{ cardData.message }}</p>
 
+        @if (eventData(); as ev) {
+          <div class="card-event-info">
+            @if (eventTypeLabel()) {
+              <span class="event-type-tag" [style.background]="schemePrimary() + '22'" [style.color]="schemePrimary()">
+                {{ eventTypeLabel() }}
+              </span>
+            }
+            @if (eventDateFormatted()) {
+              <p class="event-info-row">
+                <span class="event-info-icon">📅</span>
+                {{ eventDateFormatted() }}{{ ev.eventTime ? ' às ' + ev.eventTime : '' }}
+              </p>
+            }
+            @if (ev.eventLocation) {
+              <p class="event-info-row">
+                <span class="event-info-icon">📍</span>
+                <a [href]="googleMapsUrl()" target="_blank" rel="noopener noreferrer" class="event-maps-link" [style.color]="schemePrimary()">
+                  {{ ev.eventLocation }}
+                </a>
+              </p>
+            }
+            @if (ev.additionalNotes) {
+              <p class="event-info-row event-notes">
+                <span class="event-info-icon">📝</span>
+                {{ ev.additionalNotes }}
+              </p>
+            }
+          </div>
+        }
+
         <p class="card-sender">
           Com carinho, <strong [style.color]="schemePrimary()">{{ cardData.senderName || 'Anfitrião' }}</strong>
         </p>

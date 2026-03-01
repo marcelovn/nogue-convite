@@ -6,7 +6,9 @@ import { RsvpService } from '../../services/rsvp';
 import { AuthService } from '../../services/auth';
 import { InviteTokenService } from '../../services/invite-token';
 import { GuestService } from '../../services/guest.service';
+import { EventService } from '../../services/event.service';
 import { Card, RSVPStats } from '../../models/card.model';
+import { COLOR_SCHEMES } from '../../models/constants';
 import { Guest } from '../../models/guest.model';
 import { Subscription } from 'rxjs';
 import { ConfirmDialog } from '../confirm-dialog/confirm-dialog';
@@ -23,9 +25,15 @@ export class RsvpDashboard implements OnInit, OnDestroy {
   private router = inject(Router);
   private inviteTokenService = inject(InviteTokenService);
   private guestService = inject(GuestService);
+  private eventService = inject(EventService);
   public authService = inject(AuthService);
 
+  activeTab = signal<'events' | 'cards'>('events');
+  events = this.eventService.events;
+  eventsLoaded = this.eventService.hasLoaded;
+
   cards = signal<Card[]>([]);
+  standaloneCards = computed(() => this.cards().filter(c => !c.eventId));
   statsMap = signal<Map<string, RSVPStats>>(new Map());
   linkCopied = signal<string | null>(null);
   confirmDeleteId = signal<string | null>(null);
@@ -58,6 +66,8 @@ export class RsvpDashboard implements OnInit, OnDestroy {
       }
     });
     this.subscriptions.push(cardsSub);
+
+    this.eventService.loadUserEvents();
   }
 
   @HostListener('document:click', ['$event'])
@@ -205,6 +215,14 @@ export class RsvpDashboard implements OnInit, OnDestroy {
     this.router.navigate(['/editor']);
   }
 
+  createNewEvent(): void {
+    this.router.navigate(['/events/new']);
+  }
+
+  openEvent(eventId: string): void {
+    this.router.navigate(['/events', eventId]);
+  }
+
   getTotalResponses(): number {
     return this.cards().reduce((sum, card) => {
       return sum + this.getStats(card.id!).total;
@@ -262,5 +280,9 @@ export class RsvpDashboard implements OnInit, OnDestroy {
 
   async logout(): Promise<void> {
     await this.authService.logout();
+  }
+
+  getCardScheme(card: Card) {
+    return COLOR_SCHEMES.find(s => s.id === card.colorScheme) ?? COLOR_SCHEMES[0];
   }
 }

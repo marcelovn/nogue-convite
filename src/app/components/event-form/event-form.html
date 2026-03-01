@@ -1,0 +1,96 @@
+<div class="event-form-container animate-fade-in">
+  <header class="form-header">
+    <h1>{{ isEditMode() ? 'Editar Evento' : 'Novo Evento' }}</h1>
+    <p class="form-subtitle">Preencha os detalhes do seu evento</p>
+  </header>
+
+  <div class="form-card card-base">
+    <div class="form-group">
+      <label for="name">Nome do evento <span class="required">*</span></label>
+      <input
+        id="name"
+        type="text"
+        placeholder="Ex: Aniversário da Ana – 5 anos"
+        [ngModel]="name()"
+        (ngModelChange)="name.set($event)" />
+    </div>
+
+    <div class="form-group">
+      <label for="eventType">Tipo de evento</label>
+      <select
+        id="eventType"
+        [ngModel]="eventType()"
+        (ngModelChange)="eventType.set($event)">
+        <option value="">Selecione...</option>
+        @for (type of EVENT_TYPES; track type.id) {
+          <option [value]="type.id">{{ type.label }}</option>
+        }
+      </select>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label for="eventDate">Data</label>
+        <input
+          id="eventDate"
+          type="date"
+          [ngModel]="eventDate()"
+          (ngModelChange)="eventDate.set($event)" />
+      </div>
+
+      <div class="form-group">
+        <label for="eventTime">Hora</label>
+        <input
+          id="eventTime"
+          type="time"
+          [ngModel]="eventTime()"
+          (ngModelChange)="eventTime.set($event)" />
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label for="eventLocation">Local / Endereço</label>
+      <input
+        id="eventLocation"
+        type="text"
+        placeholder="Ex: Rua das Flores, 123 – São Paulo, SP"
+        [ngModel]="eventLocation()"
+        (ngModelChange)="eventLocation.set($event)" />
+    </div>
+
+    <div class="form-group">
+      <label for="budgetTotal">Orçamento total (R$)</label>
+      <input
+        id="budgetTotal"
+        type="number"
+        min="0"
+        step="0.01"
+        placeholder="Ex: 5000.00"
+        [ngModel]="budgetTotal()"
+        (ngModelChange)="budgetTotal.set($event)" />
+    </div>
+
+    <div class="form-group">
+      <label for="additionalNotes">Observações</label>
+      <textarea
+        id="additionalNotes"
+        rows="3"
+        placeholder="Ex: Traje esporte fino, presença confirmada garante acesso"
+        [ngModel]="additionalNotes()"
+        (ngModelChange)="additionalNotes.set($event)"></textarea>
+    </div>
+
+    <div class="form-actions">
+      <button class="btn btn-ghost" (click)="cancel()" [disabled]="isLoading()">
+        Cancelar
+      </button>
+      <button class="btn btn-primary" (click)="save()" [disabled]="isLoading() || !name().trim()">
+        @if (isLoading()) {
+          Salvando...
+        } @else {
+          {{ isEditMode() ? 'Salvar alterações' : 'Criar evento' }}
+        }
+      </button>
+    </div>
+  </div>
+</div>

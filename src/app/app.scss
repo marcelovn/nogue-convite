@@ -60,6 +60,7 @@
 
 .nav-links {
   display: flex;
+  align-items: center;
   gap: 0.25rem;
 
   a {
@@ -80,6 +81,36 @@
       background: #eff6ff;
       color: var(--accent, #1E40AF);
     }
+  }
+}
+
+.nav-btn-primary {
+  background: #1e63ff !important;
+  color: #fff !important;
+  border-radius: 8px !important;
+  padding: 0.4rem 0.9rem !important;
+  font-weight: 600 !important;
+
+  &:hover {
+    background: #0040d4 !important;
+    color: #fff !important;
+  }
+}
+
+.nav-btn-logout {
+  background: none;
+  border: none;
+  padding: 0.4rem 0.85rem;
+  border-radius: 6px;
+  font-size: 0.813rem;
+  font-weight: 500;
+  color: var(--text-muted, #6b7280);
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &:hover {
+    background: #f3f4f6;
+    color: var(--text, #1a1a1a);
   }
 }
 

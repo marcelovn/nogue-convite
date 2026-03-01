@@ -14,6 +14,11 @@ export class LoginComponent implements OnInit {
   loginForm: FormGroup;
   error = signal<string | null>(null);
 
+  mode = signal<'login' | 'forgot'>('login');
+  forgotEmail = signal('');
+  forgotSent = signal(false);
+  forgotError = signal<string | null>(null);
+
   constructor(
     private fb: FormBuilder,
     public authService: AuthService,
@@ -29,6 +34,18 @@ export class LoginComponent implements OnInit {
     // Se já estiver autenticado, vai para dashboard
     if (this.authService.isAuthenticated()) {
       this.router.navigate(['/dashboard']);
+    }
+  }
+
+  async sendReset() {
+    const email = this.forgotEmail().trim();
+    if (!email) return;
+    this.forgotError.set(null);
+    const { error } = await this.authService.sendPasswordReset(email);
+    if (error) {
+      this.forgotError.set('Não foi possível enviar o link. Verifique o e-mail informado.');
+    } else {
+      this.forgotSent.set(true);
     }
   }
 

@@ -1,0 +1,44 @@
+<button class="fab" (click)="open.set(true)" title="Enviar sugestão">
+  💡
+  <span class="fab-label">Sugestão</span>
+</button>
+
+@if (open()) {
+  <div class="fb-backdrop" (click)="close()">
+    <div class="fb-box" (click)="$event.stopPropagation()">
+      @if (status() === 'success') {
+        <div class="fb-success">
+          <span class="fb-success-icon">🙏</span>
+          <h3>Obrigado!</h3>
+          <p>Sua sugestão foi enviada. Vamos considerar nas próximas melhorias.</p>
+          <button class="btn-send" (click)="close()">Fechar</button>
+        </div>
+      } @else {
+        <h3 class="fb-title">💡 Enviar sugestão</h3>
+        <p class="fb-desc">Qual melhoria você gostaria de ver no Convitei?</p>
+        <textarea
+          class="fb-textarea"
+          [value]="message()"
+          (input)="message.set($any($event.target).value)"
+          placeholder="Descreva sua ideia..."
+          maxlength="500"
+          rows="4"
+        ></textarea>
+        <div class="fb-char">{{ message().length }}/500</div>
+        @if (status() === 'error') {
+          <p class="fb-error">Erro ao enviar. Tente novamente.</p>
+        }
+        <div class="fb-actions">
+          <button class="btn-cancel" (click)="close()">Cancelar</button>
+          <button
+            class="btn-send"
+            (click)="submit()"
+            [disabled]="!message().trim() || status() === 'loading'"
+          >
+            {{ status() === 'loading' ? 'Enviando...' : 'Enviar' }}
+          </button>
+        </div>
+      }
+    </div>
+  </div>
+}

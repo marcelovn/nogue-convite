@@ -80,6 +80,14 @@ export class SupabaseService {
     });
   }
 
+  async resetPasswordForEmail(email: string, redirectTo: string) {
+    return this.supabase.auth.resetPasswordForEmail(email, { redirectTo });
+  }
+
+  async updatePassword(newPassword: string) {
+    return this.supabase.auth.updateUser({ password: newPassword });
+  }
+
   onAuthStateChange(callback: (user: any) => void) {
     return this.supabase.auth.onAuthStateChange((event, session) => {
       callback(session?.user || null);

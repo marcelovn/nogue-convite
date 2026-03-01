@@ -1,13 +1,14 @@
 @if (showNavigation()) {
   <nav class="main-nav">
     <div class="nav-container">
-      <div class="nav-brand">
+      <a class="nav-brand" routerLink="/dashboard">
         <img ngSrc="/assets/logo.svg" width="28" height="28" alt="" class="brand-logo" />
         <span class="brand-text">Convitei Eventos</span>
-      </div>
+      </a>
       <div class="nav-links">
-        <a routerLink="/editor" routerLinkActive="active">Criar Grátis</a>
-        <a routerLink="/dashboard" routerLinkActive="active">Painel</a>
+        <a routerLink="/dashboard" routerLinkActive="active">Meus Eventos</a>
+        <a routerLink="/events/new" class="nav-btn-primary">+ Novo Evento</a>
+        <button class="nav-btn-logout" (click)="signOut()">Sair</button>
       </div>
     </div>
   </nav>
@@ -19,6 +20,7 @@
 
 @if (showNavigation()) {
   <footer class="main-footer">
-    <p>Convitei Eventos &copy; 2026 &mdash; Confirmações em minutos no WhatsApp, sem dor de cabeça</p>
+    <p>Convitei Eventos &copy; 2026 &mdash; Organize eventos, crie convites personalizados e gerencie convidados em um só lugar.</p>
   </footer>
+  <app-feedback-button />
 }

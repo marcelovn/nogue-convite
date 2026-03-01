@@ -119,61 +119,102 @@
     <p class="page-subtitle">Crie um convite irrecusável, monitore quantas pessoas comparecerão e evite penetras com nossos convites únicos.</p>
 
     <div class="auth-card">
-      <h2 class="card-title">Entrar</h2>
+      @if (mode() === 'login') {
+        <h2 class="card-title">Entrar</h2>
 
-      <form [formGroup]="loginForm" (ngSubmit)="onLogin()">
-        <div class="form-group">
-          <label for="email">Email</label>
-          <input
-            type="email"
-            id="email"
-            formControlName="email"
-            class="form-input"
-            placeholder="seu@email.com"
-          />
-          @if (loginForm.get('email')?.invalid && loginForm.get('email')?.touched) {
-            <span class="error">Email inválido</span>
+        <form [formGroup]="loginForm" (ngSubmit)="onLogin()">
+          <div class="form-group">
+            <label for="email">Email</label>
+            <input
+              type="email"
+              id="email"
+              formControlName="email"
+              class="form-input"
+              placeholder="seu@email.com"
+            />
+            @if (loginForm.get('email')?.invalid && loginForm.get('email')?.touched) {
+              <span class="error">Email inválido</span>
+            }
+          </div>
+
+          <div class="form-group">
+            <label for="password">Senha</label>
+            <input
+              type="password"
+              id="password"
+              formControlName="password"
+              class="form-input"
+              placeholder="Mínimo 6 caracteres"
+            />
+            @if (loginForm.get('password')?.invalid && loginForm.get('password')?.touched) {
+              <span class="error">Senha é obrigatória</span>
+            }
+            <a class="forgot-link" (click)="mode.set('forgot'); forgotSent.set(false); forgotError.set(null)">
+              Esqueceu a senha?
+            </a>
+          </div>
+
+          @if (error()) {
+            <div class="error-message">{{ error() }}</div>
           }
+
+          <button
+            type="submit"
+            class="btn btn-primary"
+            [disabled]="!loginForm.valid || authService.isLoading()"
+          >
+            @if (authService.isLoading()) {
+              <span class="spinner-small"></span> Entrando...
+            } @else {
+              Entrar
+            }
+          </button>
+        </form>
+
+        <div class="divider-section">
+          <span class="divider-text">ou</span>
         </div>
 
-        <div class="form-group">
-          <label for="password">Senha</label>
-          <input
-            type="password"
-            id="password"
-            formControlName="password"
-            class="form-input"
-            placeholder="Mínimo 6 caracteres"
-          />
-          @if (loginForm.get('password')?.invalid && loginForm.get('password')?.touched) {
-            <span class="error">Senha é obrigatória</span>
+        <p class="auth-footer-link">
+          Não tem conta? <a routerLink="/register">Criar conta</a>
+        </p>
+      } @else {
+        @if (!forgotSent()) {
+          <h2 class="card-title">Recuperar senha</h2>
+          <p class="card-desc">Informe seu e-mail e enviaremos um link para criar uma nova senha.</p>
+          <div class="form-group">
+            <label>Email</label>
+            <input
+              type="email"
+              class="form-input"
+              [value]="forgotEmail()"
+              (input)="forgotEmail.set($any($event.target).value)"
+              placeholder="seu@email.com"
+            />
+          </div>
+          @if (forgotError()) {
+            <div class="error-message">{{ forgotError() }}</div>
           }
-        </div>
-
-        @if (error()) {
-          <div class="error-message">{{ error() }}</div>
+          <button
+            class="btn btn-primary"
+            (click)="sendReset()"
+            [disabled]="!forgotEmail().trim() || authService.isLoading()"
+          >
+            @if (authService.isLoading()) {
+              <span class="spinner-small"></span> Enviando...
+            } @else {
+              Enviar link
+            }
+          </button>
+        } @else {
+          <div class="reset-success">
+            <span class="reset-icon">📬</span>
+            <h2>Link enviado!</h2>
+            <p>Verifique sua caixa de entrada (incluindo spam) e clique no link para redefinir sua senha.</p>
+          </div>
         }
-
-        <button
-          type="submit"
-          class="btn btn-primary"
-          [disabled]="!loginForm.valid || authService.isLoading()"
-        >
-          @if (authService.isLoading()) {
-            <span class="spinner-small"></span> Entrando...
-          } @else {
-            Entrar
-          }
-        </button>
-      </form>
-
-      <div class="divider-section">
-        <span class="divider-text">ou</span>
-      </div>
-
-      <p class="auth-footer-link">
-        Não tem conta? <a routerLink="/register">Criar conta</a>
-      </p>
+        <button class="btn-back-link" (click)="mode.set('login')">← Voltar ao login</button>
+      }
     </div>
 
     <p class="footer-message">Compartilhe momentos especiais</p>

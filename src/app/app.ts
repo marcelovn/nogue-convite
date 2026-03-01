@@ -2,11 +2,12 @@ import { Component, signal, computed } from '@angular/core';
 import { NgOptimizedImage } from '@angular/common';
 import { RouterOutlet, RouterLink, RouterLinkActive, Router, NavigationEnd } from '@angular/router';
 import { AuthService } from './services/auth';
+import { FeedbackButtonComponent } from './components/feedback-button/feedback-button';
 import { filter } from 'rxjs';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, RouterLink, RouterLinkActive, NgOptimizedImage],
+  imports: [RouterOutlet, RouterLink, RouterLinkActive, NgOptimizedImage, FeedbackButtonComponent],
   templateUrl: './app.html',
   styleUrl: './app.scss'
 })
@@ -26,12 +27,19 @@ export class App {
   get isAuthenticated() {
     return this.authService.isAuthenticated;
   }
+
+  async signOut() {
+    await this.authService.logout();
+    this.router.navigate(['/']);
+  }
   
   showNavigation = computed(() => {
-    const isPublicInvite = this.currentRoute().startsWith('/invite/');
-    const isAuthPage = ['login', 'register'].some(page => this.currentRoute().includes(page));
-    
-    return this.isAuthenticated() && !isPublicInvite && !isAuthPage;
+    const route = this.currentRoute();
+    const isPublicInvite = route.startsWith('/invite/');
+    const isAuthPage = ['login', 'register', 'reset-password'].some(page => route.includes(page));
+    const isWelcome = route === '/' || route === '';
+
+    return this.isAuthenticated() && !isPublicInvite && !isAuthPage && !isWelcome;
   });
 
   isPublicInvite = computed(() => {

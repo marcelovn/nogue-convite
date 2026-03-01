@@ -25,14 +25,9 @@
     <div class="dashboard-title-wrap">
       <h1>Meus eventos</h1>
     </div>
-    <div class="dashboard-header-actions">
-      <button class="btn btn-ghost" (click)="logout()">Sair</button>
-      @if (activeTab() === 'events') {
-        <button class="btn btn-primary" (click)="createNewEvent()">Novo evento</button>
-      } @else {
-        <button class="btn btn-primary" (click)="createNew()">Novo convite</button>
-      }
-    </div>
+    @if (activeTab() === 'cards') {
+      <button class="btn btn-primary" (click)="createNew()">+ Novo convite</button>
+    }
   </header>
 
   <!-- Abas -->

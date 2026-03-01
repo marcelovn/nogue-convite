@@ -130,6 +130,20 @@ export class AuthService {
     return this.supabaseService.resendSignupConfirmation(email);
   }
 
+  async sendPasswordReset(email: string) {
+    const redirectTo = `${window.location.origin}/reset-password`;
+    return this.supabaseService.resetPasswordForEmail(email, redirectTo);
+  }
+
+  async updatePassword(newPassword: string) {
+    this.isLoading.set(true);
+    try {
+      return await this.supabaseService.updatePassword(newPassword);
+    } finally {
+      this.isLoading.set(false);
+    }
+  }
+
   isEmailNotConfirmedError(error: { message?: string } | null | undefined): boolean {
     const message = error?.message?.toLowerCase() || '';
     return message.includes('email not confirmed');

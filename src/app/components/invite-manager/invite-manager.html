@@ -16,7 +16,7 @@
         <span class="card-name-badge">{{ p.title }}</span>
       </div>
       <div class="header-actions">
-        <button class="btn btn-ghost" (click)="viewLive()">👁 Ver convite</button>
+        <button class="btn btn-ghost" (click)="viewLive()">Ver convite</button>
         <button
           class="btn btn-primary save-btn"
           [class.saved]="savedSuccess()"
@@ -41,7 +41,6 @@
         <!-- Seção: Texto -->
         <div class="accordion-item" [class.open]="activeSection() === 'text'">
           <button class="accordion-header" (click)="activeSection.set('text')">
-            <span class="acc-icon">✏️</span>
             <span class="acc-title">Texto do convite</span>
             <span class="acc-arrow">{{ activeSection() === 'text' ? '▲' : '▼' }}</span>
           </button>
@@ -81,7 +80,6 @@
         <!-- Seção: Tema -->
         <div class="accordion-item" [class.open]="activeSection() === 'theme'">
           <button class="accordion-header" (click)="activeSection.set('theme')">
-            <span class="acc-icon">🎨</span>
             <span class="acc-title">Tema / Aparência</span>
             <span class="acc-arrow">{{ activeSection() === 'theme' ? '▲' : '▼' }}</span>
           </button>
@@ -95,7 +93,6 @@
         <!-- Seção: Cores -->
         <div class="accordion-item" [class.open]="activeSection() === 'colors'">
           <button class="accordion-header" (click)="activeSection.set('colors')">
-            <span class="acc-icon">🖌️</span>
             <span class="acc-title">Esquema de cores</span>
             <span class="acc-arrow">{{ activeSection() === 'colors' ? '▲' : '▼' }}</span>
           </button>
@@ -109,7 +106,6 @@
         <!-- Seção: Mecânica -->
         <div class="accordion-item" [class.open]="activeSection() === 'mechanic'">
           <button class="accordion-header" (click)="activeSection.set('mechanic')">
-            <span class="acc-icon">🎮</span>
             <span class="acc-title">Mecânica do botão "Não"</span>
             <span class="acc-arrow">{{ activeSection() === 'mechanic' ? '▲' : '▼' }}</span>
           </button>
@@ -122,14 +118,6 @@
                     class="mechanic-card"
                     [class.selected]="selectedMechanic() === mech.id"
                     (click)="selectedMechanic.set($any(mech.id))">
-                    <span class="mechanic-icon">
-                      @switch (mech.id) {
-                        @case ('teleporting')      { 🏃 }
-                        @case ('growing-yes')      { 📈 }
-                        @case ('multiplying-yes')  { ✨ }
-                        @case ('shrinking-no')     { 🔍 }
-                      }
-                    </span>
                     <span class="mechanic-label">{{ mech.label }}</span>
                     <span class="mechanic-desc">{{ mech.description }}</span>
                   </button>
@@ -142,7 +130,6 @@
         <!-- Seção: Desafios -->
         <div class="accordion-item" [class.open]="activeSection() === 'challenges'">
           <button class="accordion-header" (click)="activeSection.set('challenges')">
-            <span class="acc-icon">🧩</span>
             <span class="acc-title">Desafios para desbloqueio</span>
             <span class="acc-arrow">{{ activeSection() === 'challenges' ? '▲' : '▼' }}</span>
           </button>
@@ -180,7 +167,6 @@
         <!-- Seção: Emoji -->
         <div class="accordion-item" [class.open]="activeSection() === 'emoji'">
           <button class="accordion-header" (click)="activeSection.set('emoji')">
-            <span class="acc-icon">✨</span>
             <span class="acc-title">Emoji flutuante</span>
             <span class="acc-arrow">{{ activeSection() === 'emoji' ? '▲' : '▼' }}</span>
           </button>
@@ -205,7 +191,6 @@
         <!-- Seção: Convidados -->
         <div class="accordion-item" [class.open]="activeSection() === 'guests'">
           <button class="accordion-header" (click)="activeSection.set('guests')">
-            <span class="acc-icon">👥</span>
             <span class="acc-title">Lista de Convidados</span>
             <span class="acc-arrow">{{ activeSection() === 'guests' ? '▲' : '▼' }}</span>
           </button>
@@ -288,10 +273,10 @@
               <div class="preview-mechanic-badge">
                 <span>Mecânica: </span>
                 @switch (p.noButtonMechanic) {
-                  @case ('teleporting')     { <strong>Botão foge 🏃</strong> }
-                  @case ('growing-yes')     { <strong>Sim cresce 📈</strong> }
-                  @case ('multiplying-yes') { <strong>Sim multiplica ✨</strong> }
-                  @case ('shrinking-no')    { <strong>Não encolhe 🔍</strong> }
+                  @case ('teleporting')     { <strong>Botão foge</strong> }
+                  @case ('growing-yes')     { <strong>Sim cresce</strong> }
+                  @case ('multiplying-yes') { <strong>Sim multiplica</strong> }
+                  @case ('shrinking-no')    { <strong>Não encolhe</strong> }
                 }
               </div>
             </div>

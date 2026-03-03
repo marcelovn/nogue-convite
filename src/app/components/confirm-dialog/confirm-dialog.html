@@ -1,7 +1,7 @@
 <div class="dialog-backdrop" (click)="cancelled.emit()">
   <div class="dialog-box" (click)="$event.stopPropagation()">
     <div class="dialog-icon" [class.danger]="danger()">
-      @if (danger()) { ⚠️ } @else { ℹ️ }
+      @if (danger()) { ! } @else { i }
     </div>
     <h3 class="dialog-title">{{ title() }}</h3>
     <p class="dialog-message">{{ message() }}</p>

@@ -72,7 +72,6 @@
     <div class="loading">Carregando convidados...</div>
   } @else if (guests().length === 0) {
     <div class="empty-state">
-      <span class="empty-icon">👥</span>
       <p>Nenhum convidado adicionado ainda</p>
       <p class="empty-hint">Adicione convidados para enviar convites personalizados</p>
     </div>
@@ -89,49 +88,79 @@
     <div class="guests-list">
       @for (guest of guests(); track guest.id) {
         <div class="guest-card" [class]="getStatusClass(guest.status)">
-          <div class="guest-info">
-            <span class="guest-name">{{ guest.name }}</span>
-            <span class="guest-phone">{{ formatPhone(guest.phone) }}</span>
-            <span class="guest-status-badge" [class]="getStatusClass(guest.status)">
-              {{ getStatusLabel(guest.status) }}
-            </span>
-            
-            @if (guest.confirmedAt) {
-              <span class="guest-meta">
-                {{ guest.confirmedAt | date:'dd/MM HH:mm' }}
-                @if (guest.adults || guest.children) {
-                  · {{ guest.adults || 0 }} adulto(s), {{ guest.children || 0 }} criança(s)
-                }
+          @if (editingGuestId() === guest.id) {
+            <div class="guest-edit-form">
+              <input
+                type="text"
+                class="input-field"
+                [ngModel]="editGuestName()"
+                (ngModelChange)="editGuestName.set($event)"
+                placeholder="Nome"
+                (keyup.enter)="saveEditGuest(guest)" />
+              <input
+                type="tel"
+                class="input-field"
+                [ngModel]="editGuestPhone()"
+                (ngModelChange)="editGuestPhone.set($event)"
+                placeholder="Telefone"
+                (keyup.enter)="saveEditGuest(guest)" />
+              <div class="guest-edit-actions">
+                <button class="btn btn-sm btn-primary" (click)="saveEditGuest(guest)" [disabled]="!editGuestName().trim()">Salvar</button>
+                <button class="btn btn-sm btn-ghost" (click)="cancelEditGuest()">Cancelar</button>
+              </div>
+            </div>
+          } @else {
+            <div class="guest-info">
+              <span class="guest-name">{{ guest.name }}</span>
+              <span class="guest-phone">{{ formatPhone(guest.phone) }}</span>
+              <span class="guest-status-badge" [class]="getStatusClass(guest.status)">
+                {{ getStatusLabel(guest.status) }}
               </span>
-            } @else if (guest.sentAt) {
-              <span class="guest-meta">
-                Enviado · {{ guest.sentAt | date:'dd/MM HH:mm' }}
-              </span>
-            }
-          </div>
-          
-          <div class="guest-actions">
-            <button 
-              class="btn btn-sm btn-whatsapp" 
-              (click)="sendWhatsApp(guest)"
-              title="Enviar pelo WhatsApp">
-              WhatsApp
-            </button>
-            
-            <button 
-              class="btn btn-sm btn-ghost" 
-              (click)="copyLink(guest)"
-              title="Copiar link">
-              {{ linkCopied() === guest.id ? '✓' : 'Link' }}
-            </button>
-            
-            <button 
-              class="btn btn-sm btn-ghost btn-danger" 
-              (click)="deleteGuest(guest.id!, guest.name)"
-              title="Remover">
-              ✕
-            </button>
-          </div>
+
+              @if (guest.confirmedAt) {
+                <span class="guest-meta">
+                  {{ guest.confirmedAt | date:'dd/MM HH:mm' }}
+                  @if (guest.adults || guest.children) {
+                    · {{ guest.adults || 0 }} adulto(s), {{ guest.children || 0 }} criança(s)
+                  }
+                </span>
+              } @else if (guest.sentAt) {
+                <span class="guest-meta">
+                  Enviado · {{ guest.sentAt | date:'dd/MM HH:mm' }}
+                </span>
+              }
+            </div>
+
+            <div class="guest-actions">
+              <button
+                class="btn btn-sm btn-whatsapp"
+                (click)="sendWhatsApp(guest)"
+                title="Enviar pelo WhatsApp">
+                WhatsApp
+              </button>
+
+              <button
+                class="btn btn-sm btn-ghost"
+                (click)="copyLink(guest)"
+                title="Copiar link">
+                {{ linkCopied() === guest.id ? '✓' : 'Link' }}
+              </button>
+
+              <button
+                class="btn btn-sm btn-ghost"
+                (click)="startEditGuest(guest)"
+                title="Editar">
+                Editar
+              </button>
+
+              <button
+                class="btn btn-sm btn-ghost btn-danger"
+                (click)="deleteGuest(guest.id!, guest.name)"
+                title="Remover">
+                ×
+              </button>
+            </div>
+          }
         </div>
       }
     </div>

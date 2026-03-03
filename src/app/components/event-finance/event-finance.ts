@@ -4,6 +4,16 @@ import { CommonModule, CurrencyPipe } from '@angular/common';
 import { EventFinanceService } from '../../services/event-finance.service';
 import { EventExpense } from '../../models/event.model';
 
+const EXPENSE_CATEGORIES = [
+  { id: 'alimentacao', label: 'Alimentação' },
+  { id: 'decoracao',   label: 'Decoração'   },
+  { id: 'espaco',      label: 'Espaço'      },
+  { id: 'musica',      label: 'Música'      },
+  { id: 'fotografia',  label: 'Fotografia'  },
+  { id: 'transporte',  label: 'Transporte'  },
+  { id: 'outros',      label: 'Outros'      },
+];
+
 @Component({
   selector: 'app-event-finance',
   imports: [FormsModule, CommonModule, CurrencyPipe],
@@ -13,6 +23,33 @@ import { EventExpense } from '../../models/event.model';
 export class EventFinanceComponent implements OnInit {
   @Input({ required: true }) eventId!: string;
   @Input() budgetTotal?: number;
+
+  readonly EXPENSE_CATEGORIES = EXPENSE_CATEGORIES;
+
+  getCategoryLabel(id: string | undefined): string {
+    if (!id) return '';
+    return EXPENSE_CATEGORIES.find(c => c.id === id)?.label ?? id;
+  }
+
+  isOverdue(expense: EventExpense): boolean {
+    if (!expense.dueDate || expense.paid) return false;
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const [y, m, d] = expense.dueDate.split('-').map(Number);
+    return new Date(y, m - 1, d) < today;
+  }
+
+  dueDateLabel(expense: EventExpense): string {
+    if (!expense.dueDate) return '';
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const [y, m, d] = expense.dueDate.split('-').map(Number);
+    const due = new Date(y, m - 1, d);
+    const diff = Math.round((due.getTime() - today.getTime()) / 86400000);
+    if (diff < 0) return `Vencido há ${-diff} dia${-diff !== 1 ? 's' : ''}`;
+    if (diff === 0) return 'Vence hoje';
+    return `Vence em ${diff} dia${diff !== 1 ? 's' : ''}`;
+  }
 
   private financeService = inject(EventFinanceService);
 
@@ -43,6 +80,8 @@ export class EventFinanceComponent implements OnInit {
   addingExpense = signal(false);
   newExpDesc = signal('');
   newExpAmount = signal('');
+  newExpCategory = signal('outros');
+  newExpDueDate = signal('');
   newExpSupplierName = signal('');
   newExpSupplierContact = signal('');
   showSupplierFields = signal(false);
@@ -56,6 +95,8 @@ export class EventFinanceComponent implements OnInit {
   editingId = signal<string | null>(null);
   editDescription = signal('');
   editAmount = signal('');
+  editCategory = signal('outros');
+  editDueDate = signal('');
   editSupplierName = signal('');
   editSupplierContact = signal('');
 
@@ -82,6 +123,8 @@ export class EventFinanceComponent implements OnInit {
     this.addingExpense.set(true);
     this.newExpDesc.set('');
     this.newExpAmount.set('');
+    this.newExpCategory.set('outros');
+    this.newExpDueDate.set('');
     this.newExpSupplierName.set('');
     this.newExpSupplierContact.set('');
     this.showSupplierFields.set(false);
@@ -101,6 +144,8 @@ export class EventFinanceComponent implements OnInit {
         amount: Number(this.newExpAmount()),
         expenseType: 'expense',
         paid: false,
+        category: this.newExpCategory() || undefined,
+        dueDate: this.newExpDueDate() || undefined,
         supplierName: this.newExpSupplierName().trim() || undefined,
         supplierContact: this.newExpSupplierContact().trim() || undefined,
       });
@@ -141,6 +186,8 @@ export class EventFinanceComponent implements OnInit {
     this.editingId.set(expense.id!);
     this.editDescription.set(expense.description);
     this.editAmount.set(String(expense.amount));
+    this.editCategory.set(expense.category ?? 'outros');
+    this.editDueDate.set(expense.dueDate ?? '');
     this.editSupplierName.set(expense.supplierName ?? '');
     this.editSupplierContact.set(expense.supplierContact ?? '');
     this.addingExpense.set(false);
@@ -157,6 +204,8 @@ export class EventFinanceComponent implements OnInit {
       await this.financeService.updateExpense(expense.id!, {
         description: this.editDescription().trim(),
         amount: Number(this.editAmount()),
+        category: expense.expenseType !== 'receipt' ? this.editCategory() || undefined : undefined,
+        dueDate: expense.expenseType !== 'receipt' ? this.editDueDate() || undefined : undefined,
         supplierName: expense.expenseType !== 'receipt' ? this.editSupplierName().trim() || undefined : undefined,
         supplierContact: expense.expenseType !== 'receipt' ? this.editSupplierContact().trim() || undefined : undefined,
       });

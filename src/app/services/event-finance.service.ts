@@ -62,6 +62,8 @@ export class EventFinanceService {
 
     if (expense.supplierName) insertData.supplier_name = expense.supplierName;
     if (expense.supplierContact) insertData.supplier_contact = expense.supplierContact;
+    if (expense.category) insertData.category = expense.category;
+    if (expense.dueDate) insertData.due_date = expense.dueDate;
 
     const { data, error } = await this.supabaseService.getClient()
       .from('event_expenses')
@@ -83,6 +85,8 @@ export class EventFinanceService {
     if (updates.paid !== undefined) updateData.paid = updates.paid;
     if (updates.supplierName !== undefined) updateData.supplier_name = updates.supplierName;
     if (updates.supplierContact !== undefined) updateData.supplier_contact = updates.supplierContact;
+    if (updates.category !== undefined) updateData.category = updates.category;
+    if (updates.dueDate !== undefined) updateData.due_date = updates.dueDate;
 
     const { error } = await this.supabaseService.getClient()
       .from('event_expenses')
@@ -119,6 +123,8 @@ export class EventFinanceService {
       amount: row.amount,
       expenseType: row.expense_type,
       paid: row.paid ?? false,
+      category: row.category ?? undefined,
+      dueDate: row.due_date ?? undefined,
       supplierName: row.supplier_name ?? undefined,
       supplierContact: row.supplier_contact ?? undefined,
       createdAt: row.created_at ? new Date(row.created_at) : undefined,

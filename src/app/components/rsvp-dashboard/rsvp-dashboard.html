@@ -61,7 +61,6 @@
       </div>
     } @else if (events().length === 0) {
       <div class="empty-state card-base">
-        <span class="empty-icon">🎉</span>
         <h2>Nenhum evento criado</h2>
         <p>Crie um evento para organizar convite, convidados e finanças em um só lugar</p>
         <button class="btn btn-primary" (click)="createNewEvent()">Criar evento</button>
@@ -69,25 +68,30 @@
     } @else {
       <div class="cards-grid">
         @for (event of events(); track event.id) {
+          @let status = getEventStatus(event);
           <div class="dashboard-card card-base event-card" (click)="openEvent(event.id!)">
             <div class="card-header">
-              <h3>{{ event.name }}</h3>
+              <div class="event-card-title-row">
+                <h3>{{ event.name }}</h3>
+                <span class="event-status-badge event-status-{{ status }}">{{ getEventStatusLabel(status) }}</span>
+              </div>
               @if (event.eventDate) {
-                <span class="card-date">📅 {{ event.eventDate | date:'dd/MM/yyyy':'':'pt-BR' }}</span>
+                <span class="card-date">{{ event.eventDate | date:'dd/MM/yyyy':'':'pt-BR' }}</span>
               }
               @if (event.eventLocation) {
-                <span class="card-date">📍 {{ event.eventLocation }}</span>
+                <span class="card-date">{{ event.eventLocation }}</span>
               }
             </div>
             <div class="event-card-footer">
               @if (event.card) {
-                <span class="event-badge event-badge-invite">💌 Convite criado</span>
+                <span class="event-badge event-badge-invite">Convite criado</span>
               } @else {
                 <span class="event-badge event-badge-no-invite">Sem convite</span>
               }
-              <button class="btn btn-primary btn-sm" (click)="openEvent(event.id!); $event.stopPropagation()">
-                Gerenciar
-              </button>
+              <div class="event-card-actions">
+                <button class="btn btn-ghost btn-sm" (click)="duplicateEvent(event, $event)" title="Duplicar evento">Duplicar</button>
+                <button class="btn btn-primary btn-sm" (click)="openEvent(event.id!); $event.stopPropagation()">Gerenciar</button>
+              </div>
             </div>
           </div>
         }
@@ -126,7 +130,6 @@
       </div>
     } @else if (standaloneCards().length === 0) {
       <div class="empty-state card-base">
-        <span class="empty-icon">📫</span>
         <h2>Nenhum convite avulso</h2>
         <p>Crie um convite rápido sem precisar criar um evento</p>
         <button class="btn btn-primary" (click)="createNew()">Criar convite</button>
@@ -143,15 +146,12 @@
             @if (openMenuId() === card.id) {
               <div class="card-dropdown-menu">
                 <button class="dropdown-item" (click)="copyLink(card.id!); closeMenu()">
-                  <span class="dropdown-icon">🔗</span>
                   {{ linkCopied() === card.id ? '✓ Link copiado' : 'Copiar link' }}
                 </button>
                 <button class="dropdown-item dropdown-warning" (click)="clearResponses(card.id!); closeMenu()">
-                  <span class="dropdown-icon">↺</span>
                   Zerar respostas
                 </button>
                 <button class="dropdown-item dropdown-danger" (click)="deleteCard(card.id!); closeMenu()">
-                  <span class="dropdown-icon">🗑️</span>
                   Excluir convite
                 </button>
               </div>

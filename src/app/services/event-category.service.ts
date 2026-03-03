@@ -60,6 +60,18 @@ export class EventCategoryService {
     );
   }
 
+  /** Busca categorias sem alterar o signal (usado p/ duplicação de evento) */
+  async getCategoriesForEvent(eventId: string): Promise<EventCategory[]> {
+    const { data, error } = await this.supabaseService.getClient()
+      .from('event_categories')
+      .select('*')
+      .eq('event_id', eventId)
+      .order('display_order', { ascending: true });
+
+    if (error) throw error;
+    return (data || []).map(this.mapCategory);
+  }
+
   async deleteCategory(id: string): Promise<void> {
     const { error } = await this.supabaseService.getClient()
       .from('event_categories')

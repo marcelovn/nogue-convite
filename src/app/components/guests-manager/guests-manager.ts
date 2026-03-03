@@ -27,6 +27,10 @@ export class GuestsManager implements OnInit {
   linkCopied = signal<string | null>(null);
   showImportForm = signal(false);
   bulkImportText = signal('');
+
+  editingGuestId = signal<string | null>(null);
+  editGuestName = signal('');
+  editGuestPhone = signal('');
   
   importLinesCount = computed(() => {
     return this.bulkImportText()
@@ -161,6 +165,31 @@ export class GuestsManager implements OnInit {
       alert('Erro ao importar convidados');
     } finally {
       this.isLoading.set(false);
+    }
+  }
+
+  startEditGuest(guest: Guest): void {
+    this.editingGuestId.set(guest.id!);
+    this.editGuestName.set(guest.name);
+    this.editGuestPhone.set(guest.phone);
+  }
+
+  cancelEditGuest(): void {
+    this.editingGuestId.set(null);
+    this.editGuestName.set('');
+    this.editGuestPhone.set('');
+  }
+
+  async saveEditGuest(guest: Guest): Promise<void> {
+    const name = this.editGuestName().trim();
+    const phone = this.editGuestPhone().trim();
+    if (!name || !phone) return;
+    try {
+      await this.guestService.updateGuest(guest.id!, { name, phone });
+      this.editingGuestId.set(null);
+      await this.loadGuests();
+    } catch (error) {
+      console.error('Erro ao salvar convidado:', error);
     }
   }
 

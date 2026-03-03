@@ -1,3 +1,14 @@
+@if (confirmDeleteCategoryId()) {
+  <app-confirm-dialog
+    title="Excluir seção"
+    message="Tem certeza que deseja excluir esta seção? Todos os itens dentro dela serão removidos."
+    confirmLabel="Excluir"
+    cancelLabel="Cancelar"
+    [danger]="true"
+    (confirmed)="confirmDeleteCategory()"
+    (cancelled)="confirmDeleteCategoryId.set(null)" />
+}
+
 @if (confirmDeleteCardId()) {
   <app-confirm-dialog
     title="Excluir convite"
@@ -36,9 +47,15 @@
           ← Dashboard
         </button>
         <h1 class="event-name">{{ ev.name }}</h1>
-        @if (eventTypeLabel()) {
-          <span class="event-type-badge">{{ eventTypeLabel() }}</span>
-        }
+        <div class="event-badges">
+          @if (eventTypeLabel()) {
+            <span class="event-type-badge">{{ eventTypeLabel() }}</span>
+          }
+          @let status = eventStatus();
+          <span class="event-status-badge event-status-{{ status }}">
+            {{ status === 'planning' ? 'Planejando' : status === 'upcoming' ? 'Em breve' : 'Realizado' }}
+          </span>
+        </div>
       </div>
       <div class="event-header-actions">
         <button class="btn btn-ghost" (click)="editEvent()">Editar evento</button>
@@ -50,7 +67,6 @@
       <div class="section-row">
         @if (eventDateFormatted()) {
           <div class="detail-item">
-            <span class="detail-icon">📅</span>
             <div>
               <span class="detail-label">Data</span>
               <span class="detail-value">{{ eventDateFormatted() }}{{ ev.eventTime ? ' às ' + ev.eventTime : '' }}</span>
@@ -59,7 +75,6 @@
         }
         @if (ev.eventLocation) {
           <div class="detail-item">
-            <span class="detail-icon">📍</span>
             <div>
               <span class="detail-label">Local</span>
               <a class="detail-value detail-link" [href]="googleMapsUrl()" target="_blank" rel="noopener noreferrer">
@@ -70,7 +85,6 @@
         }
         @if (ev.budgetTotal) {
           <div class="detail-item">
-            <span class="detail-icon">🎯</span>
             <div>
               <span class="detail-label">Orçamento</span>
               <span class="detail-value">R$ {{ ev.budgetTotal | number:'1.2-2' }}</span>
@@ -80,17 +94,56 @@
       </div>
       @if (ev.additionalNotes) {
         <div class="detail-notes">
-          <span class="detail-icon">📝</span>
           <span>{{ ev.additionalNotes }}</span>
         </div>
       }
+      @if (ev.eventDate) {
+        <div class="detail-calendar">
+          <a class="btn-calendar-link" [href]="googleCalendarUrl()" target="_blank" rel="noopener noreferrer">
+            Adicionar ao Google Agenda
+          </a>
+        </div>
+      }
     </div>
+
+    <!-- Mini dashboard de stats -->
+    @let days = daysUntilEvent();
+    @let bp = budgetPercent();
+    @let tp = taskProgress();
+    @let gs = guestStats();
+    @if (days !== null || gs !== null || bp !== null || tp !== null) {
+      <div class="stats-grid">
+        @if (days !== null) {
+          <div class="stat-card" [class.stat-card-upcoming]="days >= 0 && days <= 14" [class.stat-card-done]="days < 0">
+            <span class="stat-card-value">{{ days < 0 ? -days : days }}</span>
+            <span class="stat-card-label">{{ days < 0 ? 'dias após' : days === 0 ? 'hoje!' : 'dias restantes' }}</span>
+          </div>
+        }
+        @if (gs !== null) {
+          <div class="stat-card stat-card-confirmed">
+            <span class="stat-card-value">{{ gs.confirmed }}</span>
+            <span class="stat-card-label">Confirmados</span>
+          </div>
+        }
+        @if (bp !== null) {
+          <div class="stat-card" [class.stat-card-warning]="bp > 80" [class.stat-card-danger]="bp >= 100">
+            <span class="stat-card-value">{{ bp }}%</span>
+            <span class="stat-card-label">Orçamento usado</span>
+          </div>
+        }
+        @if (tp !== null) {
+          <div class="stat-card">
+            <span class="stat-card-value">{{ tp.done }}/{{ tp.total }}</span>
+            <span class="stat-card-label">Tarefas feitas</span>
+          </div>
+        }
+      </div>
+    }
 
     <!-- Convite -->
     <div class="accordion-section card-base">
       <button class="accordion-header" (click)="toggleSection('invite')">
         <span class="acc-left">
-          <span class="acc-icon">💌</span>
           <span class="acc-title">Convite</span>
         </span>
         <span class="acc-arrow">{{ openSection() === 'invite' ? '▲' : '▼' }}</span>
@@ -146,7 +199,6 @@
     <div class="accordion-section card-base">
       <button class="accordion-header" (click)="toggleSection('guests')">
         <span class="acc-left">
-          <span class="acc-icon">👥</span>
           <span class="acc-title">Convidados</span>
         </span>
         <span class="acc-arrow">{{ openSection() === 'guests' ? '▲' : '▼' }}</span>
@@ -173,7 +225,6 @@
     <div class="accordion-section card-base">
       <button class="accordion-header" (click)="toggleSection('finance')">
         <span class="acc-left">
-          <span class="acc-icon">💸</span>
           <span class="acc-title">Gastos</span>
         </span>
         <span class="acc-arrow">{{ openSection() === 'finance' ? '▲' : '▼' }}</span>
@@ -189,11 +240,10 @@
     </div>
 
     <!-- Seções Customizadas -->
-    @for (cat of categories(); track cat.id) {
+    @for (cat of categories(); track cat.id; let first = $first, last = $last) {
       <div class="accordion-section card-base">
         <button class="accordion-header" (click)="toggleSection('cat-' + cat.id)">
           <span class="acc-left">
-            <span class="acc-icon">📋</span>
             @if (editingCategoryId() === cat.id) {
               <input
                 class="category-name-input"
@@ -206,11 +256,13 @@
               <button class="btn btn-ghost btn-xs" (click)="editingCategoryId.set(null); $event.stopPropagation()">✕</button>
             } @else {
               <span class="acc-title">{{ cat.name }}</span>
-              <button class="btn-icon-sm" (click)="startEditCategory(cat); $event.stopPropagation()" title="Renomear">✏️</button>
+              <button class="btn-icon-sm" (click)="startEditCategory(cat); $event.stopPropagation()" title="Renomear">Editar</button>
             }
           </span>
           <div class="acc-right">
-            <button class="btn-icon-sm btn-danger" (click)="deleteCategory(cat.id!); $event.stopPropagation()" title="Excluir seção">🗑️</button>
+            <button class="btn-icon-sm move-btn" (click)="moveCategory(cat.id!, 'up'); $event.stopPropagation()" [disabled]="first" title="Mover para cima">▲</button>
+            <button class="btn-icon-sm move-btn" (click)="moveCategory(cat.id!, 'down'); $event.stopPropagation()" [disabled]="last" title="Mover para baixo">▼</button>
+            <button class="btn-icon-sm btn-danger" (click)="deleteCategory(cat.id!); $event.stopPropagation()" title="Excluir seção">×</button>
             <span class="acc-arrow">{{ openSection() === 'cat-' + cat.id ? '▲' : '▼' }}</span>
           </div>
         </button>
@@ -258,20 +310,39 @@
     <!-- Adicionar seção customizada -->
     <div class="add-section-wrap">
       @if (showAddCategory()) {
-        <div class="add-category-form card-base">
-          <input
-            type="text"
-            placeholder="Nome da seção (ex: Cardápio, Decoração)"
-            [ngModel]="newCategoryName()"
-            (ngModelChange)="newCategoryName.set($event)"
-            (keyup.enter)="addCategory()" />
-          <div class="add-category-actions">
-            <button class="btn btn-primary btn-sm" (click)="addCategory()" [disabled]="!newCategoryName().trim()">Criar</button>
-            <button class="btn btn-ghost btn-sm" (click)="showAddCategory.set(false); newCategoryName.set('')">Cancelar</button>
+        @if (showTemplatePanel()) {
+          <div class="template-panel card-base">
+            <div class="template-panel-header">
+              <span>Escolha um modelo de seção</span>
+              <button class="btn btn-ghost btn-sm" (click)="showAddCategory.set(false); showTemplatePanel.set(false)">Cancelar</button>
+            </div>
+            <div class="template-grid">
+              @for (tpl of SECTION_TEMPLATES; track tpl.name) {
+                <button class="template-card" (click)="addCategoryFromTemplate(tpl)">
+                  <span class="template-name">{{ tpl.name }}</span>
+                </button>
+              }
+              <button class="template-card template-blank" (click)="showTemplatePanel.set(false)">
+                <span class="template-name">Em branco</span>
+              </button>
+            </div>
           </div>
-        </div>
+        } @else {
+          <div class="add-category-form card-base">
+            <input
+              type="text"
+              placeholder="Nome da seção (ex: Cardápio, Decoração)"
+              [ngModel]="newCategoryName()"
+              (ngModelChange)="newCategoryName.set($event)"
+              (keyup.enter)="addCategory()" />
+            <div class="add-category-actions">
+              <button class="btn btn-primary btn-sm" (click)="addCategory()" [disabled]="!newCategoryName().trim()">Criar</button>
+              <button class="btn btn-ghost btn-sm" (click)="showAddCategory.set(false); newCategoryName.set('')">Cancelar</button>
+            </div>
+          </div>
+        }
       } @else {
-        <button class="btn-add-section" (click)="showAddCategory.set(true)">
+        <button class="btn-add-section" (click)="showAddCategory.set(true); showTemplatePanel.set(true)">
           + Adicionar seção
         </button>
       }

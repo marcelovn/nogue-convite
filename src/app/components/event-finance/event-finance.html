@@ -25,7 +25,7 @@
       <span class="summary-value" [class.negative]="totalCommitted() > 0">{{ totalCommitted() | currency:'BRL':'symbol':'1.2-2' }}</span>
     </div>
     <div class="summary-item">
-      <span class="summary-label">Pago ✅</span>
+      <span class="summary-label">Pago</span>
       <span class="summary-value paid">{{ totalPaid() | currency:'BRL':'symbol':'1.2-2' }}</span>
     </div>
     <div class="summary-item">
@@ -37,7 +37,7 @@
   <!-- Linha de entradas -->
   @if (totalReceipts() > 0 || entradas().length > 0) {
     <div class="receipts-summary">
-      🎁 Entradas recebidas:
+      Entradas recebidas:
       <strong>{{ totalReceipts() | currency:'BRL':'symbol':'1.2-2' }}</strong>
     </div>
   }
@@ -45,7 +45,7 @@
   <!-- Seção Gastos -->
   <div class="finance-section">
     <button class="section-toggle" (click)="expenseSectionOpen.set(!expenseSectionOpen())">
-      <span>💸 Gastos ({{ gastos().length }})</span>
+      <span>Gastos ({{ gastos().length }})</span>
       <span class="toggle-arrow">{{ expenseSectionOpen() ? '▲' : '▼' }}</span>
     </button>
 
@@ -56,6 +56,14 @@
             <div class="expense-edit-row">
               <input type="text" placeholder="Descrição" [ngModel]="editDescription()" (ngModelChange)="editDescription.set($event)" />
               <input type="number" placeholder="Valor" [ngModel]="editAmount()" (ngModelChange)="editAmount.set($event)" />
+              <div class="add-row-secondary">
+                <select [ngModel]="editCategory()" (ngModelChange)="editCategory.set($event)" class="expense-select">
+                  @for (cat of EXPENSE_CATEGORIES; track cat.id) {
+                    <option [value]="cat.id">{{ cat.label }}</option>
+                  }
+                </select>
+                <input type="date" [ngModel]="editDueDate()" (ngModelChange)="editDueDate.set($event)" class="expense-date" />
+              </div>
               <input type="text" placeholder="Fornecedor (opcional)" [ngModel]="editSupplierName()" (ngModelChange)="editSupplierName.set($event)" />
               <input type="text" placeholder="Contato (opcional)" [ngModel]="editSupplierContact()" (ngModelChange)="editSupplierContact.set($event)" />
               <div class="edit-actions">
@@ -64,26 +72,34 @@
               </div>
             </div>
           } @else {
-            <div class="expense-row">
+            <div class="expense-row" [class.expense-overdue]="isOverdue(e)">
               <button
                 class="paid-toggle"
                 [class.is-paid]="e.paid"
                 (click)="togglePaid(e)"
                 [title]="e.paid ? 'Marcar como pendente' : 'Marcar como pago'">
-                {{ e.paid ? '✅' : '⏳' }}
+                {{ e.paid ? '✓' : '○' }}
               </button>
               <div class="expense-main">
-                <span class="expense-desc">{{ e.description }}</span>
+                <div class="expense-desc-row">
+                  <span class="expense-desc">{{ e.description }}</span>
+                  @if (e.category) {
+                    <span class="expense-category-badge">{{ getCategoryLabel(e.category) }}</span>
+                  }
+                </div>
                 @if (e.supplierName) {
                   <span class="expense-meta">{{ e.supplierName }}{{ e.supplierContact ? ' · ' + e.supplierContact : '' }}</span>
+                }
+                @if (e.dueDate && !e.paid) {
+                  <span class="due-date-label" [class.overdue-label]="isOverdue(e)">{{ dueDateLabel(e) }}</span>
                 }
               </div>
               <span class="expense-amount" [class.paid-amount]="e.paid">
                 {{ e.amount | currency:'BRL':'symbol':'1.2-2' }}
               </span>
               <div class="expense-actions">
-                <button class="btn-icon" (click)="startEdit(e)" title="Editar">✏️</button>
-                <button class="btn-icon btn-icon-danger" (click)="deleteExpense(e.id!)" title="Excluir">🗑️</button>
+                <button class="btn-icon" (click)="startEdit(e)" title="Editar">Editar</button>
+                <button class="btn-icon btn-icon-danger" (click)="deleteExpense(e.id!)" title="Excluir">×</button>
               </div>
             </div>
           }
@@ -94,6 +110,14 @@
             <div class="add-row-main">
               <input type="text" placeholder="Descrição *" [ngModel]="newExpDesc()" (ngModelChange)="newExpDesc.set($event)" />
               <input type="number" placeholder="Valor *" [ngModel]="newExpAmount()" (ngModelChange)="newExpAmount.set($event)" />
+            </div>
+            <div class="add-row-secondary">
+              <select [ngModel]="newExpCategory()" (ngModelChange)="newExpCategory.set($event)" class="expense-select">
+                @for (cat of EXPENSE_CATEGORIES; track cat.id) {
+                  <option [value]="cat.id">{{ cat.label }}</option>
+                }
+              </select>
+              <input type="date" [ngModel]="newExpDueDate()" (ngModelChange)="newExpDueDate.set($event)" class="expense-date" />
             </div>
             <button class="btn-supplier-toggle" (click)="showSupplierFields.set(!showSupplierFields())">
               {{ showSupplierFields() ? '▲ Ocultar fornecedor' : '+ Informar fornecedor' }}
@@ -119,7 +143,7 @@
   <!-- Seção Entradas -->
   <div class="finance-section">
     <button class="section-toggle" (click)="receiptSectionOpen.set(!receiptSectionOpen())">
-      <span>🎁 Entradas / Presentes ({{ entradas().length }})</span>
+      <span>Entradas / Presentes ({{ entradas().length }})</span>
       <span class="toggle-arrow">{{ receiptSectionOpen() ? '▲' : '▼' }}</span>
     </button>
 
@@ -142,8 +166,8 @@
               </div>
               <span class="expense-amount paid-amount">{{ e.amount | currency:'BRL':'symbol':'1.2-2' }}</span>
               <div class="expense-actions">
-                <button class="btn-icon" (click)="startEdit(e)" title="Editar">✏️</button>
-                <button class="btn-icon btn-icon-danger" (click)="deleteExpense(e.id!)" title="Excluir">🗑️</button>
+                <button class="btn-icon" (click)="startEdit(e)" title="Editar">Editar</button>
+                <button class="btn-icon btn-icon-danger" (click)="deleteExpense(e.id!)" title="Excluir">×</button>
               </div>
             </div>
           }

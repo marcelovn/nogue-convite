@@ -4,11 +4,12 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { EventService } from '../../services/event.service';
 import { EventCategoryService } from '../../services/event-category.service';
+import { EventFinanceService } from '../../services/event-finance.service';
 import { InviteTokenService } from '../../services/invite-token';
 import { CardService } from '../../services/card';
 import { GuestService } from '../../services/guest.service';
 import { RsvpService } from '../../services/rsvp';
-import { AppEvent, EventCategory, NoteItem, EVENT_TYPE_LABELS } from '../../models/event.model';
+import { AppEvent, EventCategory, NoteItem, EVENT_TYPE_LABELS, EventStatus, computeEventStatus } from '../../models/event.model';
 import { Card } from '../../models/card.model';
 import { COLOR_SCHEMES } from '../../models/constants';
 import { GuestsManager } from '../guests-manager/guests-manager';
@@ -26,6 +27,7 @@ export class EventDetailComponent implements OnInit {
   readonly router = inject(Router);
   private eventService = inject(EventService);
   private categoryService = inject(EventCategoryService);
+  private financeService = inject(EventFinanceService);
   private inviteTokenService = inject(InviteTokenService);
   private cardService = inject(CardService);
   private guestService = inject(GuestService);
@@ -36,14 +38,24 @@ export class EventDetailComponent implements OnInit {
   linkCopied = signal(false);
   confirmDeleteEventId = signal<string | null>(null);
   confirmDeleteCardId = signal<string | null>(null);
+  confirmDeleteCategoryId = signal<string | null>(null);
 
   // Categories
   categories = this.categoryService.categories;
   newCategoryName = signal('');
   showAddCategory = signal(false);
+  showTemplatePanel = signal(false);
   editingCategoryId = signal<string | null>(null);
   editingCategoryName = signal('');
   newItemDraft = signal<Record<string, string>>({});
+
+  readonly SECTION_TEMPLATES = [
+    { name: 'Cardápio', items: ['Entrada', 'Prato principal', 'Sobremesa', 'Bebidas'] },
+    { name: 'Compras', items: ['Decoração', 'Comida', 'Bebidas', 'Lembranças'] },
+    { name: 'Decoração', items: ['Balões', 'Mesa de bolo', 'Flores', 'Iluminação'] },
+    { name: 'Programação', items: ['Abertura', 'Jantar', 'Brincadeiras', 'Encerramento'] },
+    { name: 'Fotografia', items: ['Entrada', 'Mesa do bolo', 'Família', 'Grupo geral'] },
+  ];
 
   getNewItemDraft(catId: string): string {
     return this.newItemDraft()[catId] ?? '';
@@ -93,6 +105,54 @@ export class EventDetailComponent implements OnInit {
 
   // Open sections
   openSection = signal<string | null>('invite');
+
+  // --- Computed signals ---
+  readonly eventStatus = computed<EventStatus>(() => computeEventStatus(this.event()));
+
+  readonly daysUntilEvent = computed<number | null>(() => {
+    const dateStr = this.event()?.eventDate;
+    if (!dateStr) return null;
+    const [y, m, d] = dateStr.split('-').map(Number);
+    const eventDate = new Date(y, m - 1, d);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    return Math.round((eventDate.getTime() - today.getTime()) / 86400000);
+  });
+
+  readonly budgetPercent = computed<number | null>(() => {
+    const budget = this.event()?.budgetTotal;
+    if (!budget) return null;
+    const committed = this.financeService.totalCommitted();
+    return Math.min(100, Math.round((committed / budget) * 100));
+  });
+
+  readonly taskProgress = computed<{ done: number; total: number } | null>(() => {
+    const cats = this.categories();
+    if (cats.length === 0) return null;
+    let done = 0, total = 0;
+    for (const cat of cats) {
+      const items = this.getNoteItems(cat.notes);
+      done += items.filter(i => i.done).length;
+      total += items.length;
+    }
+    return total === 0 ? null : { done, total };
+  });
+
+  readonly googleCalendarUrl = computed<string>(() => {
+    const ev = this.event();
+    if (!ev?.eventDate) return '';
+    const dateStr = ev.eventDate.replace(/-/g, '');
+    const dates = ev.eventTime
+      ? `${dateStr}T${ev.eventTime.replace(':', '')}00/${dateStr}T${ev.eventTime.replace(':', '')}00`
+      : `${dateStr}/${dateStr}`;
+    const url = new URL('https://calendar.google.com/calendar/render');
+    url.searchParams.set('action', 'TEMPLATE');
+    url.searchParams.set('text', ev.name);
+    url.searchParams.set('dates', dates);
+    if (ev.eventLocation) url.searchParams.set('location', ev.eventLocation);
+    if (ev.additionalNotes) url.searchParams.set('details', ev.additionalNotes);
+    return url.toString();
+  });
 
   readonly card = computed(() => this.event()?.card ?? null);
 
@@ -150,6 +210,7 @@ export class EventDetailComponent implements OnInit {
 
     this.loadEvent(eventId);
     this.categoryService.loadCategoriesByEvent(eventId);
+    this.financeService.loadExpensesByEvent(eventId).catch(() => {});
   }
 
   private async loadEvent(id: string): Promise<void> {
@@ -258,6 +319,50 @@ export class EventDetailComponent implements OnInit {
     }
   }
 
+  // Reordenar seções
+  async moveCategory(id: string, direction: 'up' | 'down'): Promise<void> {
+    const cats = this.categories();
+    const idx = cats.findIndex(c => c.id === id);
+    if (idx === -1) return;
+    const targetIdx = direction === 'up' ? idx - 1 : idx + 1;
+    if (targetIdx < 0 || targetIdx >= cats.length) return;
+
+    const current = cats[idx];
+    const target = cats[targetIdx];
+    const currentOrder = current.displayOrder ?? idx;
+    const targetOrder = target.displayOrder ?? targetIdx;
+
+    await Promise.all([
+      this.categoryService.updateCategory(current.id!, { displayOrder: targetOrder }),
+      this.categoryService.updateCategory(target.id!, { displayOrder: currentOrder }),
+    ]);
+
+    // Atualiza signal local com nova ordem
+    this.categoryService.categories.update(list => {
+      const updated = list.map(c => {
+        if (c.id === current.id!) return { ...c, displayOrder: targetOrder };
+        if (c.id === target.id!) return { ...c, displayOrder: currentOrder };
+        return c;
+      });
+      return [...updated].sort((a, b) => (a.displayOrder ?? 0) - (b.displayOrder ?? 0));
+    });
+  }
+
+  // Templates de seção
+  async addCategoryFromTemplate(template: { name: string; items: string[] }): Promise<void> {
+    if (!this.event()?.id) return;
+    const notes = template.items.length > 0
+      ? JSON.stringify(template.items.map(text => ({ text, done: false })))
+      : '';
+    try {
+      await this.categoryService.addCategory({ eventId: this.event()!.id!, name: template.name, notes });
+      this.showAddCategory.set(false);
+      this.showTemplatePanel.set(false);
+    } catch (error) {
+      console.error('Erro ao criar seção a partir do template:', error);
+    }
+  }
+
   // Categories
   async addCategory(): Promise<void> {
     const name = this.newCategoryName().trim();
@@ -296,8 +401,14 @@ export class EventDetailComponent implements OnInit {
     }
   }
 
-  async deleteCategory(id: string): Promise<void> {
-    if (!confirm('Excluir esta seção?')) return;
+  deleteCategory(id: string): void {
+    this.confirmDeleteCategoryId.set(id);
+  }
+
+  async confirmDeleteCategory(): Promise<void> {
+    const id = this.confirmDeleteCategoryId();
+    if (!id) return;
+    this.confirmDeleteCategoryId.set(null);
     try {
       await this.categoryService.deleteCategory(id);
     } catch (error) {

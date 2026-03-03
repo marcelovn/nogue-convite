@@ -7,8 +7,10 @@ import { AuthService } from '../../services/auth';
 import { InviteTokenService } from '../../services/invite-token';
 import { GuestService } from '../../services/guest.service';
 import { EventService } from '../../services/event.service';
+import { EventCategoryService } from '../../services/event-category.service';
 import { Card, RSVPStats } from '../../models/card.model';
 import { COLOR_SCHEMES } from '../../models/constants';
+import { AppEvent, EventStatus, computeEventStatus } from '../../models/event.model';
 import { Guest } from '../../models/guest.model';
 import { Subscription } from 'rxjs';
 import { ConfirmDialog } from '../confirm-dialog/confirm-dialog';
@@ -26,6 +28,7 @@ export class RsvpDashboard implements OnInit, OnDestroy {
   private inviteTokenService = inject(InviteTokenService);
   private guestService = inject(GuestService);
   private eventService = inject(EventService);
+  private categoryService = inject(EventCategoryService);
   public authService = inject(AuthService);
 
   activeTab = signal<'events' | 'cards'>('events');
@@ -280,6 +283,44 @@ export class RsvpDashboard implements OnInit, OnDestroy {
 
   async logout(): Promise<void> {
     await this.authService.logout();
+  }
+
+  getEventStatus(event: AppEvent): EventStatus {
+    return computeEventStatus(event);
+  }
+
+  getEventStatusLabel(status: EventStatus): string {
+    if (status === 'planning') return 'Planejando';
+    if (status === 'upcoming') return 'Em breve';
+    return 'Realizado';
+  }
+
+  async duplicateEvent(event: AppEvent, domEvent: Event): Promise<void> {
+    domEvent.stopPropagation();
+    try {
+      const categories = await this.categoryService.getCategoriesForEvent(event.id!);
+      const newId = await this.eventService.createEvent({
+        name: `${event.name} (cópia)`,
+        eventType: event.eventType,
+        eventDate: event.eventDate,
+        eventTime: event.eventTime,
+        eventLocation: event.eventLocation,
+        budgetTotal: event.budgetTotal,
+        additionalNotes: event.additionalNotes,
+      });
+      if (categories.length > 0) {
+        await Promise.all(
+          categories.map(cat => this.categoryService.addCategory({
+            eventId: newId,
+            name: cat.name,
+            notes: cat.notes,
+          }))
+        );
+      }
+      this.router.navigate(['/events', newId]);
+    } catch (error) {
+      console.error('Erro ao duplicar evento:', error);
+    }
   }
 
   getCardScheme(card: Card) {

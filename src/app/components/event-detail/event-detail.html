@@ -1,3 +1,7 @@
+@if (showTutorial()) {
+  <app-event-tutorial [steps]="TUTORIAL_STEPS" (closed)="closeTutorial()" />
+}
+
 @if (confirmDeleteCategoryId()) {
   <app-confirm-dialog
     title="Excluir seção"
@@ -58,6 +62,7 @@
         </div>
       </div>
       <div class="event-header-actions">
+        <button class="btn btn-ghost btn-tutorial" (click)="reopenTutorial()" title="Abrir tutorial">?</button>
         <button class="btn btn-ghost" (click)="editEvent()">Editar evento</button>
       </div>
     </header>

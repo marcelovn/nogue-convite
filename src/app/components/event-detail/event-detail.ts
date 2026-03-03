@@ -15,10 +15,34 @@ import { COLOR_SCHEMES } from '../../models/constants';
 import { GuestsManager } from '../guests-manager/guests-manager';
 import { EventFinanceComponent } from '../event-finance/event-finance';
 import { ConfirmDialog } from '../confirm-dialog/confirm-dialog';
+import { EventTutorialComponent } from '../event-tutorial/event-tutorial';
+
+const TUTORIAL_STEPS = [
+  {
+    title: 'Bem-vindo ao hub do evento!',
+    text: 'Aqui você gerencia tudo sobre o seu evento em um só lugar — convite, convidados, finanças e organização. Use as seções abaixo para explorar cada funcionalidade.',
+  },
+  {
+    title: 'Convite digital',
+    text: 'Crie um convite personalizado com tema e cores. Depois compartilhe por WhatsApp ou link direto. Acompanhe as confirmações em tempo real.',
+  },
+  {
+    title: 'Lista de convidados',
+    text: 'Adicione convidados individualmente ou importe uma lista. Envie convites personalizados pelo WhatsApp e veja quem confirmou, está pendente ou recusou.',
+  },
+  {
+    title: 'Controle financeiro',
+    text: 'Registre gastos por categoria, defina datas de vencimento e acompanhe o saldo. Registre também entradas e presentes recebidos.',
+  },
+  {
+    title: 'Seções personalizadas',
+    text: 'Crie listas de tarefas para qualquer aspecto do evento — cardápio, decoração, compras, programação. Marque os itens conforme avança na organização.',
+  },
+];
 
 @Component({
   selector: 'app-event-detail',
-  imports: [CommonModule, FormsModule, GuestsManager, EventFinanceComponent, ConfirmDialog],
+  imports: [CommonModule, FormsModule, GuestsManager, EventFinanceComponent, ConfirmDialog, EventTutorialComponent],
   templateUrl: './event-detail.html',
   styleUrl: './event-detail.scss',
 })
@@ -33,12 +57,15 @@ export class EventDetailComponent implements OnInit {
   private guestService = inject(GuestService);
   private rsvpService = inject(RsvpService);
 
+  readonly TUTORIAL_STEPS = TUTORIAL_STEPS;
+
   event = signal<AppEvent | null>(null);
   isLoading = signal(true);
   linkCopied = signal(false);
   confirmDeleteEventId = signal<string | null>(null);
   confirmDeleteCardId = signal<string | null>(null);
   confirmDeleteCategoryId = signal<string | null>(null);
+  showTutorial = signal(false);
 
   // Categories
   categories = this.categoryService.categories;
@@ -211,6 +238,19 @@ export class EventDetailComponent implements OnInit {
     this.loadEvent(eventId);
     this.categoryService.loadCategoriesByEvent(eventId);
     this.financeService.loadExpensesByEvent(eventId).catch(() => {});
+
+    if (!localStorage.getItem('event-tutorial-done')) {
+      this.showTutorial.set(true);
+    }
+  }
+
+  closeTutorial(): void {
+    localStorage.setItem('event-tutorial-done', '1');
+    this.showTutorial.set(false);
+  }
+
+  reopenTutorial(): void {
+    this.showTutorial.set(true);
   }
 
   private async loadEvent(id: string): Promise<void> {

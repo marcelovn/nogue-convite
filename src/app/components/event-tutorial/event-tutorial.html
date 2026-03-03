@@ -1,0 +1,22 @@
+<div class="tutorial-backdrop" (click)="close()">
+  <div class="tutorial-box" (click)="$event.stopPropagation()">
+    <div class="tutorial-progress-bar">
+      <div class="tutorial-progress-fill" [style.width.%]="progressPercent()"></div>
+    </div>
+
+    <div class="tutorial-content">
+      <h3 class="tutorial-title">{{ steps()[currentStep()].title }}</h3>
+      <p class="tutorial-text">{{ steps()[currentStep()].text }}</p>
+    </div>
+
+    <div class="tutorial-footer">
+      <span class="tutorial-counter">Dica {{ currentStep() + 1 }} de {{ steps().length }}</span>
+      <div class="tutorial-actions">
+        <button class="btn-tutorial-close" (click)="close()">Fechar Tutorial</button>
+        <button class="btn-tutorial-next" (click)="next()">
+          {{ isLast() ? 'Concluir' : 'Próxima Dica' }}
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

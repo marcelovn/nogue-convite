@@ -78,11 +78,14 @@
   } @else {
     <div class="guests-header">
       <h3>Convidados ({{ guests().length }})</h3>
-      @if (stats().pending > 0) {
-        <button class="btn btn-primary btn-send-all" (click)="sendToAll()">
-          Enviar para {{ stats().pending }} pendente{{ stats().pending > 1 ? 's' : '' }}
-        </button>
-      }
+      <div class="guests-header-actions">
+        <button class="btn btn-ghost btn-sm" (click)="exportCsv()" title="Exportar lista em CSV">⬇ CSV</button>
+        @if (stats().pending > 0) {
+          <button class="btn btn-primary btn-send-all" (click)="sendToAll()">
+            Enviar para {{ stats().pending }} pendente{{ stats().pending > 1 ? 's' : '' }}
+          </button>
+        }
+      </div>
     </div>
 
     <div class="guests-list">

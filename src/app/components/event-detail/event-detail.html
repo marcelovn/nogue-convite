@@ -212,6 +212,31 @@
       @if (openSection() === 'guests') {
         <div class="accordion-body">
           @if (card(); as c) {
+            @if (guestStats(); as gs) {
+              @if (gs.guestCount > 0) {
+                <div class="funnel-row">
+                  <div class="funnel-step">
+                    <span class="funnel-num">{{ gs.guestCount }}</span>
+                    <span class="funnel-lbl">Adicionados</span>
+                  </div>
+                  <span class="funnel-arrow">→</span>
+                  <div class="funnel-step">
+                    <span class="funnel-num">{{ gs.sent }}</span>
+                    <span class="funnel-lbl">Enviados</span>
+                  </div>
+                  <span class="funnel-arrow">→</span>
+                  <div class="funnel-step">
+                    <span class="funnel-num">{{ gs.viewed }}</span>
+                    <span class="funnel-lbl">Visualizados</span>
+                  </div>
+                  <span class="funnel-arrow">→</span>
+                  <div class="funnel-step funnel-step-confirmed">
+                    <span class="funnel-num">{{ gs.confirmed }}</span>
+                    <span class="funnel-lbl">Confirmados</span>
+                  </div>
+                </div>
+              }
+            }
             <app-guests-manager
               [cardId]="c.id!"
               [cardTitle]="c.title"
@@ -245,8 +270,9 @@
     </div>
 
     <!-- Seções Customizadas -->
+    <div cdkDropList (cdkDropListDropped)="reorderCategories($event)" class="categories-list">
     @for (cat of categories(); track cat.id; let first = $first, last = $last) {
-      <div class="accordion-section card-base">
+      <div class="accordion-section card-base" cdkDrag>
         <button class="accordion-header" (click)="toggleSection('cat-' + cat.id)">
           <span class="acc-left">
             @if (editingCategoryId() === cat.id) {
@@ -311,6 +337,7 @@
         }
       </div>
     }
+    </div>
 
     <!-- Adicionar seção customizada -->
     <div class="add-section-wrap">

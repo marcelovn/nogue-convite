@@ -3,6 +3,7 @@ import { FormsModule } from '@angular/forms';
 import { CommonModule, CurrencyPipe } from '@angular/common';
 import { EventFinanceService } from '../../services/event-finance.service';
 import { EventExpense } from '../../models/event.model';
+import { ConfirmDialog } from '../confirm-dialog/confirm-dialog';
 
 const EXPENSE_CATEGORIES = [
   { id: 'alimentacao', label: 'Alimentação' },
@@ -16,7 +17,7 @@ const EXPENSE_CATEGORIES = [
 
 @Component({
   selector: 'app-event-finance',
-  imports: [FormsModule, CommonModule, CurrencyPipe],
+  imports: [FormsModule, CommonModule, CurrencyPipe, ConfirmDialog],
   templateUrl: './event-finance.html',
   styleUrl: './event-finance.scss',
 })
@@ -58,6 +59,9 @@ export class EventFinanceComponent implements OnInit {
   readonly totalPaid      = this.financeService.totalPaid;
   readonly totalPending   = this.financeService.totalPending;
   readonly totalReceipts  = this.financeService.totalReceipts;
+  readonly netBalance     = this.financeService.netBalance;
+
+  deleteTargetId = signal<string | null>(null);
 
   readonly budgetProgress = computed(() => {
     if (!this.budgetTotal || this.budgetTotal === 0) return 0;
@@ -216,7 +220,13 @@ export class EventFinanceComponent implements OnInit {
   }
 
   async deleteExpense(id: string): Promise<void> {
-    if (!confirm('Excluir este item?')) return;
+    this.deleteTargetId.set(id);
+  }
+
+  async confirmDeleteExpense(): Promise<void> {
+    const id = this.deleteTargetId();
+    this.deleteTargetId.set(null);
+    if (!id) return;
     try {
       await this.financeService.deleteExpense(id);
     } catch (error) {

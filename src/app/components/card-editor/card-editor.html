@@ -56,34 +56,6 @@
           (ngModelChange)="cardMessage.set($event)"></textarea>
       </div>
 
-      <!-- Upload de Foto -->
-      <div class="form-group">
-        <label>Foto do personagem <span class="label-hint">(aparece no jogo desafio)</span></label>
-        @if (photoPreview()) {
-          <div class="photo-preview-wrapper">
-            <img [src]="photoPreview()" class="photo-preview" alt="Foto selecionada" />
-            @if (isUploadingPhoto()) {
-              <div class="photo-uploading-overlay">
-                <span class="spinner"></span>
-              </div>
-            }
-            <button class="photo-remove-btn" (click)="removePhoto()" title="Remover foto">✕</button>
-          </div>
-        } @else {
-          <label class="photo-upload-area" for="photoInput">
-            <span class="photo-upload-icon">📷</span>
-            <span class="photo-upload-text">Clique para adicionar uma foto</span>
-            <span class="photo-upload-hint">JPG, PNG ou WebP</span>
-          </label>
-        }
-        <input
-          id="photoInput"
-          type="file"
-          accept="image/jpeg,image/png,image/webp"
-          class="photo-input-hidden"
-          (change)="onPhotoSelected($event)" />
-      </div>
-
       <div class="step-actions">
         <span></span>
         <button class="btn btn-primary" (click)="nextStep()">Próximo →</button>
@@ -176,6 +148,34 @@
                 <span class="challenge-desc">{{ game.description }}</span>
               </button>
             }
+          </div>
+
+          <!-- Upload de Foto do Personagem -->
+          <div class="form-group">
+            <label>Foto do personagem <span class="label-hint">(aparece no jogo desafio)</span></label>
+            @if (photoPreview()) {
+              <div class="photo-preview-wrapper">
+                <img [src]="photoPreview()" class="photo-preview" alt="Foto selecionada" />
+                @if (isUploadingPhoto()) {
+                  <div class="photo-uploading-overlay">
+                    <span class="spinner"></span>
+                  </div>
+                }
+                <button class="photo-remove-btn" (click)="removePhoto()" title="Remover foto">✕</button>
+              </div>
+            } @else {
+              <label class="photo-upload-area" for="photoInput">
+                <span class="photo-upload-icon">📷</span>
+                <span class="photo-upload-text">Clique para adicionar uma foto</span>
+                <span class="photo-upload-hint">JPG, PNG ou WebP</span>
+              </label>
+            }
+            <input
+              id="photoInput"
+              type="file"
+              accept="image/jpeg,image/png,image/webp"
+              class="photo-input-hidden"
+              (change)="onPhotoSelected($event)" />
           </div>
         }
       </div>

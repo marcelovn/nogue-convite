@@ -2,6 +2,7 @@ import { Component, inject, signal, OnInit, computed } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { CdkDragDrop, DragDropModule, moveItemInArray } from '@angular/cdk/drag-drop';
 import { EventService } from '../../services/event.service';
 import { EventCategoryService } from '../../services/event-category.service';
 import { EventFinanceService } from '../../services/event-finance.service';
@@ -42,7 +43,7 @@ const TUTORIAL_STEPS = [
 
 @Component({
   selector: 'app-event-detail',
-  imports: [CommonModule, FormsModule, GuestsManager, EventFinanceComponent, ConfirmDialog, EventTutorialComponent],
+  imports: [CommonModule, FormsModule, GuestsManager, EventFinanceComponent, ConfirmDialog, EventTutorialComponent, DragDropModule],
   templateUrl: './event-detail.html',
   styleUrl: './event-detail.scss',
 })
@@ -192,6 +193,8 @@ export class EventDetailComponent implements OnInit {
     const confirmedGuests = guests.filter(g => g.status === 'confirmed').length;
     const declinedGuests = guests.filter(g => g.status === 'declined').length;
     const pendingGuests = guests.filter(g => g.status !== 'confirmed' && g.status !== 'declined').length;
+    const sentGuests = guests.filter(g => ['sent', 'viewed', 'confirmed'].includes(g.status)).length;
+    const viewedGuests = guests.filter(g => ['viewed', 'confirmed'].includes(g.status)).length;
 
     // Anonymous RSVPs (via shared invite link)
     const rsvpEntries = this.rsvpService.rsvpEntries().filter(e => e.cardId === c.id);
@@ -203,6 +206,9 @@ export class EventDetailComponent implements OnInit {
       confirmed: confirmedGuests + confirmedRsvp,
       declined: declinedGuests + declinedRsvp,
       pending: pendingGuests,
+      sent: sentGuests,
+      viewed: viewedGuests,
+      guestCount: guests.length,
     };
   });
 
@@ -356,6 +362,23 @@ export class EventDetailComponent implements OnInit {
       this.router.navigate(['/dashboard']);
     } catch (error) {
       console.error('Erro ao excluir evento:', error);
+    }
+  }
+
+  // Reordenar seções via drag-and-drop
+  async reorderCategories(event: CdkDragDrop<EventCategory[]>): Promise<void> {
+    if (event.previousIndex === event.currentIndex) return;
+    const cats = [...this.categories()];
+    moveItemInArray(cats, event.previousIndex, event.currentIndex);
+    // Optimistic update
+    this.categoryService.categories.set(cats.map((c, i) => ({ ...c, displayOrder: i })));
+    // Persist to DB
+    try {
+      await Promise.all(
+        cats.map((c, i) => this.categoryService.updateCategory(c.id!, { displayOrder: i }))
+      );
+    } catch (error) {
+      console.error('Erro ao reordenar seções:', error);
     }
   }
 

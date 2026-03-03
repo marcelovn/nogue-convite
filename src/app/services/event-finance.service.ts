@@ -33,6 +33,8 @@ export class EventFinanceService {
       .reduce((sum, e) => sum + e.amount, 0)
   );
 
+  readonly netBalance = computed(() => this.totalReceipts() - this.totalCommitted());
+
   // Mantidos para compatibilidade com event-finance.ts existente
   readonly totalExpenses = this.totalCommitted;
   readonly totalSuppliers = computed(() => 0);

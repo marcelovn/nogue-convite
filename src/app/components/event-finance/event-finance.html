@@ -1,3 +1,14 @@
+@if (deleteTargetId()) {
+  <app-confirm-dialog
+    title="Excluir item"
+    message="Tem certeza que deseja excluir este item financeiro?"
+    confirmLabel="Excluir"
+    cancelLabel="Cancelar"
+    [danger]="true"
+    (confirmed)="confirmDeleteExpense()"
+    (cancelled)="deleteTargetId.set(null)" />
+}
+
 @if (isLoading()) {
   <div class="finance-loading">Carregando finanças...</div>
 } @else {
@@ -31,6 +42,10 @@
     <div class="summary-item">
       <span class="summary-label">Pendente ⏳</span>
       <span class="summary-value pending">{{ totalPending() | currency:'BRL':'symbol':'1.2-2' }}</span>
+    </div>
+    <div class="summary-item">
+      <span class="summary-label">Saldo</span>
+      <span class="summary-value" [class.positive]="netBalance() >= 0" [class.negative]="netBalance() < 0">{{ netBalance() | currency:'BRL':'symbol':'1.2-2' }}</span>
     </div>
   </div>
 

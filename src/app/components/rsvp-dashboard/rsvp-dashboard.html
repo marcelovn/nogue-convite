@@ -66,6 +66,21 @@
         <button class="btn btn-primary" (click)="createNewEvent()">Criar evento</button>
       </div>
     } @else {
+      @let ds = dashboardSummary();
+      <div class="events-summary-bar">
+        <div class="summary-chip">
+          <span class="summary-chip-num">{{ ds.total }}</span>
+          <span class="summary-chip-lbl">Eventos</span>
+        </div>
+        <div class="summary-chip summary-chip-upcoming">
+          <span class="summary-chip-num">{{ ds.upcoming }}</span>
+          <span class="summary-chip-lbl">Próximos</span>
+        </div>
+        <div class="summary-chip summary-chip-invite">
+          <span class="summary-chip-num">{{ ds.withInvite }}</span>
+          <span class="summary-chip-lbl">Com convite</span>
+        </div>
+      </div>
       <div class="cards-grid">
         @for (event of events(); track event.id) {
           @let status = getEventStatus(event);

@@ -208,6 +208,28 @@ export class GuestsManager implements OnInit {
     return `status-${status}`;
   }
 
+  exportCsv(): void {
+    const guests = this.guests();
+    if (!guests.length) return;
+    const headers = 'Nome,Telefone,Status,Confirmado em,Adultos,Crian\u00e7as';
+    const rows = guests.map(g => [
+      `"${g.name.replace(/"/g, '\"')}"`,
+      `"${g.phone}"`,
+      `"${this.getStatusLabel(g.status)}"`,
+      g.confirmedAt ? `"${new Date(g.confirmedAt).toLocaleDateString('pt-BR')}"` : '""',
+      g.adults ?? 0,
+      g.children ?? 0,
+    ].join(','));
+    const csv = [headers, ...rows].join('\n');
+    const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `convidados.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+  }
+
   formatPhone(phone: string): string {
     const cleaned = phone.replace(/\D/g, '');
     if (cleaned.length === 11) {

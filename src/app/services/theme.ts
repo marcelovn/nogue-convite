@@ -15,7 +15,6 @@ export class ThemeService {
     const theme = THEMES.find(t => t.id === themeId);
     if (theme) {
       this.selectedTheme.set(theme);
-      this.applyThemeFont(theme.font);
     }
   }
 
@@ -23,7 +22,6 @@ export class ThemeService {
     const scheme = COLOR_SCHEMES.find(s => s.id === schemeId);
     if (scheme) {
       this.selectedColorScheme.set(scheme);
-      this.applyColorScheme(scheme);
     }
   }
 

@@ -42,6 +42,17 @@ export class RsvpDashboard implements OnInit, OnDestroy {
   confirmDeleteId = signal<string | null>(null);
   confirmClearId = signal<string | null>(null);
   isLoading = computed(() => !this.cardService.hasLoaded());
+
+  readonly dashboardSummary = computed(() => {
+    const evts = this.events();
+    const total = evts.length;
+    const upcoming = evts.filter(e => {
+      const s = computeEventStatus(e);
+      return s === 'upcoming' || s === 'planning';
+    }).length;
+    const withInvite = evts.filter(e => !!e.card).length;
+    return { total, upcoming, withInvite };
+  });
   openMenuId = signal<string | null>(null);
   guestPopoverbCardId = signal<string | null>(null);
   guestPopoverList = signal<Guest[]>([]);

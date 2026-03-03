@@ -171,6 +171,25 @@ export class GuestService {
   }
 
   /**
+   * Atualiza nome/telefone de um convidado
+   */
+  async updateGuest(guestId: string, updates: { name?: string; phone?: string }): Promise<void> {
+    const updateData: any = {};
+    if (updates.name !== undefined) updateData.name = updates.name;
+    if (updates.phone !== undefined) updateData.phone = updates.phone;
+
+    const { error } = await this.supabaseService.getClient()
+      .from('guests')
+      .update(updateData)
+      .eq('id', guestId);
+
+    if (error) throw error;
+
+    this.guests = this.guests.map(g => g.id === guestId ? { ...g, ...updates } : g);
+    this.guestsSignal.set([...this.guests]);
+  }
+
+  /**
    * Remove todos os convidados de um card
    */
   async deleteGuestsByCard(cardId: string): Promise<void> {

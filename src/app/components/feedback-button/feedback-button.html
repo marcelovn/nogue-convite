@@ -1,5 +1,4 @@
 <button class="fab" (click)="open.set(true)" title="Enviar sugestão">
-  💡
   <span class="fab-label">Sugestão</span>
 </button>
 
@@ -8,13 +7,12 @@
     <div class="fb-box" (click)="$event.stopPropagation()">
       @if (status() === 'success') {
         <div class="fb-success">
-          <span class="fb-success-icon">🙏</span>
           <h3>Obrigado!</h3>
           <p>Sua sugestão foi enviada. Vamos considerar nas próximas melhorias.</p>
           <button class="btn-send" (click)="close()">Fechar</button>
         </div>
       } @else {
-        <h3 class="fb-title">💡 Enviar sugestão</h3>
+        <h3 class="fb-title">Enviar sugestão</h3>
         <p class="fb-desc">Qual melhoria você gostaria de ver no Convitei?</p>
         <textarea
           class="fb-textarea"

@@ -274,6 +274,83 @@
   font-size: 0.85rem;
 }
 
+// Category badge
+.expense-desc-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.expense-category-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.2rem;
+  background: var(--bg-secondary, #f3f4f6);
+  color: var(--text-secondary, #6b7280);
+  border-radius: 10px;
+  padding: 0.1rem 0.5rem;
+  font-size: 0.7rem;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+// Overdue
+.expense-overdue {
+  background: #fff7f7;
+  border-radius: 8px;
+  margin: 0 -0.25rem;
+  padding-left: 0.25rem;
+  padding-right: 0.25rem;
+}
+
+.due-date-label {
+  font-size: 0.72rem;
+  color: var(--text-secondary, #6b7280);
+}
+
+.overdue-label {
+  color: #dc2626;
+  font-weight: 600;
+}
+
+// Secondary row (category + due date)
+.add-row-secondary {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.expense-select {
+  flex: 1;
+  padding: 0.5rem 0.75rem;
+  border: 1.5px solid var(--border-color, #e5e7eb);
+  border-radius: 8px;
+  font-size: 0.875rem;
+  background: white;
+  cursor: pointer;
+  box-sizing: border-box;
+
+  &:focus {
+    outline: none;
+    border-color: var(--primary, #667eea);
+  }
+}
+
+.expense-date {
+  flex: 1;
+  padding: 0.5rem 0.75rem;
+  border: 1.5px solid var(--border-color, #e5e7eb);
+  border-radius: 8px;
+  font-size: 0.875rem;
+  box-sizing: border-box;
+  min-width: 0;
+
+  &:focus {
+    outline: none;
+    border-color: var(--primary, #667eea);
+  }
+}
+
 @media (max-width: 480px) {
   .add-row-main {
     flex-direction: column;

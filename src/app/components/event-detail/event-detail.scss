@@ -54,6 +54,27 @@
   }
 }
 
+.btn-tutorial {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  padding: 0;
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text-secondary, #6b7280);
+  border: 1.5px solid var(--border-color, #e5e7eb);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+
+  &:hover {
+    background: var(--bg-secondary, #f3f4f6);
+    color: var(--primary, #3B82F6);
+    border-color: var(--primary, #3B82F6);
+  }
+}
+
 .btn-danger-ghost {
   color: #dc2626;
   &:hover {
@@ -465,6 +486,212 @@
     outline: none;
     border-color: var(--primary, #667eea);
   }
+}
+
+// Event badges (type + status)
+.event-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  align-items: center;
+}
+
+.event-status-badge {
+  display: inline-block;
+  border-radius: 20px;
+  padding: 0.2rem 0.75rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  width: fit-content;
+
+  &.event-status-planning {
+    background: #eff6ff;
+    color: #1d4ed8;
+  }
+  &.event-status-upcoming {
+    background: #fffbeb;
+    color: #d97706;
+  }
+  &.event-status-done {
+    background: #f0fdf4;
+    color: #16a34a;
+  }
+}
+
+// Google Calendar link
+.detail-calendar {
+  margin-top: 0.75rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--border-color, #f3f4f6);
+}
+
+.btn-calendar-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.8rem;
+  color: var(--primary, #667eea);
+  text-decoration: none;
+  font-weight: 500;
+
+  &:hover { text-decoration: underline; }
+}
+
+// Stats grid
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 0.75rem;
+}
+
+.stat-card {
+  background: white;
+  border: 1px solid var(--border-color, #e5e7eb);
+  border-radius: 12px;
+  padding: 1rem;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+
+  .stat-card-value {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: var(--text-primary, #1a1a2e);
+    line-height: 1;
+  }
+
+  .stat-card-label {
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--text-secondary, #6b7280);
+  }
+
+  &.stat-card-upcoming {
+    border-color: #fbbf24;
+    background: #fffbeb;
+    .stat-card-value { color: #d97706; }
+  }
+
+  &.stat-card-done {
+    border-color: #86efac;
+    background: #f0fdf4;
+    .stat-card-value { color: #16a34a; }
+  }
+
+  &.stat-card-confirmed {
+    border-color: #86efac;
+    background: #f0fdf4;
+    .stat-card-value { color: #16a34a; }
+  }
+
+  &.stat-card-warning {
+    border-color: #fbbf24;
+    background: #fffbeb;
+    .stat-card-value { color: #d97706; }
+  }
+
+  &.stat-card-danger {
+    border-color: #fca5a5;
+    background: #fff1f2;
+    .stat-card-value { color: #dc2626; }
+  }
+}
+
+// Move buttons
+.move-btn {
+  font-size: 0.7rem;
+  opacity: 0.6;
+  color: var(--text-secondary, #6b7280);
+
+  &:disabled {
+    opacity: 0.2;
+    cursor: not-allowed;
+  }
+
+  &:not(:disabled):hover {
+    background: var(--bg-secondary, #f3f4f6);
+    opacity: 1;
+  }
+}
+
+// Template picker
+.template-panel {
+  padding: 1rem;
+}
+
+.template-panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.75rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-secondary, #6b7280);
+}
+
+.template-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
+  gap: 0.5rem;
+}
+
+.template-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.75rem 0.5rem;
+  border: 1.5px solid var(--border-color, #e5e7eb);
+  border-radius: 10px;
+  background: white;
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s, transform 0.1s;
+
+  &:hover {
+    border-color: var(--primary, #667eea);
+    background: var(--bg-secondary, #f5f3ff);
+    transform: translateY(-1px);
+  }
+
+  .template-icon {
+    font-size: 1.4rem;
+  }
+
+  .template-name {
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: var(--text-primary, #1a1a2e);
+    text-align: center;
+  }
+
+  &.template-blank {
+    border-style: dashed;
+    color: var(--text-secondary, #6b7280);
+
+    .template-name { color: var(--text-secondary, #6b7280); }
+  }
+}
+
+// Invite actions row (standalone, not inside invite-summary)
+.invite-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.invite-title {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text-primary, #1a1a2e);
+}
+
+.invite-sender {
+  font-size: 0.78rem;
+  color: var(--text-secondary, #6b7280);
 }
 
 @media (max-width: 600px) {
